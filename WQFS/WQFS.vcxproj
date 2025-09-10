@@ -24,6 +24,7 @@
     <ProjectGuid>{3a01d270-ab7a-48f1-ae6b-0c66aecb5e78}</ProjectGuid>
     <RootNamespace>WQFS</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>World_evnet_n_Quest_Fusion_System</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -128,6 +129,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="WQFS.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="WQFS.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
