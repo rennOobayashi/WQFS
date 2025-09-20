@@ -4,11 +4,16 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "ResourceManager.h"
+#include "SpriteRenderer.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 
 enum GameState {
 	GAME_ACTIVE, //0
@@ -22,12 +27,18 @@ class OpenGLCode
 private:
 	GameState states;
 	unsigned int width, height;
-	float delta_time;
-	float last_frame;
+	float deltaTime;
+	float lastFrame;
+	float changeMoveTime;
 
 	GLFWwindow* window;
+	SpriteRenderer* sRenderer;
+
+
 
 	void init();
+	void render();
+	void MoveSelf(float dt);
 public:
 	OpenGLCode(unsigned int _width, unsigned int _height);
 	~OpenGLCode(); //Destructor

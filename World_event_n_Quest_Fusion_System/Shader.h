@@ -25,7 +25,6 @@ public:
 	void SetInt(const char* name, int value, bool useShader = false);
 	void SetVec2(const char* name, float x, float y, bool useShader = false);
 	void SetVec2(const char* name, const glm::vec2 &value, bool useShader = false);
-	void SetVec3(const char* name, float value, bool useShader = false);
 	void SetVec3(const char* name, float x, float y, float z, bool useShader = false);
 	void SetVec3(const char* name, const glm::vec3& value, bool useShader = false);
 	void SetVec4(const char* name, float x, float y, float z, float w, bool useShader = false);

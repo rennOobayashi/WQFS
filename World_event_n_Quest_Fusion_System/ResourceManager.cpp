@@ -3,25 +3,25 @@
 std::map<std::string, Shader> ResourceManager::shaders;
 std::map<std::string, Texture> ResourceManager::textures;
 
-Shader ResourceManager::loadShader(const char* vShaderFile, const char* fShaderFileconst, char* gShaderFile, std::string name) {
-	shaders[name] = loadShaderFromFile(vShaderFile, fShaderFileconst, gShaderFile);
+Shader ResourceManager::LoadShader(const char* vShaderFile, const char* fShaderFileconst, char* gShaderFile, std::string name) {
+	shaders[name] = LoadShaderFromFile(vShaderFile, fShaderFileconst, gShaderFile);
 	return shaders[name];
 }
 
-Texture ResourceManager::loadTexture(const char* file, bool alpha) {
-	textures[file] = loadTexture(file, alpha);
-	return textures[file];
+Texture ResourceManager::LoadTexture(const char* file, bool alpha, std::string name) {
+	textures[name] = LoadTextureFromFile(file, alpha);
+	return textures[name];
 }
 
-Shader ResourceManager::getShader(std::string name) {
+Shader ResourceManager::GetShader(std::string name) {
 	return shaders[name];
 }
 
-Texture ResourceManager::getTexture(std::string file) {
+Texture ResourceManager::GetTexture(std::string file) {
 	return textures[file];
 }
 
-void ResourceManager::clear() {
+void ResourceManager::Clear() {
 	for (auto iter : shaders) {
 		glDeleteProgram(iter.second.ID);
 	}
@@ -30,7 +30,7 @@ void ResourceManager::clear() {
 	}
 }
 
-Shader ResourceManager::loadShaderFromFile(const char* vShaderFile, const char* fShaderFileconst, char* gShaderFile) {
+Shader ResourceManager::LoadShaderFromFile(const char* vShaderFile, const char* fShaderFileconst, char* gShaderFile) {
 	std::string vertexCode;
 	std::string fragmentCode;
 	std::string geometryCode;
@@ -73,7 +73,7 @@ Shader ResourceManager::loadShaderFromFile(const char* vShaderFile, const char* 
 	return shader;
 }
 
-Texture ResourceManager::loadTextureFromFile(const char* file, bool alpha) {
+Texture ResourceManager::LoadTextureFromFile(const char* file, bool alpha) {
 	Texture tex;
 
 	if (alpha) {
