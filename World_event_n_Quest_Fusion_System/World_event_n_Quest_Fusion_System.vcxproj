@@ -127,6 +127,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\..\glad\src\glad.c" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="NPC.cpp" />
     <ClCompile Include="OpenGLCode.cpp" />
@@ -140,6 +141,7 @@
     <ClCompile Include="WQFS.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="NPC.h" />
     <ClInclude Include="OpenGLCode.h" />

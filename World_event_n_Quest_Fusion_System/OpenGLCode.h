@@ -39,6 +39,7 @@ private:
 	void init();
 	void render();
 	void MoveSelf(float dt);
+	void CheckCollision();
 public:
 	OpenGLCode(unsigned int _width, unsigned int _height);
 	~OpenGLCode(); //Destructor
