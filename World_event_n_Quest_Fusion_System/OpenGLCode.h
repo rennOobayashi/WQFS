@@ -23,7 +23,6 @@ enum GameState {
 	GAME_WIN     //2
 };
 
-
 class OpenGLCode
 {
 private:
@@ -46,7 +45,8 @@ private:
 	void init();
 	void render();
 	void MoveSelf(float dt);
-	void CheckCollision();
+	void DoCollisions();
+	bool CheckCollision(GameObject& object1, GameObject& object2);
 public:
 	OpenGLCode(unsigned int _width, unsigned int _height);
 	~OpenGLCode(); //Destructor

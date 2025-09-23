@@ -3,6 +3,7 @@
 
 #include <iostream>
 
+// Example world event types:
 // 1.monster
 // 2.earthquake
 // 3.landslide
@@ -11,17 +12,15 @@
 class WorldEvent
 {
 private:
-	float position_x, position_y;
-	int type;
+	float positionX, positionY;
 
 	void init();
 public:
-	WorldEvent(int _type, float pos_x, float pos_y);
+	WorldEvent();
 	~WorldEvent() { }
 
+	void SetUp(float posX, float posY);
 	void DoEvent();
-	std::string getName();
-	int getType();
 };
 
 #endif

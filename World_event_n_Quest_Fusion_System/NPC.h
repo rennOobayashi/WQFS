@@ -3,6 +3,7 @@
 
 #include <iostream>
 
+// Example NPC types:
 // 1. normal
 // 2. Item dealer
 // 3. weapon dealer
@@ -13,16 +14,15 @@ class NPC
 private:
 	std::string name;
 	int type;
-	float position_x, position_y;
+	float positionX, positionY;
 
 	void init();
 public:
 
-	NPC(std::string _name, int _type, float pos_x, float pos_y);
+	NPC();
 	~NPC() { }
 
-	void move();
-	std::string getName();
+	void SetUp(int _type, float pos_x, float pos_y);
 	int getType();
 };
 

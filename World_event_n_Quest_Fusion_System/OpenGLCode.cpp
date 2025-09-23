@@ -81,6 +81,7 @@ void OpenGLCode::update() {
 
         render();
         MoveSelf(deltaTime);
+		DoCollisions();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -118,10 +119,12 @@ void OpenGLCode::MoveSelf(float dt) {
     for (auto& npc : npcObjects) {
         if (changedir) {
             npc.objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
+            std::cout << npc.objVelocity.x << " " << npc.objVelocity.y << std::endl;
         }
 
-		if ((npc.objPosition.x < 0 && npc.objVelocity.x == -1) && (npc.objPosition.x > width - npc.objSize.x && npc.objVelocity.x == 1)) npc.objVelocity.x = 0;
-		if ((npc.objPosition.y < 0 && npc.objVelocity.y == -1) && (npc.objPosition.y > height - npc.objSize.y && npc.objVelocity.y == 1)) npc.objVelocity.y = 0;
+
+		if ((npc.objPosition.x < 0 && npc.objVelocity.x == -1) || (npc.objPosition.x > width - npc.objSize.x && npc.objVelocity.x == 1)) npc.objVelocity.x = 0;
+		if ((npc.objPosition.y < 0 && npc.objVelocity.y == -1) || (npc.objPosition.y > height - npc.objSize.y && npc.objVelocity.y == 1)) npc.objVelocity.y = 0;
 
         npc.objPosition.x += npc.objVelocity.x * 50 * dt;
         npc.objPosition.y += npc.objVelocity.y * 50 * dt;
@@ -132,8 +135,8 @@ void OpenGLCode::MoveSelf(float dt) {
             monster.objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
         }
 
-        if ((monster.objPosition.x < 0 && monster.objVelocity.x == -1) && (monster.objPosition.x > width - monster.objSize.x && monster.objVelocity.x == 1)) monster.objVelocity.x = 0;
-        if ((monster.objPosition.y < 0 && monster.objVelocity.y == -1) && (monster.objPosition.y > height - monster.objSize.y && monster.objVelocity.y == 1)) monster.objVelocity.y = 0;
+        if ((monster.objPosition.x < 0 && monster.objVelocity.x == -1) || (monster.objPosition.x > width - monster.objSize.x && monster.objVelocity.x == 1)) monster.objVelocity.x = 0;
+        if ((monster.objPosition.y < 0 && monster.objVelocity.y == -1) || (monster.objPosition.y > height - monster.objSize.y && monster.objVelocity.y == 1)) monster.objVelocity.y = 0;
 
         monster.objPosition.x += monster.objVelocity.x * 30 * dt;
         monster.objPosition.y += monster.objVelocity.y * 30 * dt;
@@ -144,12 +147,43 @@ void OpenGLCode::MoveSelf(float dt) {
             event.objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
         }
 
-        if ((event.objPosition.x < 0 && event.objVelocity.x == -1) && (event.objPosition.x > width - event.objSize.x && event.objVelocity.x == 1)) event.objVelocity.x = 0;
-        if ((event.objPosition.y < 0 && event.objVelocity.y == -1) && (event.objPosition.y > width - event.objSize.y && event.objVelocity.y == 1)) event.objVelocity.y = 0;
+        if ((event.objPosition.x < 0 && event.objVelocity.x == -1) || (event.objPosition.x > width - event.objSize.x && event.objVelocity.x == 1)) event.objVelocity.x = 0;
+        if ((event.objPosition.y < 0 && event.objVelocity.y == -1) || (event.objPosition.y > height - event.objSize.y && event.objVelocity.y == 1)) event.objVelocity.y = 0;
 
         event.objPosition.x += event.objVelocity.x * 10 * dt;
         event.objPosition.y += event.objVelocity.y * 10 * dt;
 	}
 
 	if (changedir)  changedir = false;
+}
+
+bool OpenGLCode::CheckCollision(GameObject& object1, GameObject& object2) {
+    bool collisionX = object1.objPosition.x + object1.objSize.x >= object2.objPosition.x &&
+		object2.objPosition.x + object2.objSize.x >= object1.objPosition.x;
+    bool collisionY = object1.objPosition.y + object1.objSize.y >= object2.objPosition.y &&
+		object2.objPosition.y + object2.objSize.y >= object1.objPosition.y;
+
+    return collisionX && collisionY;
+}
+
+void OpenGLCode::DoCollisions() {
+    for (auto& npc : npcObjects) {
+        for (auto& monster : monsterObjects) {
+            if (CheckCollision(npc, monster)) {
+				std::cout << "collision npc and monster" << std::endl;
+            }
+        }
+        for (auto& event : eventObjects) {
+            if (CheckCollision(npc, event)) {
+                std::cout << "collision npc and event" << std::endl;
+            }
+        }
+    }
+    for (auto& monster : monsterObjects) {
+        for (auto& event : eventObjects) {
+            if (CheckCollision(monster, event)) {
+                std::cout << "collision monster and event" << std::endl;
+            }
+        }
+    }
 }

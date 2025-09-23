@@ -1,14 +1,11 @@
 #include "NPC.h"
 
-NPC::NPC(std::string _name, int _type, float pos_x, float pos_y) 
-	:name(_name), type(_type), position_x(pos_x), position_y(pos_y) { }
+NPC::NPC() { }
 
-void NPC::move() {
-	std::cout << "NPC " << name << "moving" << std::endl;
-}
-
-std::string NPC::getName() {
-	return name;
+void NPC::SetUp(int _type, float pos_x, float pos_y) {
+	type = _type;
+	positionX = pos_x;
+	positionY = pos_y;
 }
 
 int NPC::getType() {

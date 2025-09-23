@@ -9,29 +9,24 @@
 #include <vector>
 #include <Windows.h>
 #include <time.h>
+#include <map>
 
 class WQFS
 {
 private:
-	std::vector<WorldEvent> world_events;
-	std::vector<NPC> npcs;
-	std::vector<Item> comps;
-	
-	clock_t start_time;
-	double time_limit;
-	int fame;
 
-	void init();
+	WQFS() {}
 	void SetCompensation(WorldEvent event, NPC npc);
 	void CheckConfirmation();
 public:
-	WQFS(int _fame);
-	~WQFS();
+	//bool eventHappen;
+	static std::map<std::string, WorldEvent> worldEvents;
+	static std::map<std::string, NPC> npcs;
+	static std::map<std::string, Item> comps;
 
-	void AddEvent();
-	void AddNPC();
-	void AddItem();
-	void Test();
+	static WorldEvent AddEvent(std::string name, float posX, float posY);
+	static NPC AddNPC(std::string name, int type, float posX, float posY);
+	static Item AddItem(std::string name, int type, float effect);
 };
 
 #endif
