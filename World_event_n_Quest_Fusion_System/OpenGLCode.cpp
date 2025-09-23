@@ -2,16 +2,6 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
-glm::vec2 npcMovePos = glm::vec2(0.0f);
-glm::vec2 monsterMovePos = glm::vec2(0.0f);
-glm::vec2 event1MovePos = glm::vec2(0.0f);
-glm::vec2 event2MovePos = glm::vec2(0.0f);
-
-glm::vec2 npcPos;
-glm::vec2 monsterPos;
-glm::vec2 event1Pos;
-glm::vec2 event2Pos;
-
 OpenGLCode::OpenGLCode(unsigned int _width, unsigned int _height)
 	: states(GAME_MENU), width(_width), height(_height) {
     init();
@@ -19,6 +9,11 @@ OpenGLCode::OpenGLCode(unsigned int _width, unsigned int _height)
 
 OpenGLCode::~OpenGLCode() {
 	delete sRenderer;
+	npcObjects.clear();
+    monsterObjects.clear();
+    eventObjects.clear();
+    ResourceManager::Clear();
+
 }
 
 void OpenGLCode::init() {
@@ -62,12 +57,13 @@ void OpenGLCode::init() {
 
 	Shader spriteShader = ResourceManager::GetShader("sprite");
 	sRenderer = new SpriteRenderer(spriteShader);
+
     changeMoveTime = 5.0f;
 
-	npcPos = glm::vec2(0.0f);
-	monsterPos = glm::vec2(width - 200.0f, 0.0f);
-	event1Pos = glm::vec2(width - 400.0f, height - 400.0f);
-	event2Pos = glm::vec2(0.0f, height - 350.0f);
+	npcObjects.push_back(GameObject(ResourceManager::GetTexture("NPC"), glm::vec2(0.0f, 0.0f), glm::vec2(200.0f), 0.0f, glm::vec3(0.1f, 0.5f, 1.0f)));
+    monsterObjects.push_back(GameObject(ResourceManager::GetTexture("Monster"), glm::vec2(width - 200.0f, 0.0f), glm::vec2(200.0f), 0.0f, glm::vec3(1.0f, 0.2f, 0.1f)));
+    eventObjects.push_back(GameObject(ResourceManager::GetTexture("Event"), glm::vec2(width - 400.0f, height - 400.0f), glm::vec2(400.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f)));
+    eventObjects.push_back(GameObject(ResourceManager::GetTexture("Event"), glm::vec2(0.0f, height - 350.0f), glm::vec2(350.0f), 0.0f, glm::vec3(0.4f, 0.1f, 1.0f)));
 }
 
 void OpenGLCode::update() {
@@ -95,15 +91,16 @@ void OpenGLCode::update() {
 }
 
 void OpenGLCode::render() {
-	Texture npcTex = ResourceManager::GetTexture("NPC");
-    Texture monsterTex = ResourceManager::GetTexture("Monster");
-    Texture eventTex1 = ResourceManager::GetTexture("Event");
-    Texture eventTex2 = ResourceManager::GetTexture("Event");
+    for (auto npc : npcObjects) {
+		npc.Draw(*sRenderer);
+	}
+    for (auto monster : monsterObjects) {
+        monster.Draw(*sRenderer);
+    }
+    for (auto event : eventObjects) {
+        event.Draw(*sRenderer);
+    }
 
-	sRenderer->DrawSprite(npcTex, glm::vec2(npcPos), glm::vec2(200.0f), 0.0f, glm::vec3(0.1f, 0.5f, 1.0f));
-    sRenderer->DrawSprite(monsterTex, glm::vec2(monsterPos), glm::vec2(200.0f), 0.0f, glm::vec3(1.0f, 0.2f, 0.1f));
-    sRenderer->DrawSprite(eventTex1, glm::vec2(event1Pos), glm::vec2(400.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f));
-    sRenderer->DrawSprite(eventTex2, glm::vec2(event2Pos), glm::vec2(350.0f), 0.0f, glm::vec3(0.4f, 0.1f, 1.0f));
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -113,28 +110,46 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void OpenGLCode::MoveSelf(float dt) {
     if (changeMoveTime >= 2.5f) {
-		npcMovePos.x = (rand() % 3) - 1;
-        npcMovePos.y = (rand() % 3) - 1;
-        monsterMovePos.x = (rand() % 3) - 1;
-        monsterMovePos.y = (rand() % 3) - 1;
-        event1MovePos.x = (rand() % 3) - 1;
-        event1MovePos.y = (rand() % 3) - 1;
-        event2MovePos.x = (rand() % 3) - 1;
-        event2MovePos.y = (rand() % 3) - 1;
+        changedir = true;
 
         changeMoveTime = 0;
     }
 
+    for (auto& npc : npcObjects) {
+        if (changedir) {
+            npc.objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
+        }
 
-    if (!(npcPos.x < 0 && npcMovePos.x == -1) && !(npcPos.x > width - 200.0f && npcMovePos.x == 1)) npcPos.x += npcMovePos.x * 50 * dt;
-    if (!(npcPos.y < 0 && npcMovePos.y == -1) && !(npcPos.y > height - 200.0f && npcMovePos.y == 1)) npcPos.y += npcMovePos.y * 50 * dt;
+		if ((npc.objPosition.x < 0 && npc.objVelocity.x == -1) && (npc.objPosition.x > width - npc.objSize.x && npc.objVelocity.x == 1)) npc.objVelocity.x = 0;
+		if ((npc.objPosition.y < 0 && npc.objVelocity.y == -1) && (npc.objPosition.y > height - npc.objSize.y && npc.objVelocity.y == 1)) npc.objVelocity.y = 0;
 
-    if (!(monsterPos.x < 0 && monsterMovePos.x == -1) && !(monsterPos.x > width - 200.0f && monsterMovePos.x == 1)) monsterPos.x += monsterMovePos.x * 30.0f * dt;
-    if (!(monsterPos.y < 0 && monsterMovePos.y == -1) && !(monsterPos.y > width - 200.0f && monsterMovePos.y == 1)) monsterPos.y += monsterMovePos.y * 30.0f * dt;
+        npc.objPosition.x += npc.objVelocity.x * 50 * dt;
+        npc.objPosition.y += npc.objVelocity.y * 50 * dt;
+	}
 
-    if (!(event1Pos.x < 0 && event1MovePos.x == -1) && !(event1Pos.x > width - 400.0f && event1MovePos.x == 1)) event1Pos.x += event1MovePos.x * 30.0f * dt;
-    if (!(event1Pos.y < 0 && event1MovePos.y == -1) && !(event1Pos.y > width - 400.0f && event1MovePos.y == 1)) event1Pos.y += event1MovePos.y * 30.0f * dt;
+    for (auto& monster : monsterObjects) {
+        if (changedir) {
+            monster.objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
+        }
 
-    if (!(event2Pos.x < 0 && event2MovePos.x == -1) && !(event2Pos.x > width - 350.0f && event1MovePos.x == 1)) event2Pos.x += event2MovePos.x * 30.0f * dt;
-    if (!(event2Pos.y < 0 && event2MovePos.y == -1) && !(event2Pos.y > width - 350.0f && event1MovePos.y == 1)) event2Pos.y += event2MovePos.y * 30.0f * dt;
+        if ((monster.objPosition.x < 0 && monster.objVelocity.x == -1) && (monster.objPosition.x > width - monster.objSize.x && monster.objVelocity.x == 1)) monster.objVelocity.x = 0;
+        if ((monster.objPosition.y < 0 && monster.objVelocity.y == -1) && (monster.objPosition.y > height - monster.objSize.y && monster.objVelocity.y == 1)) monster.objVelocity.y = 0;
+
+        monster.objPosition.x += monster.objVelocity.x * 30 * dt;
+        monster.objPosition.y += monster.objVelocity.y * 30 * dt;
+    }
+
+    for (auto& event : eventObjects) {
+        if (changedir) {
+            event.objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
+        }
+
+        if ((event.objPosition.x < 0 && event.objVelocity.x == -1) && (event.objPosition.x > width - event.objSize.x && event.objVelocity.x == 1)) event.objVelocity.x = 0;
+        if ((event.objPosition.y < 0 && event.objVelocity.y == -1) && (event.objPosition.y > width - event.objSize.y && event.objVelocity.y == 1)) event.objVelocity.y = 0;
+
+        event.objPosition.x += event.objVelocity.x * 10 * dt;
+        event.objPosition.y += event.objVelocity.y * 10 * dt;
+	}
+
+	if (changedir)  changedir = false;
 }

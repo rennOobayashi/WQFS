@@ -4,6 +4,12 @@ WQFS::WQFS(int _fame) : fame(_fame) {
 	init();
 }
 
+WQFS::~WQFS() {
+	world_events.clear();
+	npcs.clear();
+	comps.clear();
+}
+
 void WQFS::init() {
 	world_events.push_back(WorldEvent(1, 0, 0));
 	world_events.push_back(WorldEvent(2, 0, 0));

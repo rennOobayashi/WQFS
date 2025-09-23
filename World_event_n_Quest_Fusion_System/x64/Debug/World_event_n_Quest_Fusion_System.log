@@ -1,57 +1,9 @@
-﻿  glad.c
-  stb_image.c
-  코드를 생성하고 있습니다...
-  Item.cpp
-  NPC.cpp
-  OpenGLCode.cpp
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(116,31): warning C4244: '=': 'int'에서 'T'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(116,31): warning C4244:         with
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(116,31): warning C4244:         [
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(116,31): warning C4244:             T=float
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(116,31): warning C4244:         ]
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(117,37): warning C4244: '=': 'int'에서 'T'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(117,37): warning C4244:         with
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(117,37): warning C4244:         [
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(117,37): warning C4244:             T=float
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(117,37): warning C4244:         ]
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(118,41): warning C4244: '=': 'int'에서 'T'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(118,41): warning C4244:         with
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(118,41): warning C4244:         [
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(118,41): warning C4244:             T=float
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(118,41): warning C4244:         ]
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(119,41): warning C4244: '=': 'int'에서 'T'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(119,41): warning C4244:         with
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(119,41): warning C4244:         [
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(119,41): warning C4244:             T=float
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(119,41): warning C4244:         ]
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(120,40): warning C4244: '=': 'int'에서 'T'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(120,40): warning C4244:         with
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(120,40): warning C4244:         [
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(120,40): warning C4244:             T=float
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(120,40): warning C4244:         ]
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(121,40): warning C4244: '=': 'int'에서 'T'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(121,40): warning C4244:         with
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(121,40): warning C4244:         [
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(121,40): warning C4244:             T=float
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(121,40): warning C4244:         ]
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(122,40): warning C4244: '=': 'int'에서 'T'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(122,40): warning C4244:         with
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(122,40): warning C4244:         [
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(122,40): warning C4244:             T=float
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(122,40): warning C4244:         ]
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(123,40): warning C4244: '=': 'int'에서 'T'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(123,40): warning C4244:         with
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(123,40): warning C4244:         [
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(123,40): warning C4244:             T=float
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(123,40): warning C4244:         ]
-  ResourceManager.cpp
-  Shader.cpp
-  SpriteRenderer.cpp
-  Texture.cpp
-  WorldEvent.cpp
+﻿  OpenGLCode.cpp
   World_event_n_Quest_Fusion_System.cpp
-  WQFS.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: 'APIENTRY': 매크로 재정의
+  (소스 파일 'World_event_n_Quest_Fusion_System.cpp'을(를) 컴파일하는 중)
+      C:\glfw-3.4\include\glad\glad.h(32,9):
+      'APIENTRY'의 이전 정의를 참조하십시오.
+  
   코드를 생성하고 있습니다...
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\WorldEvent.cpp(26,1): warning C4715: 'WorldEvent::getName': 모든 제어 경로에서 값을 반환하지는 않습니다.
-LINK : warning LNK4098: 'MSVCRT' defaultlib가 다른 라이브러리와 충돌합니다. /NODEFAULTLIB:library를 사용하십시오.
   World_event_n_Quest_Fusion_System.vcxproj -> C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\x64\Debug\World_event_n_Quest_Fusion_System.exe

@@ -6,6 +6,7 @@
 
 #include "ResourceManager.h"
 #include "SpriteRenderer.h"
+#include "GameObject.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -14,6 +15,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
+#include <vector>
 
 enum GameState {
 	GAME_ACTIVE, //0
@@ -25,11 +27,16 @@ enum GameState {
 class OpenGLCode
 {
 private:
+	std::vector<GameObject> npcObjects;
+	std::vector<GameObject> monsterObjects;
+	std::vector<GameObject> eventObjects;
+
 	GameState states;
 	unsigned int width, height;
 	float deltaTime;
 	float lastFrame;
 	float changeMoveTime;
+	bool changedir;
 
 	GLFWwindow* window;
 	SpriteRenderer* sRenderer;
