@@ -8,6 +8,7 @@
 #include "ResourceManager.h"
 #include "SpriteRenderer.h"
 #include "GameObject.h"
+#include "WQFS.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

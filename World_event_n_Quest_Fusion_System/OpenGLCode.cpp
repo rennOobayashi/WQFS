@@ -168,6 +168,7 @@ bool OpenGLCode::CheckCollision(GameObject& object1, GameObject& object2) {
 
 void OpenGLCode::DoCollisions() {
     for (auto& npc : npcObjects) {
+        if ()
         for (auto& monster : monsterObjects) {
             if (CheckCollision(npc, monster)) {
 				std::cout << "collision npc and monster" << std::endl;

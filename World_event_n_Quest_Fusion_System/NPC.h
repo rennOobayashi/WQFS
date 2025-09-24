@@ -15,10 +15,8 @@ private:
 	std::string name;
 	int type;
 	float positionX, positionY;
-
-	void init();
 public:
-
+	bool inDangerous;
 	NPC();
 	~NPC() { }
 
