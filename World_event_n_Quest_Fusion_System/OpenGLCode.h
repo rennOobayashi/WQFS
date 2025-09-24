@@ -18,6 +18,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <vector>
+#include <map>
 
 enum GameState {
 	GAME_ACTIVE, //0
@@ -28,9 +29,9 @@ enum GameState {
 class OpenGLCode
 {
 private:
-	std::vector<GameObject> npcObjects;
-	std::vector<GameObject> monsterObjects;
-	std::vector<GameObject> eventObjects;
+	std::map<std::string, GameObject > npcObjects;
+	std::map<std::string, GameObject> monsterObjects;
+	std::map<std::string, GameObject> eventObjects;
 
 	GameState states;
 	unsigned int width, height;

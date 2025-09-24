@@ -21,8 +21,12 @@ public:
 	~Item() {}
 
 	void SetUp(int _type, float _effect);
-	void DoEffect();
+	float GetEffect();
 	int getType();
+
+	bool operator<(const Item& other) const {
+		return type < other.type;
+	};
 };
 
 #endif

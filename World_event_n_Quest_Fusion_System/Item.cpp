@@ -8,8 +8,8 @@ void Item::SetUp(int _type, float _effect) {
 	effect = _effect;
 }
 
-void Item::DoEffect() {
-
+float Item::GetEffect() {
+	return effect;
 }
 
 int Item::getType() {

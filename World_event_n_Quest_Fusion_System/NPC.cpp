@@ -1,6 +1,6 @@
 #include "NPC.h"
 
-NPC::NPC() : inDangerous(false) { }
+NPC::NPC() : inDangerous(false), type(0), positionX(0), positionY(0) { }
 
 void NPC::SetUp(int _type, float pos_x, float pos_y) {
 	type = _type;
@@ -8,6 +8,6 @@ void NPC::SetUp(int _type, float pos_x, float pos_y) {
 	positionY = pos_y;
 }
 
-int NPC::getType() {
+int NPC::getType() const {
 	return type;
 }

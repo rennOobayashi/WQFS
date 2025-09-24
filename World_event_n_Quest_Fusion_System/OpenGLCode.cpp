@@ -60,10 +60,15 @@ void OpenGLCode::init() {
 
     changeMoveTime = 5.0f;
 
-	npcObjects.push_back(GameObject(ResourceManager::GetTexture("NPC"), glm::vec2(0.0f, 0.0f), glm::vec2(200.0f), 0.0f, glm::vec3(0.1f, 0.5f, 1.0f)));
-    monsterObjects.push_back(GameObject(ResourceManager::GetTexture("Monster"), glm::vec2(width - 200.0f, 0.0f), glm::vec2(200.0f), 0.0f, glm::vec3(1.0f, 0.2f, 0.1f)));
-    eventObjects.push_back(GameObject(ResourceManager::GetTexture("Event"), glm::vec2(width - 400.0f, height - 400.0f), glm::vec2(400.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f)));
-    eventObjects.push_back(GameObject(ResourceManager::GetTexture("Event"), glm::vec2(0.0f, height - 350.0f), glm::vec2(350.0f), 0.0f, glm::vec3(0.4f, 0.1f, 1.0f)));
+	WQFS::AddNPC("Normal", 0, 0.0f, 0.0f);
+	WQFS::AddEvent("Monster", 0, 0.0f, 0.0f);
+	WQFS::AddEvent("Earthquake", 1, 0.0f, 0.0f);
+	WQFS::AddEvent("Landslide", 2, 0.0f, 0.0f);
+
+    npcObjects["Normal"] = GameObject(ResourceManager::GetTexture("NPC"), glm::vec2(0.0f, 0.0f), glm::vec2(200.0f), 0.0f, glm::vec3(0.1f, 0.5f, 1.0f));
+    monsterObjects["Monster"] = GameObject(ResourceManager::GetTexture("Monster"), glm::vec2(width - 200.0f, 0.0f), glm::vec2(200.0f), 0.0f, glm::vec3(1.0f, 0.2f, 0.1f));
+    eventObjects["Earthquake"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(width - 400.0f, height - 400.0f), glm::vec2(400.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f));
+    eventObjects["Landslide"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(0.0f, height - 350.0f), glm::vec2(350.0f), 0.0f, glm::vec3(0.4f, 0.1f, 1.0f));
 }
 
 void OpenGLCode::update() {
@@ -92,14 +97,20 @@ void OpenGLCode::update() {
 }
 
 void OpenGLCode::render() {
-    for (auto npc : npcObjects) {
-		npc.Draw(*sRenderer);
+    for (const auto& npc : WQFS::GetAllNPC()) {
+		npcObjects[npc.first].Draw(*sRenderer);
 	}
-    for (auto monster : monsterObjects) {
-        monster.Draw(*sRenderer);
+
+    for (const auto& monster : WQFS::GetAllEvent()) {
+        if (monster.second.GetType() == 0) {
+            monsterObjects[monster.first].Draw(*sRenderer);
+        }
     }
-    for (auto event : eventObjects) {
-        event.Draw(*sRenderer);
+    for (const auto& event : WQFS::GetAllEvent()) {
+		//std::cout << eventObjects[event.first].GetType() << std::endl;
+        if (event.second.GetType() != 0) {
+            eventObjects[event.first].Draw(*sRenderer);
+        }
     }
 
 }
@@ -116,42 +127,56 @@ void OpenGLCode::MoveSelf(float dt) {
         changeMoveTime = 0;
     }
 
-    for (auto& npc : npcObjects) {
-        if (changedir) {
-            npc.objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
-            std::cout << npc.objVelocity.x << " " << npc.objVelocity.y << std::endl;
+    for (auto& npc : WQFS::GetAllNPC()) {
+        if (!npc.second.inDangerous) {
+            if (changedir) {
+                npcObjects[npc.first].objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
+                std::cout << npcObjects[npc.first].objVelocity.x << " " << npcObjects[npc.first].objVelocity.y << std::endl;
+            }
+
+            if ((npcObjects[npc.first].objPosition.x < 0 && npcObjects[npc.first].objVelocity.x == -1) || (npcObjects[npc.first].objPosition.x > width - npcObjects[npc.first].objSize.x && npcObjects[npc.first].objVelocity.x == 1)) npcObjects[npc.first].objVelocity.x = 0;
+            if ((npcObjects[npc.first].objPosition.y < 0 && npcObjects[npc.first].objVelocity.y == -1) || (npcObjects[npc.first].objPosition.y > height - npcObjects[npc.first].objSize.y && npcObjects[npc.first].objVelocity.y == 1)) npcObjects[npc.first].objVelocity.y = 0;
+
+            npcObjects[npc.first].objPosition.x += npcObjects[npc.first].objVelocity.x * 50 * dt;
+            npcObjects[npc.first].objPosition.y += npcObjects[npc.first].objVelocity.y * 50 * dt;
+
+			npc.second.positionX = npcObjects[npc.first].objPosition.x;
+			npc.second.positionY = npcObjects[npc.first].objPosition.y;
         }
-
-
-		if ((npc.objPosition.x < 0 && npc.objVelocity.x == -1) || (npc.objPosition.x > width - npc.objSize.x && npc.objVelocity.x == 1)) npc.objVelocity.x = 0;
-		if ((npc.objPosition.y < 0 && npc.objVelocity.y == -1) || (npc.objPosition.y > height - npc.objSize.y && npc.objVelocity.y == 1)) npc.objVelocity.y = 0;
-
-        npc.objPosition.x += npc.objVelocity.x * 50 * dt;
-        npc.objPosition.y += npc.objVelocity.y * 50 * dt;
 	}
 
-    for (auto& monster : monsterObjects) {
-        if (changedir) {
-            monster.objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
+    for (auto& monster : WQFS::GetAllEvent()) {
+        if (monster.second.GetType() == 0) {
+            if (changedir) {
+                monsterObjects[monster.first].objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
+            }
+
+            if ((monsterObjects[monster.first].objPosition.x < 0 && monsterObjects[monster.first].objVelocity.x == -1) || (monsterObjects[monster.first].objPosition.x > width - monsterObjects[monster.first].objSize.x && monsterObjects[monster.first].objVelocity.x == 1)) monsterObjects[monster.first].objVelocity.x = 0;
+            if ((monsterObjects[monster.first].objPosition.y < 0 && monsterObjects[monster.first].objVelocity.y == -1) || (monsterObjects[monster.first].objPosition.y > height - monsterObjects[monster.first].objSize.y && monsterObjects[monster.first].objVelocity.y == 1)) monsterObjects[monster.first].objVelocity.y = 0;
+
+            monsterObjects[monster.first].objPosition.x += monsterObjects[monster.first].objVelocity.x * 30 * dt;
+            monsterObjects[monster.first].objPosition.y += monsterObjects[monster.first].objVelocity.y * 30 * dt;
+
+            monster.second.positionX = npcObjects[monster.first].objPosition.x;
+            monster.second.positionY = npcObjects[monster.first].objPosition.y;
         }
-
-        if ((monster.objPosition.x < 0 && monster.objVelocity.x == -1) || (monster.objPosition.x > width - monster.objSize.x && monster.objVelocity.x == 1)) monster.objVelocity.x = 0;
-        if ((monster.objPosition.y < 0 && monster.objVelocity.y == -1) || (monster.objPosition.y > height - monster.objSize.y && monster.objVelocity.y == 1)) monster.objVelocity.y = 0;
-
-        monster.objPosition.x += monster.objVelocity.x * 30 * dt;
-        monster.objPosition.y += monster.objVelocity.y * 30 * dt;
     }
 
-    for (auto& event : eventObjects) {
-        if (changedir) {
-            event.objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
+    for (auto& event : WQFS::GetAllEvent()) {
+        if (event.second.GetType() != 0) {
+            if (changedir) {
+                eventObjects[event.first].objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
+            }
+
+            if ((eventObjects[event.first].objPosition.x < 0 && eventObjects[event.first].objVelocity.x == -1) || (eventObjects[event.first].objPosition.x > width - eventObjects[event.first].objSize.x && eventObjects[event.first].objVelocity.x == 1)) eventObjects[event.first].objVelocity.x = 0;
+            if ((eventObjects[event.first].objPosition.y < 0 && eventObjects[event.first].objVelocity.y == -1) || (eventObjects[event.first].objPosition.y > height - eventObjects[event.first].objSize.y && eventObjects[event.first].objVelocity.y == 1)) eventObjects[event.first].objVelocity.y = 0;
+
+            eventObjects[event.first].objPosition.x += eventObjects[event.first].objVelocity.x * 10 * dt;
+            eventObjects[event.first].objPosition.y += eventObjects[event.first].objVelocity.y * 10 * dt;
+
+            event.second.positionX = npcObjects[event.first].objPosition.x;
+            event.second.positionY = npcObjects[event.first].objPosition.y;
         }
-
-        if ((event.objPosition.x < 0 && event.objVelocity.x == -1) || (event.objPosition.x > width - event.objSize.x && event.objVelocity.x == 1)) event.objVelocity.x = 0;
-        if ((event.objPosition.y < 0 && event.objVelocity.y == -1) || (event.objPosition.y > height - event.objSize.y && event.objVelocity.y == 1)) event.objVelocity.y = 0;
-
-        event.objPosition.x += event.objVelocity.x * 10 * dt;
-        event.objPosition.y += event.objVelocity.y * 10 * dt;
 	}
 
 	if (changedir)  changedir = false;
@@ -167,22 +192,24 @@ bool OpenGLCode::CheckCollision(GameObject& object1, GameObject& object2) {
 }
 
 void OpenGLCode::DoCollisions() {
-    for (auto& npc : npcObjects) {
-        if ()
-        for (auto& monster : monsterObjects) {
-            if (CheckCollision(npc, monster)) {
-				std::cout << "collision npc and monster" << std::endl;
+    for (auto& npc : WQFS::GetAllNPC()) {
+        if (!npc.second.inDangerous) {
+            for (auto& monster : monsterObjects) {
+                if (CheckCollision(npcObjects[npc.first], monsterObjects[monster.first])) {
+                    std::cout << "collision npc and monster" << std::endl;
+					npc.second.inDangerous = true;
+                }
             }
-        }
-        for (auto& event : eventObjects) {
-            if (CheckCollision(npc, event)) {
-                std::cout << "collision npc and event" << std::endl;
+            for (auto& event : eventObjects) {
+                if (CheckCollision(npcObjects[npc.first], eventObjects[event.first])) {
+                    std::cout << "collision npc and event" << std::endl;
+                }
             }
         }
     }
     for (auto& monster : monsterObjects) {
         for (auto& event : eventObjects) {
-            if (CheckCollision(monster, event)) {
+            if (CheckCollision(monsterObjects[monster.first], eventObjects[event.first])) {
                 std::cout << "collision monster and event" << std::endl;
             }
         }
