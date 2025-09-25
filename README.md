@@ -1,19 +1,17 @@
-1. OpenGLエラーが発生します。
-2. ライブラリとincludeを確認します。
-3. x64かdebugかを確認します。
-4. プロジェクトを作り直してみます。
-5. Geminiに聞きます。
-6. user32.lib;gdi32.lib;shell32.lib;を追加します。
-7. stbi_load問題が発生します。
-8. ビルドができません。
-9. 一番好きなグッズを見て落ち着きます。
-10. 千円だと思って買った1万円のスタチューベリーデラックスエディションを見ます。
-11. また、一番好きなグッズを見ます。
-12. プロジェクトを一から作り直します。
-13. よく動作します。 ^_^
-14. 今日、4万円を使いました。
-15. それでニンテンドースイッチ2ケースを買えませんでした。
-16. 大森を再開しました。
-17. Instars and timeもまた始めました。
+Default Types
 
-結論 - Geminiは最高です。 ポップアップストアのグッズは高すぎます。
+NPC
+0. Normal NPC (HP(40), Collectible(60))
+1. Dealer NPC (HP(40), MP(40), Collectible Item(20))
+2. Weapon Dealer NPC (Weapon type Item(70), (30))
+3. Peddler NPC (All(Same Probability))
+
+Event
+0. Monster Event
+1. Static Event
+2. Dynamic Event
+
+Item
+0. HP, MP Heal
+1. Weapons
+3. Collectible Item
