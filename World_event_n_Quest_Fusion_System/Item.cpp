@@ -12,6 +12,6 @@ float Item::GetEffect() {
 	return effect;
 }
 
-int Item::getType() {
+int Item::GetType() {
 	return type;
 }

@@ -11,16 +11,22 @@
 class WorldEvent
 {
 private:
+	float positionX, positionY;
 	int type;
 
 	void init();
 public:
-	float positionX, positionY;
 	WorldEvent();
 	~WorldEvent() { }
 
 	void SetUp(int _type, float posX, float posY);
 	void DoEvent();
+
+	void SetPositionX(float x);
+	float GetPositionX() const;
+	void SetPositionY(float y);
+	float GetPositionY() const;
+	void SetPosition(float x, float y);
 	int GetType() const;
 
 	bool operator<(const WorldEvent& other) const {

@@ -16,3 +16,24 @@ void WorldEvent::DoEvent() {
 int WorldEvent::GetType() const {
 	return type;
 }
+
+void WorldEvent::SetPositionX(float x) {
+	positionX = x;
+}
+
+float WorldEvent::GetPositionX() const {
+	return positionX;
+}
+
+void WorldEvent::SetPositionY(float y) {
+	positionY = y;
+}
+
+float WorldEvent::GetPositionY() const {
+	return positionY;
+}
+
+void WorldEvent::SetPosition(float x, float y) {
+	positionX = x;
+	positionY = y;
+}

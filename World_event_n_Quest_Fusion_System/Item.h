@@ -4,9 +4,9 @@
 #include <iostream>
 
 // Example item types:
-// 1. Heal
-// 2. Weapon
-// 3. Trade
+// 0. Heal
+// 1. Weapon
+// 2. Collectible
 
 class Item
 {
@@ -22,11 +22,7 @@ public:
 
 	void SetUp(int _type, float _effect);
 	float GetEffect();
-	int getType();
-
-	bool operator<(const Item& other) const {
-		return type < other.type;
-	};
+	int GetType();
 };
 
 #endif

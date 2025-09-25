@@ -27,26 +27,29 @@ Item WQFS::AddItem(std::string name, int type, float effect) {
 	return newItem;
 }
 
-WorldEvent WQFS::GetEvent(std::string name) {
+WorldEvent& WQFS::GetEvent(std::string name) {
 	return worldEvents[name];
 }
 
-NPC WQFS::GetNPC(std::string name) {
+NPC& WQFS::GetNPC(std::string name) {
 	return npcs[name];
 }
 
-Item WQFS::GetItem(std::string name) {
+Item& WQFS::GetItem(std::string name) {
 	return comps[name];
 }
 
-std::map<std::string, WorldEvent> WQFS::GetAllEvent() {
+std::map<std::string, WorldEvent>& WQFS::GetAllEvent() {
 	return worldEvents;
 }
 
-std::map<std::string, NPC> WQFS::GetAllNPC() {
+std::map<std::string, NPC>& WQFS::GetAllNPC() {
 	return npcs;
 }
 
-std::map<std::string, Item> WQFS::GetAllItem() {
+std::map<std::string, Item>& WQFS::GetAllItem() {
 	return comps;
+}
+
+void WQFS::MakeQuest(int eventType, int npcType) {
 }

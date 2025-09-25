@@ -12,15 +12,23 @@
 class NPC
 {
 private:
-	int type;
-public:
 	float positionX, positionY;
 	bool inDangerous;
+	int type;
+public:
 	NPC();
 	~NPC() { }
 
 	void SetUp(int _type, float pos_x, float pos_y);
-	int getType() const;
+	int GetType() const;
+
+	void SetPositionX(float x);
+	float GetPositionX() const;
+	void SetPositionY(float y);
+	float GetPositionY() const;
+	void SetPosition(float x, float y);
+	void SetInDangerous(bool _inDangerous);
+	bool GetInDangerous() const;
 };
 
 #endif

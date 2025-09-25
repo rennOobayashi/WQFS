@@ -23,18 +23,22 @@ public:
 	static std::map<std::string, WorldEvent> worldEvents;
 	static std::map<std::string, NPC> npcs;
 	static std::map<std::string, Item> comps;
+	static std::map<int, Item> questList; // quest type, comp
+
+	static void MakeQuest(int eventType, int npcType);
+	static void CompleteQuest();
 
 	static WorldEvent AddEvent(std::string name, int type, float posX, float posY);
 	static NPC AddNPC(std::string name, int type, float posX, float posY);
 	static Item AddItem(std::string name, int type, float effect);
 
-	static WorldEvent GetEvent(std::string name);
-	static NPC GetNPC(std::string name);
-	static Item GetItem(std::string name);
+	static WorldEvent& GetEvent(std::string name);
+	static NPC& GetNPC(std::string name);
+	static Item& GetItem(std::string name);
 
-	static std::map<std::string, WorldEvent> GetAllEvent();
-	static std::map<std::string, NPC> GetAllNPC();
-	static std::map<std::string, Item> GetAllItem();
+	static std::map<std::string, WorldEvent>& GetAllEvent();
+	static std::map<std::string, NPC>& GetAllNPC();
+	static std::map<std::string, Item>& GetAllItem();
 };
 
 #endif
