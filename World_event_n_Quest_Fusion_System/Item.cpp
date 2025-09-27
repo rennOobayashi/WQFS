@@ -8,10 +8,10 @@ void Item::SetUp(int _type, float _effect) {
 	effect = _effect;
 }
 
-float Item::GetEffect() {
+float Item::GetEffect() const{
 	return effect;
 }
 
-int Item::GetType() {
+int Item::GetType() const{
 	return type;
 }

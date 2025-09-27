@@ -4,9 +4,10 @@
 #include <iostream>
 
 // Example item types:
-// 0. Heal
-// 1. Weapon
-// 2. Collectible
+// 0. HP heal
+// 1. MP heal
+// 2. Weapon
+// 3. Collectible
 
 class Item
 {
@@ -21,8 +22,8 @@ public:
 	~Item() {}
 
 	void SetUp(int _type, float _effect);
-	float GetEffect();
-	int GetType();
+	float GetEffect() const;
+	int GetType() const;
 };
 
 #endif

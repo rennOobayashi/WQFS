@@ -44,7 +44,6 @@ private:
 	SpriteRenderer* sRenderer;
 
 
-
 	void init();
 	void render();
 	void MoveSelf(float dt);

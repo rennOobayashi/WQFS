@@ -14,14 +14,27 @@
 class WQFS
 {
 private:
+	int compensation;
 
-	WQFS() {}
-	void SetCompensation(WorldEvent event, NPC npc);
+
+	WQFS() : compensation(0) {}
+	// 복사 방지
+	WQFS(const WQFS&) = delete;
+	WQFS& operator=(const WQFS&) = delete;
+	~WQFS() {};
+
+	void SetCompensation(int npcType);
+	int GetCompensation() ;
 	void CheckConfirmation();
-	void MonsterEvent(int npcType);
-	void DynamicEvent(int npcType);
-	void StaticEvent(int npcType);
+	void MonsterEvent(int npcType) ;
+	void DynamicEvent(int npcType) ;
+	void StaticEvent(int npcType) ;
 public:
+	static WQFS& GetInstance() {
+		static WQFS instance;
+		return instance;
+	}
+
 	//bool eventHappen;
 	static std::map<std::string, WorldEvent> worldEvents;
 	static std::map<std::string, NPC> npcs;

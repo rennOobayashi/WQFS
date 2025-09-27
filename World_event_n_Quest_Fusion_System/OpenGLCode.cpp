@@ -60,19 +60,21 @@ void OpenGLCode::init() {
 
     changeMoveTime = 5.0f;
 
-	WQFS::AddNPC("Normal", 0, 0.0f, 0.0f);
-	WQFS::AddEvent("Monster", 0, 0.0f, 0.0f);
-	WQFS::AddEvent("Earthquake", 1, 0.0f, 0.0f);
-	WQFS::AddEvent("Landslide", 2, 0.0f, 0.0f);
+	WQFS::GetInstance().GetInstance().AddNPC("Normal", 0, 0.0f, 0.0f);
+	WQFS::GetInstance().AddEvent("Monster", 0, 0.0f, 0.0f);
+	WQFS::GetInstance().AddEvent("Earthquake", 1, 0.0f, 0.0f);
+	WQFS::GetInstance().AddEvent("Landslide", 2, 0.0f, 0.0f);
 
     npcObjects["Normal"] = GameObject(ResourceManager::GetTexture("NPC"), glm::vec2(0.0f, 0.0f), glm::vec2(200.0f), 0.0f, glm::vec3(0.1f, 0.5f, 1.0f));
     monsterObjects["Monster"] = GameObject(ResourceManager::GetTexture("Monster"), glm::vec2(width - 200.0f, 0.0f), glm::vec2(200.0f), 0.0f, glm::vec3(1.0f, 0.2f, 0.1f));
     eventObjects["Earthquake"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(width - 400.0f, height - 400.0f), glm::vec2(400.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f));
     eventObjects["Landslide"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(0.0f, height - 350.0f), glm::vec2(350.0f), 0.0f, glm::vec3(0.4f, 0.1f, 1.0f));
 
-    WQFS::AddItem("HP Posion", 0, 30);
-    WQFS::AddItem("GOOD HP Posion", 0, 50);
-    WQFS::AddItem("Stone Sword", 1, 30);
+    WQFS::GetInstance().AddItem("HP Posion", 0, 30);
+    WQFS::GetInstance().AddItem("GOOD HP Posion", 0, 50);
+    WQFS::GetInstance().AddItem("Stone Sword", 2, 30);
+    WQFS::GetInstance().AddItem("Stone", 3, 30);
+    WQFS::GetInstance().AddItem("Iron", 3, 30);
 }
 
 void OpenGLCode::update() {
@@ -101,16 +103,16 @@ void OpenGLCode::update() {
 }
 
 void OpenGLCode::render() {
-    for (const auto& npc : WQFS::GetAllNPC()) {
+    for (const auto& npc : WQFS::GetInstance().GetAllNPC()) {
 		npcObjects[npc.first].Draw(*sRenderer);
 	}
 
-    for (const auto& monster : WQFS::GetAllEvent()) {
+    for (const auto& monster : WQFS::GetInstance().GetAllEvent()) {
         if (monster.second.GetType() == 0) {
             monsterObjects[monster.first].Draw(*sRenderer);
         }
     }
-    for (const auto& event : WQFS::GetAllEvent()) {
+    for (const auto& event : WQFS::GetInstance().GetAllEvent()) {
 		//std::cout << eventObjects[event.first].GetType() << std::endl;
         if (event.second.GetType() != 0) {
             eventObjects[event.first].Draw(*sRenderer);
@@ -131,24 +133,28 @@ void OpenGLCode::MoveSelf(float dt) {
         changeMoveTime = 0;
     }
 
-    for (auto& npc : WQFS::GetAllNPC()) {
+    for (auto& npc : WQFS::GetInstance().GetAllNPC()) {
         if (!npc.second.GetInDangerous()) {
-            if (changedir) {
-                npcObjects[npc.first].objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
-                std::cout << npcObjects[npc.first].objVelocity.x << " " << npcObjects[npc.first].objVelocity.y << std::endl;
-            }
+            //if (changedir) {
+            //    npcObjects[npc.first].objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
+            //    std::cout << npcObjects[npc.first].objVelocity.x << " " << npcObjects[npc.first].objVelocity.y << std::endl;
+            //}
 
-            if ((npcObjects[npc.first].objPosition.x < 0 && npcObjects[npc.first].objVelocity.x == -1) || (npcObjects[npc.first].objPosition.x > width - npcObjects[npc.first].objSize.x && npcObjects[npc.first].objVelocity.x == 1)) npcObjects[npc.first].objVelocity.x = 0;
-            if ((npcObjects[npc.first].objPosition.y < 0 && npcObjects[npc.first].objVelocity.y == -1) || (npcObjects[npc.first].objPosition.y > height - npcObjects[npc.first].objSize.y && npcObjects[npc.first].objVelocity.y == 1)) npcObjects[npc.first].objVelocity.y = 0;
+            //if ((npcObjects[npc.first].objPosition.x < 0 && npcObjects[npc.first].objVelocity.x == -1) || (npcObjects[npc.first].objPosition.x > width - npcObjects[npc.first].objSize.x && npcObjects[npc.first].objVelocity.x == 1)) npcObjects[npc.first].objVelocity.x = 0;
+            //if ((npcObjects[npc.first].objPosition.y < 0 && npcObjects[npc.first].objVelocity.y == -1) || (npcObjects[npc.first].objPosition.y > height - npcObjects[npc.first].objSize.y && npcObjects[npc.first].objVelocity.y == 1)) npcObjects[npc.first].objVelocity.y = 0;
 
-            npcObjects[npc.first].objPosition.x += npcObjects[npc.first].objVelocity.x * 50 * dt;
-            npcObjects[npc.first].objPosition.y += npcObjects[npc.first].objVelocity.y * 50 * dt;
+            //npcObjects[npc.first].objPosition.x += npcObjects[npc.first].objVelocity.x * 50 * dt;
+            //npcObjects[npc.first].objPosition.y += npcObjects[npc.first].objVelocity.y * 50 * dt;
 
+            //npc.second.SetPosition(npcObjects[npc.first].objPosition.x, npcObjects[npc.first].objPosition.y);
+
+            npcObjects[npc.first].objPosition.x += 0 * 100 * dt;
+            npcObjects[npc.first].objPosition.y += 1 * 100 * dt;
             npc.second.SetPosition(npcObjects[npc.first].objPosition.x, npcObjects[npc.first].objPosition.y);
         }
 	}
 
-    for (auto& monster : WQFS::GetAllEvent()) {
+    for (auto& monster : WQFS::GetInstance().GetAllEvent()) {
         if (monster.second.GetType() == 0) {
             if (changedir) {
                 monsterObjects[monster.first].objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
@@ -164,7 +170,7 @@ void OpenGLCode::MoveSelf(float dt) {
         }
     }
 
-    for (auto& event : WQFS::GetAllEvent()) {
+    for (auto& event : WQFS::GetInstance().GetAllEvent()) {
         if (event.second.GetType() != 0) {
             if (changedir) {
                 eventObjects[event.first].objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
@@ -193,18 +199,20 @@ bool OpenGLCode::CheckCollision(GameObject& object1, GameObject& object2) {
 }
 
 void OpenGLCode::DoCollisions() {
-    for (auto& npc : WQFS::GetAllNPC()) {
+    for (auto& npc : WQFS::GetInstance().GetAllNPC()) {
         if (!npc.second.GetInDangerous()) {
             for (auto& monster : monsterObjects) {
                 if (CheckCollision(npcObjects[npc.first], monsterObjects[monster.first])) {
                     std::cout << npc.second.GetInDangerous() << std::endl;
 					npc.second.SetInDangerous(true);
+					WQFS::GetInstance().MakeQuest(0, npc.second.GetType());
                 }
             }
             for (auto& event : eventObjects) {
                 if (CheckCollision(npcObjects[npc.first], eventObjects[event.first])) {
                     std::cout << npc.second.GetInDangerous() << std::endl;
                     npc.second.SetInDangerous(true);
+                    WQFS::GetInstance().MakeQuest(WQFS::GetInstance().GetEvent(event.first).GetType(), npc.second.GetType());
                 }
             }
         }
@@ -212,7 +220,7 @@ void OpenGLCode::DoCollisions() {
     for (auto& monster : monsterObjects) {
         for (auto& event : eventObjects) {
             if (CheckCollision(monsterObjects[monster.first], eventObjects[event.first])) {
-                std::cout << "collision monster and event" << std::endl;
+                //std::cout << "collision monster and event" << std::endl;
             }
         }
     }
