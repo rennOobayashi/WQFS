@@ -4,10 +4,10 @@
 #include <iostream>
 
 // Example NPC types:
-// 1. normal
-// 2. Item 
-// 3. weapon 
-// 4. all
+// 0. normal
+// 1. Item 
+// 2. weapon 
+// 3. all
 
 class NPC
 {

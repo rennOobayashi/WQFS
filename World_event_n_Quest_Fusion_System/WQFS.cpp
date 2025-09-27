@@ -52,4 +52,60 @@ std::map<std::string, Item>& WQFS::GetAllItem() {
 }
 
 void WQFS::MakeQuest(int eventType, int npcType) {
+	switch (eventType) {
+	case 0: WQFS().MonsterEvent(npcType);
+		break;
+	case 1: WQFS().StaticEvent(npcType);
+		break;
+	case 2: WQFS().MonsterEvent(npcType);
+		break;
+	default: std::cout << "Wrong event type!" << std::endl;
+		break;
+	}
+}
+
+void WQFS::MonsterEvent(int npcType) {
+	switch (npcType) {
+		case 0: //(HP(40), Collectible(60))
+			break;
+		case 1: //(HP(40), MP(40), Collectible Item(20))
+			break;
+		case 2: //(Weapon type Item(70), (30))
+			break;
+		case 3: //All(Same Probability))
+			break;
+		default: std::cout << "Wrong NPC type!" << std::endl;
+			break;
+	}
+}
+
+void WQFS::DynamicEvent(int npcType) {
+	switch (npcType) {
+		case 0: //(HP(40), Collectible(60))
+			break;
+		case 1: //(HP(40), MP(40), Collectible Item(20))
+			break;
+		case 2: //(Weapon type Item(70), (30))
+			break;
+		case 3: //All(Same Probability))
+			break;
+		default: std::cout << "Wrong NPC type!" << std::endl;
+			break;
+	}
+}
+
+void WQFS::StaticEvent(int npcType) {
+	switch (npcType) {
+		switch (npcType) {
+		case 0: //(HP(40), Collectible(60))
+			break;
+		case 1: //(HP(40), MP(40), Collectible Item(20))
+			break;
+		case 2: //(Weapon type Item(70), (30))
+			break;
+		case 3: //All(Same Probability))
+			break;
+		default: std::cout << "Wrong NPC type!" << std::endl;
+			break;
+	}
 }

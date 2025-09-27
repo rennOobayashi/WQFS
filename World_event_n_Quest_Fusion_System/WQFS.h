@@ -18,6 +18,9 @@ private:
 	WQFS() {}
 	void SetCompensation(WorldEvent event, NPC npc);
 	void CheckConfirmation();
+	void MonsterEvent(int npcType);
+	void DynamicEvent(int npcType);
+	void StaticEvent(int npcType);
 public:
 	//bool eventHappen;
 	static std::map<std::string, WorldEvent> worldEvents;
