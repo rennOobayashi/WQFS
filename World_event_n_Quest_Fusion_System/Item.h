@@ -3,11 +3,11 @@
 
 #include <iostream>
 
-// Example item types:
-// 0. HP heal
-// 1. MP heal
-// 2. Weapon
-// 3. Exchange
+// 기본 아이템 타입:
+// 0. HP 회복
+// 1. MP 회복
+// 2. 무기
+// 3. 환전
 
 class Item
 {

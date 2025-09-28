@@ -68,11 +68,12 @@ void OpenGLCode::init() {
     eventObjects["Earthquake"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(width - 400.0f, height - 400.0f), glm::vec2(400.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f));
     eventObjects["Landslide"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(0.0f, height - 350.0f), glm::vec2(350.0f), 0.0f, glm::vec3(0.4f, 0.1f, 1.0f));
 
-    WQFS::GetInstance().AddItem("HP Posion", 0, 30, 0);
+	//                         이름,          타입,효과, 희귀도 
+    WQFS::GetInstance().AddItem("HP Posion",      0, 30, 0);
     WQFS::GetInstance().AddItem("GOOD HP Posion", 0, 50, 1);
-    WQFS::GetInstance().AddItem("Stone Sword", 2, 30, 0);
-    WQFS::GetInstance().AddItem("Iron", 3, 20, 0);
-    WQFS::GetInstance().AddItem("Gold", 3, 50, 1);
+    WQFS::GetInstance().AddItem("Stone Sword",    2, 30, 0);
+    WQFS::GetInstance().AddItem("Iron",           3, 20, 0);
+    WQFS::GetInstance().AddItem("Gold",           3, 50, 1);
 }
 
 void OpenGLCode::update() {
