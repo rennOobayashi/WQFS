@@ -1,7 +1,6 @@
 NPC
-HP = 1(1), MP = 2(10), Weapon = 4(100), Collectible = 8(1000), HP and Collectible = 9(1001)
-NPC normal        0 (HP(30), Collectible(60), All(10))
-NPC HP(and MP) 1  (HP(40), MP(30), Collectible Item(15), Both(10), All(5))
+NPC normal        0 (HP(30), Exchange(60), All(10))
+NPC HP(and MP) 1  (HP(40), MP(30), Exchange(15), Both(10), All(5))
 NPC Weapon      2  (Weapon type Item(60), HP(30), Both(10))
 NPC All             3   (All(One(50), Two(30), Three(15), All(5)))
 

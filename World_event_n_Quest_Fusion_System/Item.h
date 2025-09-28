@@ -7,13 +7,14 @@
 // 0. HP heal
 // 1. MP heal
 // 2. Weapon
-// 3. Collectible
+// 3. Exchange
 
 class Item
 {
 private:
 	std::string name;
 	int type;
+	int rarity; // 0~4
 	float effect;
 
 	void init();
@@ -21,9 +22,11 @@ public:
 	Item();
 	~Item() {}
 
-	void SetUp(int _type, float _effect);
+	void SetUp(std::string _name, int _type, float _effect, int rarity);
+	std::string GetName() const;
 	float GetEffect() const;
 	int GetType() const;
+	int GetRarity() const;
 };
 
 #endif

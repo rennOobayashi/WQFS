@@ -14,21 +14,21 @@
 class WQFS
 {
 private:
-	int compensation;
+	int questNumber;
 
-
-	WQFS() : compensation(0) {}
+	WQFS() : questNumber(0) {}
 	// 복사 방지
 	WQFS(const WQFS&) = delete;
 	WQFS& operator=(const WQFS&) = delete;
 	~WQFS() {};
 
-	void SetCompensation(int npcType);
-	int GetCompensation() ;
+	void SetCompensation(NPC npc);
+	std::vector<Item> GetCompensation(NPC npc) ;
 	void CheckConfirmation();
 	void MonsterEvent(int npcType) ;
 	void DynamicEvent(int npcType) ;
 	void StaticEvent(int npcType) ;
+	std::map<int, std::vector<Item>> questList; //quest number, compensation list
 public:
 	static WQFS& GetInstance() {
 		static WQFS instance;
@@ -39,14 +39,13 @@ public:
 	static std::map<std::string, WorldEvent> worldEvents;
 	static std::map<std::string, NPC> npcs;
 	static std::map<std::string, Item> comps;
-	static std::map<int, Item> questList; // quest type, comp
 
-	static void MakeQuest(int eventType, int npcType);
+	static void MakeQuest(NPC npc, WorldEvent event);
 	static void CompleteQuest();
 
 	static WorldEvent AddEvent(std::string name, int type, float posX, float posY);
 	static NPC AddNPC(std::string name, int type, float posX, float posY);
-	static Item AddItem(std::string name, int type, float effect);
+	static Item AddItem(std::string name, int type, float effect, int rarity);
 
 	static WorldEvent& GetEvent(std::string name);
 	static NPC& GetNPC(std::string name);

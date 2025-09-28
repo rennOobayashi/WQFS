@@ -38,7 +38,9 @@ private:
 	float deltaTime;
 	float lastFrame;
 	float changeMoveTime;
+	float resetTimer;
 	bool changedir;
+	bool startResetTimer;
 
 	GLFWwindow* window;
 	SpriteRenderer* sRenderer;
@@ -48,6 +50,7 @@ private:
 	void render();
 	void MoveSelf(float dt);
 	void DoCollisions();
+	void Reset();
 	bool CheckCollision(GameObject& object1, GameObject& object2);
 public:
 	OpenGLCode(unsigned int _width, unsigned int _height);
