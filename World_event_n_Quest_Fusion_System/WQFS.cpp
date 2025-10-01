@@ -20,7 +20,7 @@ std::map<std::string, Item> WQFS::comps;
 WorldEvent WQFS::AddEvent(std::string name, int type, float posX, float posY) {
 	std::cout << type << " ";
 	WorldEvent newEvent;
-	newEvent.SetUp(type, posX, posY);
+	newEvent.SetUp(WQFS::GetInstance().eventNumber++, type, posX, posY);
 	std:: cout << newEvent.GetType() << std::endl;
 	worldEvents[name] = newEvent;
 	return newEvent;
@@ -28,14 +28,14 @@ WorldEvent WQFS::AddEvent(std::string name, int type, float posX, float posY) {
 
 NPC WQFS::AddNPC(std::string name, int type, float posX, float posY) {
 	NPC newNPC;
-	newNPC.SetUp(type, posX, posY);
+	newNPC.SetUp(WQFS::GetInstance().npcNumber++, type, posX, posY);
 	npcs[name] = newNPC;
 	return newNPC;
 }
 
 Item WQFS::AddItem(std::string name, int type, float effect, int rarity) {
 	Item newItem;
-	newItem.SetUp(name, type, effect, rarity);
+	newItem.SetUp(WQFS::GetInstance().itemNumber++, name, type, effect, rarity);
 	comps[name] = newItem;
 	return newItem;
 }
@@ -62,6 +62,12 @@ std::map<std::string, NPC>& WQFS::GetAllNPC() {
 
 std::map<std::string, Item>& WQFS::GetAllItem() {
 	return comps;
+}
+
+void WQFS::Clear() {
+	worldEvents.clear();
+	npcs.clear();
+	comps.clear();
 }
 
 void WQFS::MakeQuest(NPC npc, WorldEvent event) {

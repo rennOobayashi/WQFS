@@ -1,9 +1,10 @@
 #include "Item.h"
 
 Item::Item()
-	:type(0), effect(0), rarity(0) { }
+	: number(0), type(0), effect(0), rarity(0) { }
 
-void Item::SetUp(std::string _name, int _type, float _effect, int rarity) {
+void Item::SetUp(int _number, std::string _name, int _type, float _effect, int rarity) {
+	number = _number;
 	name = _name;
 	type = _type;
 	effect = _effect;

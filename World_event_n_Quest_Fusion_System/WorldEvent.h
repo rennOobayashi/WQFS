@@ -11,6 +11,7 @@
 class WorldEvent
 {
 private:
+	int number;
 	float positionX, positionY;
 	int type;
 
@@ -19,7 +20,7 @@ public:
 	WorldEvent();
 	~WorldEvent() { }
 
-	void SetUp(int _type, float posX, float posY);
+	void SetUp(int _number, int _type, float posX, float posY);
 	void DoEvent();
 
 	void SetPositionX(float x);

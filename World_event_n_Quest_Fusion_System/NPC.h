@@ -12,6 +12,7 @@
 class NPC
 {
 private:
+	int number;
 	float positionX, positionY;
 	bool inDangerous;
 	int type;
@@ -19,7 +20,7 @@ public:
 	NPC();
 	~NPC() { }
 
-	void SetUp(int _type, float pos_x, float pos_y);
+	void SetUp(int _number, int _type, float pos_x, float pos_y);
 	int GetType() const;
 
 	void SetPositionX(float x);
@@ -29,6 +30,10 @@ public:
 	void SetPosition(float x, float y);
 	void SetInDangerous(bool _inDangerous);
 	bool GetInDangerous() const;
+
+	bool operator<(const NPC& other) const {
+		return this->number < other.number;
+	}
 };
 
 #endif

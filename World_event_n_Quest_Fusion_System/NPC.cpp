@@ -1,8 +1,9 @@
 #include "NPC.h"
 
-NPC::NPC() : inDangerous(false), type(0), positionX(0), positionY(0) { }
+NPC::NPC() : number(0), inDangerous(false), type(0), positionX(0), positionY(0) { }
 
-void NPC::SetUp(int _type, float pos_x, float pos_y) {
+void NPC::SetUp(int _number, int _type, float pos_x, float pos_y) {
+	number = _number;
 	type = _type;
 	positionX = pos_x;
 	positionY = pos_y;

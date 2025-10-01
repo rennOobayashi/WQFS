@@ -1,9 +1,10 @@
 #include "WorldEvent.h"
 
 WorldEvent::WorldEvent() 
-	: type(0), positionX(0), positionY(0) {}
+	: number(0), type(0), positionX(0), positionY(0) {}
 
-void WorldEvent::SetUp(int _type, float posX, float posY) {
+void WorldEvent::SetUp(int _number, int _type, float posX, float posY) {
+	number = _number;
 	type = _type;
 	positionX = posX;
 	positionY = posY;

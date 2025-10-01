@@ -15,12 +15,13 @@ class WQFS
 {
 private:
 	int questNumber;
+	int npcNumber, eventNumber, itemNumber;
 
-	WQFS() : questNumber(0) {}
+	WQFS() : questNumber(0),  npcNumber(0), eventNumber(0), itemNumber(0) {}
 	// 복사 방지
 	WQFS(const WQFS&) = delete;
 	WQFS& operator=(const WQFS&) = delete;
-	~WQFS() {};
+	~WQFS() { };
 
 	void SetCompensation(NPC npc);
 	std::vector<Item> GetCompensation(NPC npc) ;
@@ -54,6 +55,8 @@ public:
 	static std::map<std::string, WorldEvent>& GetAllEvent();
 	static std::map<std::string, NPC>& GetAllNPC();
 	static std::map<std::string, Item>& GetAllItem();
+
+	static void Clear();
 };
 
 #endif

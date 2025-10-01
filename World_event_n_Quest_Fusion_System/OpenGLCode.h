@@ -35,20 +35,27 @@ private:
 
 	GameState states;
 	unsigned int width, height;
+	unsigned int cameraWidth, cameraHeight;
 	float deltaTime;
 	float lastFrame;
 	float changeMoveTime;
 	float resetTimer;
 	bool changedir;
 	bool startResetTimer;
+	bool mapLoading, getItemFirstTime;
 
 	GLFWwindow* window;
 	SpriteRenderer* sRenderer;
 
 
+	GameObject* player;
+
+
 	void init();
 	void render();
+	void ProcessInput(GLFWwindow* window, float dt);
 	void MoveSelf(float dt);
+	void CameraMove(float dt);
 	void DoCollisions();
 	void Reset();
 	bool CheckCollision(GameObject& object1, GameObject& object2);
