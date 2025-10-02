@@ -4,13 +4,11 @@ C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(1
   C:\glfw-3.4\include\glad\glad.h(32,1):
   'APIENTRY'의 이전 정의를 참조하십시오.
   
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(9,64): warning C4305: '초기화 중': 'float'에서 'bool'(으)로 잘립니다.
-  WQFS.cpp
-  World_event_n_Quest_Fusion_System.cpp
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(130,1): warning C4005: 'APIENTRY': 매크로 재정의
-  (소스 파일 'World_event_n_Quest_Fusion_System.cpp'을(를) 컴파일하는 중)
-  C:\glfw-3.4\include\glad\glad.h(32,1):
-  'APIENTRY'의 이전 정의를 참조하십시오.
-  
-  코드를 생성하고 있습니다...
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(13,88): warning C4305: '초기화 중': 'float'에서 'bool'(으)로 잘립니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(282,29): warning C4244: '=': 'unsigned int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(285,29): warning C4244: '=': 'unsigned int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(289,29): warning C4244: '=': 'unsigned int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(293,29): warning C4244: '=': 'unsigned int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(298,23): warning C4244: '=': 'float'에서 'unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(299,23): warning C4244: '=': 'float'에서 'unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   World_event_n_Quest_Fusion_System.vcxproj -> C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\x64\Debug\World_event_n_Quest_Fusion_System.exe

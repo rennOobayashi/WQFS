@@ -33,9 +33,10 @@ private:
 	std::map<std::string, GameObject> monsterObjects;
 	std::map<std::string, GameObject> eventObjects;
 
+	glm::mat4 view;
 	GameState states;
 	unsigned int width, height;
-	unsigned int cameraWidth, cameraHeight;
+	unsigned int cameraX, cameraY;
 	float deltaTime;
 	float lastFrame;
 	float changeMoveTime;

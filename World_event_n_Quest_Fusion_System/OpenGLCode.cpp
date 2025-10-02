@@ -2,11 +2,15 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
+glm::vec2 cameraPos(0.0f, 0.0f);
+glm::vec3 cameraFront(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp(0.0f, 1.0f, 0.0f);
 const glm::vec2 playerSize(100.0f, 100.0f);
 const float playerVelocity(500.0f);
+const float CameraVelocity(100.0f);
 
 OpenGLCode::OpenGLCode(unsigned int _width, unsigned int _height)
-	: states(GAME_MENU), width(_width), height(_height), cameraWidth(0), cameraHeight(0), changedir(5.0f), startResetTimer(false), resetTimer(0.0f), mapLoading(false), getItemFirstTime(false) {
+	: states(GAME_MENU), width(_width), height(_height), cameraX(0), cameraY(0), changedir(5.0f), startResetTimer(false), resetTimer(0.0f), mapLoading(false), getItemFirstTime(false) {
     init();
 }
 
@@ -79,13 +83,15 @@ void OpenGLCode::init() {
     monsterObjects["Monster"] = GameObject(ResourceManager::GetTexture("Monster"), glm::vec2(width - 200.0f, 0.0f), glm::vec2(200.0f), 0.0f, glm::vec3(1.0f, 0.2f, 0.1f));
     eventObjects["Earthquake"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(width - 400.0f, height - 400.0f), glm::vec2(400.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f));
     eventObjects["Landslide"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(0.0f, height - 350.0f), glm::vec2(350.0f), 0.0f, glm::vec3(0.4f, 0.1f, 1.0f));
-    player = new GameObject(ResourceManager::GetTexture("NPC"), playerPos, playerSize);
+    player = new GameObject(ResourceManager::GetTexture("NPC"), playerPos, playerSize, 0.0f, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(playerVelocity));
 
 
     states = GAME_ACTIVE;
 
-    cameraWidth = width;
-    cameraHeight = height;
+    cameraX = width;
+    cameraY = height;
+
+    view = glm::mat4(0.0f);
 }
 
 void OpenGLCode::update() {
@@ -101,6 +107,9 @@ void OpenGLCode::update() {
         glClearColor(0.2f, 0.7f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        view = glm::lookAt(glm::vec3(cameraPos, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f) + cameraFront, cameraUp);
+        ResourceManager::GetShader("sprite").use().SetMat4("view", view);
+
 		changeMoveTime += deltaTime;
 
         if (startResetTimer) {
@@ -113,6 +122,7 @@ void OpenGLCode::update() {
 
         render();
         MoveSelf(deltaTime);
+        CameraMove(deltaTime);
 		DoCollisions();
 
         glfwSwapBuffers(window);
@@ -151,23 +161,24 @@ void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
     }
 
     if (states == GAME_ACTIVE) {
-        float velocity = playerVelocity * dt;
+        float velocityX = player->objVelocity.x * dt;
+        float velocityY = player->objVelocity.y * dt;
 
         //Up
         if ((glfwGetKey(window, GLFW_KEY_W) || glfwGetKey(window, GLFW_KEY_UP)) && player->objPosition.y > 0) {
-            player->objPosition.y -= velocity;
+            player->objPosition.y -= velocityY;
         }
         //Down
         if (glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN)) {
-            player->objPosition.y += velocity;
+            player->objPosition.y += velocityY;
         }
         //Left
         if ((glfwGetKey(window, GLFW_KEY_A) || glfwGetKey(window, GLFW_KEY_LEFT)) && player->objPosition.x > 0) {
-            player->objPosition.x -= velocity;
+            player->objPosition.x -= velocityX;
         }
         //Right
         if (glfwGetKey(window, GLFW_KEY_D) || glfwGetKey(window, GLFW_KEY_RIGHT)) {
-            player->objPosition.x += velocity;
+            player->objPosition.x += velocityX;
         }
         //Attack, Interept
         if (glfwGetKey(window, GLFW_KEY_SPACE)) {
@@ -266,21 +277,31 @@ void OpenGLCode::CameraMove(float dt) {
     float nextX = 0;
     float nextY = 0;
 
-    if (player->objPosition.x < cameraWidth - width - 10 && player->objPosition.x > 0) {
-        nextX = cameraWidth - width;
-    }
-    else if (player->objPosition.x > cameraWidth + 10) {
-        nextX = cameraHeight + width;
-    }
-    else if (player->objPosition.y < cameraHeight - height - 10 && player->objPosition.y > 0) {
-        nextY = cameraHeight - width;
-    }
-    else if (player->objPosition.y > cameraHeight + 10) {
-        nextY = cameraHeight + width;
-    }
+    if (!mapLoading) {
+        if (player->objPosition.x < (float)cameraX - (float)width - 10 && player->objPosition.x > 0) {
+            nextX = cameraX - width;
+        }
+        else if (player->objPosition.x > (float)cameraX + 10) {
+            nextX = cameraY + width;
+            std::cout << "camera right" << std::endl;
+        }
+        else if (player->objPosition.y < (float)cameraY - (float)height - 10 && player->objPosition.y > 0) {
+            nextY = cameraY - width;
+            std::cout << "camera up" << std::endl;
+        }
+        else if (player->objPosition.y > (float)cameraY + 10) {
+            nextY = cameraY + width;
+            std::cout << "camera down" << std::endl;
+        }
 
-    if (nextX != 0 || nextY != 0) {
-        //Camera Move
+        if (nextX != 0 || nextY != 0) {
+            cameraX = nextX;
+            cameraY = nextY;
+            mapLoading = true;
+        }
+    }
+    else {
+        float velocity = 100.0f;
     }
 }
 
