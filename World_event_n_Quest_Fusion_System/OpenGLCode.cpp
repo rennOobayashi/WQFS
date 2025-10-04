@@ -3,14 +3,15 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 glm::vec2 cameraPos(0.0f, 0.0f);
+glm::vec2 cameraNextPos(0.0f, 0.0f);
 glm::vec3 cameraFront(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp(0.0f, 1.0f, 0.0f);
 const glm::vec2 playerSize(100.0f, 100.0f);
 const float playerVelocity(500.0f);
-const float CameraVelocity(100.0f);
+const float CameraVelocity(1000.0f);
 
 OpenGLCode::OpenGLCode(unsigned int _width, unsigned int _height)
-	: states(GAME_MENU), width(_width), height(_height), cameraX(0), cameraY(0), changedir(5.0f), startResetTimer(false), resetTimer(0.0f), mapLoading(false), getItemFirstTime(false) {
+	: states(GAME_MENU), width(_width), height(_height), changedir(5.0f), startResetTimer(false), resetTimer(0.0f), mapLoading(false), mapLoadingDelay(0.0f), getItemFirstTime(false) {
     init();
 }
 
@@ -88,9 +89,6 @@ void OpenGLCode::init() {
 
     states = GAME_ACTIVE;
 
-    cameraX = width;
-    cameraY = height;
-
     view = glm::mat4(0.0f);
 }
 
@@ -102,28 +100,21 @@ void OpenGLCode::update() {
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        ProcessInput(window, deltaTime);
 
         glClearColor(0.2f, 0.7f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        view = glm::lookAt(glm::vec3(cameraPos, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f) + cameraFront, cameraUp);
+        view = glm::lookAt(glm::vec3(cameraPos, 0.0f), glm::vec3(cameraPos, 0.0f) + cameraFront, cameraUp);
         ResourceManager::GetShader("sprite").use().SetMat4("view", view);
 
-		changeMoveTime += deltaTime;
-
-        if (startResetTimer) {
-            resetTimer += deltaTime;
-
-            if (resetTimer >= 5.0f) {
-                Reset();
-            }
-        }
-
         render();
-        MoveSelf(deltaTime);
+        DoCollisions();
         CameraMove(deltaTime);
-		DoCollisions();
+
+        if (!mapLoading) {
+            MoveSelf(deltaTime);
+            ProcessInput(window, deltaTime);
+        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -220,6 +211,9 @@ void OpenGLCode::MoveSelf(float dt) {
 
         changeMoveTime = 0;
     }
+    else {
+        changeMoveTime += deltaTime;
+    }
 
     for (auto& npc : WQFS::GetInstance().GetAllNPC()) {
         if (!npc.second.GetInDangerous()) {
@@ -274,34 +268,86 @@ void OpenGLCode::MoveSelf(float dt) {
 }
 
 void OpenGLCode::CameraMove(float dt) {
-    float nextX = 0;
-    float nextY = 0;
+    float nextX = -1;
+    float nextY = -1;
 
     if (!mapLoading) {
-        if (player->objPosition.x < (float)cameraX - (float)width - 10 && player->objPosition.x > 0) {
-            nextX = cameraX - width;
+        if (player->objPosition.x < cameraNextPos.x - (player->objSize.x / 2) && player->objPosition.x > 0) {
+            nextX = cameraNextPos.x - (float)width;
+            std::cout << "-X" << std::endl <<
+                player->objPosition.x << " " << cameraNextPos.x + 1.0f << std::endl;
         }
-        else if (player->objPosition.x > (float)cameraX + 10) {
-            nextX = cameraY + width;
-            std::cout << "camera right" << std::endl;
+        else if (player->objPosition.x > cameraNextPos.x + (float)width - (player->objSize.x / 2)) {
+            nextX = cameraNextPos.x + (float)width;
+            std::cout << "+X" << std::endl << 
+                player->objPosition.x << " " << cameraNextPos.x + (float)width - (player->objSize.x / 2) << std::endl;
         }
-        else if (player->objPosition.y < (float)cameraY - (float)height - 10 && player->objPosition.y > 0) {
-            nextY = cameraY - width;
-            std::cout << "camera up" << std::endl;
+        else if (player->objPosition.y < cameraNextPos.y - (player->objSize.y / 2) && player->objPosition.y > 0) {
+            nextY = cameraNextPos.y - (float)height;
+            std::cout << "-Y" << std::endl <<
+                player->objPosition.y << " " << cameraNextPos.y + 1.0f << std::endl;
         }
-        else if (player->objPosition.y > (float)cameraY + 10) {
-            nextY = cameraY + width;
-            std::cout << "camera down" << std::endl;
+        else if (player->objPosition.y > cameraNextPos.y + (float)height - (player->objSize.y / 2)) {
+            nextY = cameraNextPos.y + (float)height;
+            std::cout << "+Y" << std::endl <<
+                player->objPosition.y << " " << cameraNextPos.y + (float)height - (player->objSize.y / 2) << std::endl;
         }
 
-        if (nextX != 0 || nextY != 0) {
-            cameraX = nextX;
-            cameraY = nextY;
+        if (nextX != -1 || nextY != -1) {
+			if (nextX == -1) nextX = cameraNextPos.x;
+			if (nextY == -1) nextY = cameraNextPos.y;
+            cameraNextPos = glm::vec2(nextX, nextY);
+
             mapLoading = true;
         }
     }
     else {
-        float velocity = 100.0f;
+        if (cameraPos.x != cameraNextPos.x) {
+            if (cameraPos.x < cameraNextPos.x) {
+                cameraPos.x += CameraVelocity * dt;
+
+                if (cameraPos.x > cameraNextPos.x) {
+                    cameraPos.x = cameraNextPos.x;
+                    player->objPosition.x = cameraPos.x;
+                }
+            }
+            else {
+                cameraPos.x -= CameraVelocity * dt;
+
+                if (cameraPos.x < cameraNextPos.x) {
+                    cameraPos.x = cameraNextPos.x;
+                    player->objPosition.x = cameraPos.x + (float)width - player->objSize.x;
+                }
+            }
+        }
+        else if (cameraPos.y != cameraNextPos.y) {
+            if (cameraPos.y < cameraNextPos.y) {
+                cameraPos.y += CameraVelocity * dt;
+
+                if (cameraPos.y > cameraNextPos.y) {
+                    cameraPos.y = cameraNextPos.y;
+                    player->objPosition.y = cameraPos.y;
+                }
+            }
+            else {
+                cameraPos.y -= CameraVelocity * dt;
+
+                if (cameraPos.y < cameraNextPos.y) {
+                    cameraPos.y = cameraNextPos.y;
+                    player->objPosition.y = cameraPos.y + (float)height - player->objSize.y;
+                }
+            }
+        }
+        else {
+            mapLoadingDelay += dt;
+
+            if (mapLoadingDelay > 0.25f) {
+				mapLoadingDelay = 0.0f;
+                mapLoading = false;
+            }
+		}
+
+		//std::cout << cameraPos.x << " " << cameraPos.y << std::endl;
     }
 }
 

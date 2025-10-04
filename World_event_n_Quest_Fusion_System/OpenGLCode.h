@@ -36,11 +36,10 @@ private:
 	glm::mat4 view;
 	GameState states;
 	unsigned int width, height;
-	unsigned int cameraX, cameraY;
 	float deltaTime;
 	float lastFrame;
 	float changeMoveTime;
-	float resetTimer;
+	float resetTimer, mapLoadingDelay;
 	bool changedir;
 	bool startResetTimer;
 	bool mapLoading, getItemFirstTime;
