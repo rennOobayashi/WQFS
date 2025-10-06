@@ -11,6 +11,8 @@
 #include <time.h>
 #include <map>
 
+typedef std::tuple<std::vector<Item>, bool> Quest; // compensation list, confirmation
+
 class WQFS
 {
 private:
@@ -23,13 +25,11 @@ private:
 	WQFS& operator=(const WQFS&) = delete;
 	~WQFS() { };
 
-	void SetCompensation(NPC npc);
+	void SetCompensation(NPC &npc);
 	std::vector<Item> GetCompensation(NPC npc) ;
-	void CheckConfirmation();
 	void MonsterEvent(int npcType) ;
 	void DynamicEvent(int npcType) ;
 	void StaticEvent(int npcType) ;
-	std::map<int, std::vector<Item>> questList; //quest number, compensation list
 public:
 	static WQFS& GetInstance() {
 		static WQFS instance;
@@ -40,9 +40,10 @@ public:
 	static std::map<std::string, WorldEvent> worldEvents;
 	static std::map<std::string, NPC> npcs;
 	static std::map<std::string, Item> comps;
+	static std::map<int, Quest> questList; //quest number, compensation list
 
-	static void MakeQuest(NPC npc, WorldEvent event);
-	static void CompleteQuest();
+	static void MakeQuest(NPC &npc, WorldEvent &event);
+	static void CompleteQuest(NPC &npc);
 
 	static WorldEvent AddEvent(std::string name, int type, float posX, float posY);
 	static NPC AddNPC(std::string name, int type, float posX, float posY);
@@ -55,6 +56,7 @@ public:
 	static std::map<std::string, WorldEvent>& GetAllEvent();
 	static std::map<std::string, NPC>& GetAllNPC();
 	static std::map<std::string, Item>& GetAllItem();
+	static std::map<int, Quest>& GetAllQuest();
 
 	static void Clear();
 };

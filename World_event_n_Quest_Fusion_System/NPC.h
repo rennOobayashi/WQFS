@@ -13,6 +13,7 @@ class NPC
 {
 private:
 	int number;
+	int questNumber;
 	float positionX, positionY;
 	bool inDangerous;
 	int type;
@@ -30,6 +31,8 @@ public:
 	void SetPosition(float x, float y);
 	void SetInDangerous(bool _inDangerous);
 	bool GetInDangerous() const;
+	void setQuestNumber(int n);
+	int getQuestNumber() const;
 
 	bool operator<(const NPC& other) const {
 		return this->number < other.number;

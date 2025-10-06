@@ -32,6 +32,8 @@ private:
 	std::map<std::string, GameObject > npcObjects;
 	std::map<std::string, GameObject> monsterObjects;
 	std::map<std::string, GameObject> eventObjects;
+	std::map<int, GameObject> questObjects; //quest number, object
+	std::map<Item, int> inventory; //Item, count
 
 	glm::mat4 view;
 	GameState states;
@@ -39,9 +41,8 @@ private:
 	float deltaTime;
 	float lastFrame;
 	float changeMoveTime;
-	float resetTimer, mapLoadingDelay;
+	float dangerousDelay, mapLoadingDelay;
 	bool changedir;
-	bool startResetTimer;
 	bool mapLoading, getItemFirstTime;
 
 	GLFWwindow* window;

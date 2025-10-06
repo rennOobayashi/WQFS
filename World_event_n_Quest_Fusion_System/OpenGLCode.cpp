@@ -11,7 +11,7 @@ const float playerVelocity(500.0f);
 const float CameraVelocity(1000.0f);
 
 OpenGLCode::OpenGLCode(unsigned int _width, unsigned int _height)
-	: states(GAME_MENU), width(_width), height(_height), changedir(5.0f), startResetTimer(false), resetTimer(0.0f), mapLoading(false), mapLoadingDelay(0.0f), getItemFirstTime(false) {
+	: states(GAME_MENU), width(_width), height(_height), changedir(5.0f), dangerousDelay(5.0f), mapLoading(false), mapLoadingDelay(0.0f), getItemFirstTime(false) {
     init();
 }
 
@@ -116,6 +116,10 @@ void OpenGLCode::update() {
             ProcessInput(window, deltaTime);
         }
 
+        if (dangerousDelay < 5.0f) {
+            dangerousDelay += deltaTime;
+		}
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -126,6 +130,13 @@ void OpenGLCode::update() {
 
 void OpenGLCode::render() {
     for (const auto& npc : WQFS::GetInstance().GetAllNPC()) {
+        if (npc.second.GetInDangerous()) {
+            npcObjects[npc.first].objColor = glm::vec3(glfwGetTime(), 0.0f, 0.0f);
+        }
+        else {
+			npcObjects[npc.first].objColor = glm::vec3(0.1f, 0.5f, 1.0f);
+        }
+
 		npcObjects[npc.first].Draw(*sRenderer);
 	}
 
@@ -195,9 +206,6 @@ void OpenGLCode::Reset() {
     eventObjects["Earthquake"].objVelocity = glm::vec2(0.0f);
     eventObjects["Landslide"].objVelocity = glm::vec2(0.0f);
 	changeMoveTime = 5.0f;
-
-	resetTimer = 0.0f;
-    startResetTimer = false;
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -206,6 +214,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 void OpenGLCode::MoveSelf(float dt) {
+    float timeScale = 1.0f;
+
     if (changeMoveTime >= 2.5f) {
         changedir = true;
 
@@ -225,8 +235,8 @@ void OpenGLCode::MoveSelf(float dt) {
             if ((npcObjects[npc.first].objPosition.x < 0 && npcObjects[npc.first].objVelocity.x == -1)) npcObjects[npc.first].objVelocity.x = 0;
             if ((npcObjects[npc.first].objPosition.y < 0 && npcObjects[npc.first].objVelocity.y == -1)) npcObjects[npc.first].objVelocity.y = 0;
 
-            npcObjects[npc.first].objPosition.x += npcObjects[npc.first].objVelocity.x * 50 * dt;
-            npcObjects[npc.first].objPosition.y += npcObjects[npc.first].objVelocity.y * 50 * dt;
+            npcObjects[npc.first].objPosition.x += npcObjects[npc.first].objVelocity.x * 50 * dt * timeScale;
+            npcObjects[npc.first].objPosition.y += npcObjects[npc.first].objVelocity.y * 50 * dt * timeScale;
 
             npc.second.SetPosition(npcObjects[npc.first].objPosition.x, npcObjects[npc.first].objPosition.y);
         }
@@ -241,8 +251,8 @@ void OpenGLCode::MoveSelf(float dt) {
             if ((monsterObjects[monster.first].objPosition.x < 0 && monsterObjects[monster.first].objVelocity.x == -1)) monsterObjects[monster.first].objVelocity.x = 0;
             if ((monsterObjects[monster.first].objPosition.y < 0 && monsterObjects[monster.first].objVelocity.y == -1)) monsterObjects[monster.first].objVelocity.y = 0;
 
-            monsterObjects[monster.first].objPosition.x += monsterObjects[monster.first].objVelocity.x * 30 * dt;
-            monsterObjects[monster.first].objPosition.y += monsterObjects[monster.first].objVelocity.y * 30 * dt;
+            monsterObjects[monster.first].objPosition.x += monsterObjects[monster.first].objVelocity.x * 30 * dt * timeScale;
+            monsterObjects[monster.first].objPosition.y += monsterObjects[monster.first].objVelocity.y * 30 * dt * timeScale;
 
 			monster.second.SetPosition(monsterObjects[monster.first].objPosition.x, monsterObjects[monster.first].objPosition.y);
         }
@@ -257,8 +267,8 @@ void OpenGLCode::MoveSelf(float dt) {
             if ((eventObjects[event.first].objPosition.x < 0 && eventObjects[event.first].objVelocity.x == -1)) eventObjects[event.first].objVelocity.x = 0;
             if ((eventObjects[event.first].objPosition.y < 0 && eventObjects[event.first].objVelocity.y == -1)) eventObjects[event.first].objVelocity.y = 0;
 
-            eventObjects[event.first].objPosition.x += eventObjects[event.first].objVelocity.x * 10 * dt;
-            eventObjects[event.first].objPosition.y += eventObjects[event.first].objVelocity.y * 10 * dt;
+            eventObjects[event.first].objPosition.x += eventObjects[event.first].objVelocity.x * 10 * dt * timeScale;
+            eventObjects[event.first].objPosition.y += eventObjects[event.first].objVelocity.y * 10 * dt * timeScale;
 
 			event.second.SetPosition(eventObjects[event.first].objPosition.x, eventObjects[event.first].objPosition.y);
         }
@@ -364,20 +374,22 @@ void OpenGLCode::DoCollisions() {
     for (auto& npc : WQFS::GetInstance().GetAllNPC()) {
         if (!npc.second.GetInDangerous()) {
             for (auto& monster : monsterObjects) {
-                if (CheckCollision(npcObjects[npc.first], monsterObjects[monster.first])) {
-                    std::cout << npc.second.GetInDangerous() << std::endl;
+                if (CheckCollision(npcObjects[npc.first], monsterObjects[monster.first]) && dangerousDelay >= 5.0f) {
 					npc.second.SetInDangerous(true);
 					WQFS::GetInstance().MakeQuest(npc.second, WQFS::GetInstance().GetEvent(monster.first));
-					std::cout << "5초 뒤 리셋" << std::endl;
-					startResetTimer = true;
                 }
             }
             for (auto& event : eventObjects) {
-                if (CheckCollision(npcObjects[npc.first], eventObjects[event.first])) {
-                    std::cout << npc.second.GetInDangerous() << std::endl;
+                if (CheckCollision(npcObjects[npc.first], eventObjects[event.first]) && dangerousDelay >= 5.0f) {
                     npc.second.SetInDangerous(true);
                     WQFS::GetInstance().MakeQuest(npc.second, WQFS::GetInstance().GetEvent(event.first));
                 }
+            }
+        }
+        else {
+            if (CheckCollision(npcObjects[npc.first], *player) && npc.second.getQuestNumber() != -1) {
+				WQFS::GetInstance().CompleteQuest(npc.second);
+				dangerousDelay = 0.0f;
             }
         }
     }

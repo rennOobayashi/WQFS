@@ -1,6 +1,6 @@
 #include "NPC.h"
 
-NPC::NPC() : number(0), inDangerous(false), type(0), positionX(0), positionY(0) { }
+NPC::NPC() : number(0), inDangerous(false), type(0), positionX(0), positionY(0), questNumber(-1) { }
 
 void NPC::SetUp(int _number, int _type, float pos_x, float pos_y) {
 	number = _number;
@@ -40,4 +40,12 @@ float NPC::GetPositionY() const {
 void NPC::SetPosition(float x, float y) {
 	positionX = x;
 	positionY = y;
+}
+
+void NPC::setQuestNumber(int n) {
+	questNumber = n;
+}
+
+int NPC::getQuestNumber() const {
+	return questNumber;
 }
