@@ -26,25 +26,20 @@ enum GameState {
 	GAME_WIN     //2
 };
 
-enum Direction {
-	UP,
-	DOWN,
-	LEFT,
-	RIGHT
-};
+typedef std::tuple<GameObject, bool> Monster;
 
 class OpenGLCode
 {
 private:
 	std::map<std::string, GameObject > npcObjects;
-	std::map<std::string, GameObject> monsterObjects;
+	std::map<std::string, Monster> monsterObjects;
 	std::map<std::string, GameObject> eventObjects;
 	std::map<int, GameObject> questObjects; //quest number, object
 	std::map<Item, int> inventory; //Item, count
+	std::map<GameObject, GameObject> QuestTargetObjects; //npc, Event
 
 	glm::mat4 view;
 	GameState states;
-	Direction dir;
 	unsigned int width, height;
 	float deltaTime;
 	float lastFrame;

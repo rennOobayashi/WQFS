@@ -80,14 +80,14 @@ void OpenGLCode::init() {
     WQFS::GetInstance().AddItem("Gold",           3, 50, 1);
 
     glm::vec2 playerPos(width / 2, height / 2);
-    attackCollidePos = glm::vec2(playerPos.x + 20.0f, 0.0f);
+    attackCollidePos = glm::vec2(playerPos.x + 20.0f, playerPos.y);
 
     npcObjects["Normal"] = GameObject(ResourceManager::GetTexture("NPC"), glm::vec2(0.0f, 0.0f), glm::vec2(200.0f), 0.0f, glm::vec3(0.1f, 0.5f, 1.0f));
-    monsterObjects["Monster"] = GameObject(ResourceManager::GetTexture("Monster"), glm::vec2(width - 200.0f, 0.0f), glm::vec2(200.0f), 0.0f, glm::vec3(1.0f, 0.2f, 0.1f));
+    std::get<0>(monsterObjects["Monster"]) = GameObject(ResourceManager::GetTexture("Monster"), glm::vec2(width - 200.0f, 0.0f), glm::vec2(200.0f), 0.0f, glm::vec3(1.0f, 0.2f, 0.1f));
     eventObjects["Earthquake"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(width - 400.0f, height - 400.0f), glm::vec2(400.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f));
     eventObjects["Landslide"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(0.0f, height - 350.0f), glm::vec2(350.0f), 0.0f, glm::vec3(0.4f, 0.1f, 1.0f));
     player = new GameObject(ResourceManager::GetTexture("NPC"), playerPos, playerSize, 0.0f, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(playerVelocity));
-	attackBox = new GameObject(ResourceManager::GetTexture("NPC"), attackCollidePos, glm::vec2(20.0f, 100.0f), 0.0f, glm::vec3(1.0f, 0.3f, 0.3f));
+	attackBox = new GameObject(ResourceManager::GetTexture("NPC"), attackCollidePos, glm::vec2(50.0f, 100.0f), 0.0f, glm::vec3(1.0f, 0.3f, 0.3f));
 
     states = GAME_ACTIVE;
 
@@ -118,10 +118,6 @@ void OpenGLCode::update() {
             ProcessInput(window, deltaTime);
         }
 
-        if (isAttacked) {
-            Attack();
-        }
-
         if (dangerousDelay < 5.0f) {
             dangerousDelay += deltaTime;
 		}
@@ -143,8 +139,8 @@ void OpenGLCode::update() {
 
 void OpenGLCode::render() {
     for (const auto& monster : WQFS::GetInstance().GetAllEvent()) {
-        if (monster.second.GetType() == 0) {
-            monsterObjects[monster.first].Draw(*sRenderer);
+        if (monster.second.GetType() == 0 && !std::get<1>(monsterObjects[monster.first])) {
+            std::get<0>(monsterObjects[monster.first]).Draw(*sRenderer);
         }
     }
 
@@ -175,11 +171,12 @@ void OpenGLCode::render() {
         npcObjects[npc.first].Draw(*sRenderer);
     }
 
+    if (attackDelay < 0.5f) {
+        attackBox->Draw(*sRenderer);
+    }
+
     player->Draw(*sRenderer);
 
-    if (attackDelay < 0.5f) {
-		attackBox->Draw(*sRenderer);
-    }
 }
 
 void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
@@ -195,25 +192,33 @@ void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
         //Up
         if ((glfwGetKey(window, GLFW_KEY_W) || glfwGetKey(window, GLFW_KEY_UP)) && player->objPosition.y > 0) {
             player->objPosition.y -= velocityY;
-			attackBox->objPosition.y = player->objPosition.y - 20.0f;
+			attackBox->objPosition.y = player->objPosition.y - 70.0f;
+            attackBox->objPosition.x = player->objPosition.x + 25.0f;
+            attackBox->objRotation = 90.0f;
         }
         //Down
         if (glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN)) {
             player->objPosition.y += velocityY;
-            attackBox->objPosition.y = player->objPosition.y + 20.0f;
+            attackBox->objPosition.y = player->objPosition.y + player->objSize.y - 30.0f;
+            attackBox->objPosition.x = player->objPosition.x + 25.0f;
+            attackBox->objRotation = 90.0f;
         }
         //Left
         if ((glfwGetKey(window, GLFW_KEY_A) || glfwGetKey(window, GLFW_KEY_LEFT)) && player->objPosition.x > 0) {
             player->objPosition.x -= velocityX;
-            attackBox->objPosition.x = player->objPosition.x - 20.0f;
+            attackBox->objPosition.x = player->objPosition.x - 50.0f;
+            attackBox->objPosition.y = player->objPosition.y;
+            attackBox->objRotation = 0.0f;
         }
         //Right
         if (glfwGetKey(window, GLFW_KEY_D) || glfwGetKey(window, GLFW_KEY_RIGHT)) {
             player->objPosition.x += velocityX;
-            attackBox->objPosition.x = player->objPosition.x + 20.0f;
+            attackBox->objPosition.x = player->objPosition.x + player->objSize.x;
+            attackBox->objPosition.y = player->objPosition.y;
+            attackBox->objRotation = 0.0f;
         }
         //Attack, Interept
-        if (glfwGetKey(window, GLFW_KEY_SPACE) && attackDelay >= 0.75f) {
+        if (glfwGetKey(window, GLFW_KEY_SPACE) && attackDelay >= 0.7f) {
             attackDelay = 0.0f;
 			isAttacked = true;
         }
@@ -225,15 +230,15 @@ void OpenGLCode::Reset() {
     npcObjects["Normal"].objPosition.y = 0.0f;
 	WQFS::GetNPC("Normal").SetInDangerous(false);
 
-	monsterObjects["Monster"].objPosition.x = width - 200.0f;
-	monsterObjects["Monster"].objPosition.y = 0.0f;
+	std::get<0>(monsterObjects["Monster"]).objPosition.x = width - 200.0f;
+    std::get<0>(monsterObjects["Monster"]).objPosition.y = 0.0f;
 	eventObjects["Earthquake"].objPosition.x = width - 400.0f;
 	eventObjects["Earthquake"].objPosition.y = height - 400.0f;
 	eventObjects["Landslide"].objPosition.x = 0.0f;
 	eventObjects["Landslide"].objPosition.y = height - 350.0f;
 
 	npcObjects["Normal"].objVelocity = glm::vec2(0.0f);
-    monsterObjects["Monster"].objVelocity = glm::vec2(0.0f);
+    std::get<0>(monsterObjects["Monster"]).objVelocity = glm::vec2(0.0f);
     eventObjects["Earthquake"].objVelocity = glm::vec2(0.0f);
     eventObjects["Landslide"].objVelocity = glm::vec2(0.0f);
 	changeMoveTime = 5.0f;
@@ -277,16 +282,16 @@ void OpenGLCode::MoveSelf(float dt) {
     for (auto& monster : WQFS::GetInstance().GetAllEvent()) {
         if (monster.second.GetType() == 0) {
             if (changedir) {
-                monsterObjects[monster.first].objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
+                std::get<0>(monsterObjects[monster.first]).objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
             }
 
-            if ((monsterObjects[monster.first].objPosition.x < 0 && monsterObjects[monster.first].objVelocity.x == -1)) monsterObjects[monster.first].objVelocity.x = 0;
-            if ((monsterObjects[monster.first].objPosition.y < 0 && monsterObjects[monster.first].objVelocity.y == -1)) monsterObjects[monster.first].objVelocity.y = 0;
+            if ((std::get<0>(monsterObjects[monster.first]).objPosition.x < 0 && std::get<0>(monsterObjects[monster.first]).objVelocity.x == -1)) std::get<0>(monsterObjects[monster.first]).objVelocity.x = 0;
+            if ((std::get<0>(monsterObjects[monster.first]).objPosition.y < 0 && std::get<0>(monsterObjects[monster.first]).objVelocity.y == -1)) std::get<0>(monsterObjects[monster.first]).objVelocity.y = 0;
 
-            monsterObjects[monster.first].objPosition.x += monsterObjects[monster.first].objVelocity.x * 30 * dt * timeScale;
-            monsterObjects[monster.first].objPosition.y += monsterObjects[monster.first].objVelocity.y * 30 * dt * timeScale;
+            std::get<0>(monsterObjects[monster.first]).objPosition.x += std::get<0>(monsterObjects[monster.first]).objVelocity.x * 30 * dt * timeScale;
+            std::get<0>(monsterObjects[monster.first]).objPosition.y += std::get<0>(monsterObjects[monster.first]).objVelocity.y * 30 * dt * timeScale;
 
-			monster.second.SetPosition(monsterObjects[monster.first].objPosition.x, monsterObjects[monster.first].objPosition.y);
+			monster.second.SetPosition(std::get<0>(monsterObjects[monster.first]).objPosition.x, std::get<0>(monsterObjects[monster.first]).objPosition.y);
         }
     }
 
@@ -406,7 +411,7 @@ void OpenGLCode::DoCollisions() {
     for (auto& npc : WQFS::GetInstance().GetAllNPC()) {
         if (!npc.second.GetInDangerous()) {
             for (auto& monster : monsterObjects) {
-                if (CheckCollision(npcObjects[npc.first], monsterObjects[monster.first]) && dangerousDelay >= 5.0f) {
+                if (CheckCollision(npcObjects[npc.first], std::get<0>(monsterObjects[monster.first])) && dangerousDelay >= 5.0f) {
 					npc.second.SetInDangerous(true);
 					WQFS::GetInstance().MakeQuest(npc.second, WQFS::GetInstance().GetEvent(monster.first));
                 }
@@ -435,13 +440,15 @@ void OpenGLCode::DoCollisions() {
         }
     }
     for (auto& monster : monsterObjects) {
-        for (auto& event : eventObjects) {
-            if (CheckCollision(monsterObjects[monster.first], eventObjects[event.first])) {
-				monster.second.objVelocity = glm::vec2(0.0f);
+        if (!std::get<1>(monster.second)) {
+            for (auto& event : eventObjects) {
+                if (CheckCollision(std::get<0>(monster.second), eventObjects[event.first])) {
+                    std::get<0>(monster.second).objVelocity = glm::vec2(0.0f);
+                }
             }
-        }
-        if (attackDelay < 0.5f && CheckCollision(monsterObjects[monster.first], *attackBox)) {
-			monsterObjects.erase(monster.first);
+            if (attackDelay < 0.5f && CheckCollision(std::get<0>(monster.second), *attackBox)) {
+                std::get<1>(monster.second) = true;
+            }
         }
     }
 }
