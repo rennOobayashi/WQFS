@@ -26,6 +26,13 @@ enum GameState {
 	GAME_WIN     //2
 };
 
+enum Direction {
+	UP,
+	DOWN,
+	LEFT,
+	RIGHT
+};
+
 class OpenGLCode
 {
 private:
@@ -37,20 +44,20 @@ private:
 
 	glm::mat4 view;
 	GameState states;
+	Direction dir;
 	unsigned int width, height;
 	float deltaTime;
 	float lastFrame;
-	float changeMoveTime;
-	float dangerousDelay, mapLoadingDelay;
+	float changeMoveTime, showDangerousTime;
+	float dangerousDelay, mapLoadingDelay, attackDelay;
 	bool changedir;
-	bool mapLoading, getItemFirstTime;
+	bool mapLoading, getItemFirstTime, isAttacked;
 
 	GLFWwindow* window;
 	SpriteRenderer* sRenderer;
 
-
 	GameObject* player;
-
+	GameObject* attackBox;
 
 	void init();
 	void render();
@@ -59,6 +66,7 @@ private:
 	void CameraMove(float dt);
 	void DoCollisions();
 	void Reset();
+	void Attack();
 	bool CheckCollision(GameObject& object1, GameObject& object2);
 public:
 	OpenGLCode(unsigned int _width, unsigned int _height);

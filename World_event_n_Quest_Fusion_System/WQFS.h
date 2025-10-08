@@ -26,7 +26,6 @@ private:
 	~WQFS() { };
 
 	void SetCompensation(NPC &npc);
-	std::vector<Item> GetCompensation(NPC npc) ;
 	void MonsterEvent(int npcType) ;
 	void DynamicEvent(int npcType) ;
 	void StaticEvent(int npcType) ;
@@ -43,7 +42,7 @@ public:
 	static std::map<int, Quest> questList; //quest number, compensation list
 
 	static void MakeQuest(NPC &npc, WorldEvent &event);
-	static void CompleteQuest(NPC &npc);
+	static  std::vector<Item> CompleteQuest(NPC &npc);
 
 	static WorldEvent AddEvent(std::string name, int type, float posX, float posY);
 	static NPC AddNPC(std::string name, int type, float posX, float posY);
