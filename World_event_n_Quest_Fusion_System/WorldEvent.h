@@ -12,6 +12,7 @@ class WorldEvent
 {
 private:
 	int number;
+	int questNumber;
 	float positionX, positionY;
 	int type;
 
@@ -29,6 +30,8 @@ public:
 	float GetPositionY() const;
 	void SetPosition(float x, float y);
 	int GetType() const;
+	void setQuestNumber(int n);
+	int getQuestNumber() const;
 
 	bool operator<(const WorldEvent& other) const {
 		return type < other.type;

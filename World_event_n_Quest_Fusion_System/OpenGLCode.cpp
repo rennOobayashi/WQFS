@@ -251,7 +251,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 void OpenGLCode::MoveSelf(float dt) {
-    float timeScale = 1.0f;
+    float timeScale = 3.0f;
 
     if (changeMoveTime >= 2.5f) {
         changedir = true;
@@ -264,7 +264,7 @@ void OpenGLCode::MoveSelf(float dt) {
 
     for (auto& npc : WQFS::GetInstance().GetAllNPC()) {
         if (!npc.second.GetInDangerous()) {
-            if (changedir) {
+            /*if (changedir) {
                 npcObjects[npc.first].objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
                 //std::cout << npcObjects[npc.first].objVelocity.x << " " << npcObjects[npc.first].objVelocity.y << std::endl;
             }
@@ -275,13 +275,17 @@ void OpenGLCode::MoveSelf(float dt) {
             npcObjects[npc.first].objPosition.x += npcObjects[npc.first].objVelocity.x * 50 * dt * timeScale;
             npcObjects[npc.first].objPosition.y += npcObjects[npc.first].objVelocity.y * 50 * dt * timeScale;
 
+            npc.second.SetPosition(npcObjects[npc.first].objPosition.x, npcObjects[npc.first].objPosition.y);*/
+            npcObjects[npc.first].objPosition.x += 50 * dt * timeScale;
+
             npc.second.SetPosition(npcObjects[npc.first].objPosition.x, npcObjects[npc.first].objPosition.y);
+
         }
 	}
 
     for (auto& monster : WQFS::GetInstance().GetAllEvent()) {
         if (monster.second.GetType() == 0) {
-            if (changedir) {
+            /*if (changedir) {
                 std::get<0>(monsterObjects[monster.first]).objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
             }
 
@@ -291,7 +295,10 @@ void OpenGLCode::MoveSelf(float dt) {
             std::get<0>(monsterObjects[monster.first]).objPosition.x += std::get<0>(monsterObjects[monster.first]).objVelocity.x * 30 * dt * timeScale;
             std::get<0>(monsterObjects[monster.first]).objPosition.y += std::get<0>(monsterObjects[monster.first]).objVelocity.y * 30 * dt * timeScale;
 
-			monster.second.SetPosition(std::get<0>(monsterObjects[monster.first]).objPosition.x, std::get<0>(monsterObjects[monster.first]).objPosition.y);
+			monster.second.SetPosition(std::get<0>(monsterObjects[monster.first]).objPosition.x, std::get<0>(monsterObjects[monster.first]).objPosition.y);*/
+            std::get<0>(monsterObjects[monster.first]).objPosition.x -= 30 * dt * timeScale;
+
+            monster.second.SetPosition(std::get<0>(monsterObjects[monster.first]).objPosition.x, std::get<0>(monsterObjects[monster.first]).objPosition.y);
         }
     }
 
@@ -414,28 +421,37 @@ void OpenGLCode::DoCollisions() {
                 if (CheckCollision(npcObjects[npc.first], std::get<0>(monsterObjects[monster.first])) && dangerousDelay >= 5.0f) {
 					npc.second.SetInDangerous(true);
 					WQFS::GetInstance().MakeQuest(npc.second, WQFS::GetInstance().GetEvent(monster.first));
+					std::cout << npc.second.getQuestNumber() << std::endl;
                 }
             }
             for (auto& event : eventObjects) {
                 if (CheckCollision(npcObjects[npc.first], eventObjects[event.first]) && dangerousDelay >= 5.0f) {
                     npc.second.SetInDangerous(true);
                     WQFS::GetInstance().MakeQuest(npc.second, WQFS::GetInstance().GetEvent(event.first));
+                    std::cout << npc.second.getQuestNumber() << std::endl;
                 }
             }
         }
         else {
             if (CheckCollision(npcObjects[npc.first], *player) && npc.second.getQuestNumber() != -1) {
-				std::vector<Item> items = WQFS::GetInstance().CompleteQuest(npc.second);
+                for (const auto& target : WQFS::GetInstance().QuestTargetObjects) {
+                    std::cout << "NPC : " << target.first.getQuestNumber() << " Event : " << target.second.getQuestNumber() << std::endl;
+                    if (target.second.getQuestNumber() == npc.second.getQuestNumber() && target.second.GetType() != 0) {
+						
 
-                for (const auto& item : items) {
-                    inventory[item] += 1;
-				}
+                        std::vector<Item> items = WQFS::GetInstance().CompleteQuest(npc.second);
 
-                for (const auto& item : inventory) {
-                    std::cout << item.first.GetName() << " : " << item.second << std::endl;
-				}
+                        for (const auto& item : items) {
+                            inventory[item] += 1;
+                        }
 
-				dangerousDelay = 0.0f;
+                        for (const auto& item : inventory) {
+                            std::cout << item.first.GetName() << " : " << item.second << std::endl;
+                        }
+
+                        dangerousDelay = 0.0f;
+                    }
+                }
             }
         }
     }
@@ -447,6 +463,28 @@ void OpenGLCode::DoCollisions() {
                 }
             }
             if (attackDelay < 0.5f && CheckCollision(std::get<0>(monster.second), *attackBox)) {
+                NPC npc;
+                for (const auto& _npc : WQFS::GetInstance().GetAllNPC()) {
+					std::cout << "NPC: " << _npc.second.getQuestNumber() << " Event : " << WQFS::GetInstance().GetEvent(monster.first).getQuestNumber() << std::endl;
+                    if (_npc.second.getQuestNumber() == WQFS::GetInstance().GetEvent(monster.first).getQuestNumber()) {
+						std::cout << "Found NPC" << std::endl;
+                        npc = _npc.second;
+                    }
+				}
+
+                if (npc.getQuestNumber() == WQFS::GetInstance().GetEvent(monster.first).getQuestNumber()) {
+                    std::vector<Item> items = WQFS::GetInstance().CompleteQuest(npc);
+
+                    for (const auto& item : items) {
+                        inventory[item] += 1;
+                    }
+
+                    for (const auto& item : inventory) {
+                        std::cout << item.first.GetName() << " : " << item.second << std::endl;
+                    }
+
+                    dangerousDelay = 0.0f;
+                }
                 std::get<1>(monster.second) = true;
             }
         }

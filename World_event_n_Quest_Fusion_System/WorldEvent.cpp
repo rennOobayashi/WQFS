@@ -1,7 +1,7 @@
 #include "WorldEvent.h"
 
 WorldEvent::WorldEvent() 
-	: number(0), type(0), positionX(0), positionY(0) {}
+	: number(0), type(0), positionX(0), positionY(0), questNumber(-1) {}
 
 void WorldEvent::SetUp(int _number, int _type, float posX, float posY) {
 	number = _number;
@@ -37,4 +37,12 @@ float WorldEvent::GetPositionY() const {
 void WorldEvent::SetPosition(float x, float y) {
 	positionX = x;
 	positionY = y;
+}
+
+void WorldEvent::setQuestNumber(int n) {
+	questNumber = n;
+}
+
+int WorldEvent::getQuestNumber() const {
+	return questNumber;
 }

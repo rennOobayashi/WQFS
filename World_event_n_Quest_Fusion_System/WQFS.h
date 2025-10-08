@@ -25,7 +25,7 @@ private:
 	WQFS& operator=(const WQFS&) = delete;
 	~WQFS() { };
 
-	void SetCompensation(NPC &npc);
+	void SetCompensation(NPC &npc, WorldEvent &event);
 	void MonsterEvent(int npcType) ;
 	void DynamicEvent(int npcType) ;
 	void StaticEvent(int npcType) ;
@@ -40,6 +40,7 @@ public:
 	static std::map<std::string, NPC> npcs;
 	static std::map<std::string, Item> comps;
 	static std::map<int, Quest> questList; //quest number, compensation list
+	static std::map<NPC, WorldEvent> QuestTargetObjects; //npc, Event
 
 	static void MakeQuest(NPC &npc, WorldEvent &event);
 	static  std::vector<Item> CompleteQuest(NPC &npc);

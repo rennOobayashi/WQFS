@@ -36,7 +36,6 @@ private:
 	std::map<std::string, GameObject> eventObjects;
 	std::map<int, GameObject> questObjects; //quest number, object
 	std::map<Item, int> inventory; //Item, count
-	std::map<GameObject, GameObject> QuestTargetObjects; //npc, Event
 
 	glm::mat4 view;
 	GameState states;

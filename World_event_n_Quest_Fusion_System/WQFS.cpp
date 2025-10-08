@@ -17,6 +17,7 @@ std::map<std::string, WorldEvent> WQFS::worldEvents;
 std::map<std::string, NPC> WQFS::npcs;
 std::map<std::string, Item> WQFS::comps;
 std::map<int, Quest> WQFS::questList;
+std::map<NPC, WorldEvent> WQFS::QuestTargetObjects;
 
 WorldEvent WQFS::AddEvent(std::string name, int type, float posX, float posY) {
 	//std::cout << type << " ";
@@ -76,7 +77,7 @@ void WQFS::Clear() {
 }
 
 void WQFS::MakeQuest(NPC &npc, WorldEvent &event) {
-	WQFS::GetInstance().SetCompensation(npc);
+	WQFS::GetInstance().SetCompensation(npc, event);
 
 	std::cout << "보상 ";
 
@@ -97,7 +98,7 @@ void WQFS::MakeQuest(NPC &npc, WorldEvent &event) {
 	}
 }
 
-void WQFS::SetCompensation(NPC &npc) {
+void WQFS::SetCompensation(NPC &npc, WorldEvent& event) {
 	std::vector<Item> compList;
 	int allComp = 1;
 	bool isHp = false;
@@ -363,8 +364,11 @@ void WQFS::SetCompensation(NPC &npc) {
 	std::get<1>(questList[WQFS::GetInstance().questNumber]) = false;
 
 	npc.setQuestNumber(WQFS::GetInstance().questNumber);
+	event.setQuestNumber(WQFS::GetInstance().questNumber);
 
 	WQFS::GetInstance().questNumber++;
+
+	QuestTargetObjects[npc] = event;
 }
 
 
