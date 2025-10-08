@@ -54,22 +54,6 @@ Item& WQFS::GetItem(std::string name) {
 	return comps[name];
 }
 
-std::map<std::string, WorldEvent>& WQFS::GetAllEvent() {
-	return worldEvents;
-}
-
-std::map<std::string, NPC>& WQFS::GetAllNPC() {
-	return npcs;
-}
-
-std::map<std::string, Item>& WQFS::GetAllItem() {
-	return comps;
-}
-
-std::map<int, Quest>& WQFS::GetAllQuest() {
-	return questList;
-}
-
 void WQFS::Clear() {
 	worldEvents.clear();
 	npcs.clear();

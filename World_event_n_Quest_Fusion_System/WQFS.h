@@ -53,11 +53,6 @@ public:
 	static NPC& GetNPC(std::string name);
 	static Item& GetItem(std::string name);
 
-	static std::map<std::string, WorldEvent>& GetAllEvent();
-	static std::map<std::string, NPC>& GetAllNPC();
-	static std::map<std::string, Item>& GetAllItem();
-	static std::map<int, Quest>& GetAllQuest();
-
 	static void Clear();
 };
 

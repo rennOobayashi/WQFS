@@ -138,20 +138,20 @@ void OpenGLCode::update() {
 }
 
 void OpenGLCode::render() {
-    for (const auto& monster : WQFS::GetInstance().GetAllEvent()) {
+    for (const auto& monster : WQFS::GetInstance().worldEvents) {
         if (monster.second.GetType() == 0 && !std::get<1>(monsterObjects[monster.first])) {
             std::get<0>(monsterObjects[monster.first]).Draw(*sRenderer);
         }
     }
 
-    for (const auto& event : WQFS::GetInstance().GetAllEvent()) {
+    for (const auto& event : WQFS::GetInstance().worldEvents) {
 		//std::cout << eventObjects[event.first].GetType() << std::endl;
         if (event.second.GetType() != 0) {
             eventObjects[event.first].Draw(*sRenderer);
         }
     }
 
-    for (const auto& npc : WQFS::GetInstance().GetAllNPC()) {
+    for (const auto& npc : WQFS::GetInstance().npcs) {
         if (npc.second.GetInDangerous()) {
             showDangerousTime += deltaTime;
 
@@ -251,7 +251,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 void OpenGLCode::MoveSelf(float dt) {
-    float timeScale = 3.0f;
+    float timeScale = 0.9f;
 
     if (changeMoveTime >= 2.5f) {
         changedir = true;
@@ -262,7 +262,7 @@ void OpenGLCode::MoveSelf(float dt) {
         changeMoveTime += deltaTime * timeScale;
     }
 
-    for (auto& npc : WQFS::GetInstance().GetAllNPC()) {
+    for (auto& npc : WQFS::GetInstance().npcs) {
         if (!npc.second.GetInDangerous()) {
             /*if (changedir) {
                 npcObjects[npc.first].objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
@@ -276,16 +276,16 @@ void OpenGLCode::MoveSelf(float dt) {
             npcObjects[npc.first].objPosition.y += npcObjects[npc.first].objVelocity.y * 50 * dt * timeScale;
 
             npc.second.SetPosition(npcObjects[npc.first].objPosition.x, npcObjects[npc.first].objPosition.y);*/
+
             npcObjects[npc.first].objPosition.x += 50 * dt * timeScale;
 
             npc.second.SetPosition(npcObjects[npc.first].objPosition.x, npcObjects[npc.first].objPosition.y);
-
         }
 	}
 
-    for (auto& monster : WQFS::GetInstance().GetAllEvent()) {
+    for (auto& monster : WQFS::GetInstance().worldEvents) {
         if (monster.second.GetType() == 0) {
-            /*if (changedir) {
+            if (changedir) {
                 std::get<0>(monsterObjects[monster.first]).objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
             }
 
@@ -295,14 +295,11 @@ void OpenGLCode::MoveSelf(float dt) {
             std::get<0>(monsterObjects[monster.first]).objPosition.x += std::get<0>(monsterObjects[monster.first]).objVelocity.x * 30 * dt * timeScale;
             std::get<0>(monsterObjects[monster.first]).objPosition.y += std::get<0>(monsterObjects[monster.first]).objVelocity.y * 30 * dt * timeScale;
 
-			monster.second.SetPosition(std::get<0>(monsterObjects[monster.first]).objPosition.x, std::get<0>(monsterObjects[monster.first]).objPosition.y);*/
-            std::get<0>(monsterObjects[monster.first]).objPosition.x -= 30 * dt * timeScale;
-
-            monster.second.SetPosition(std::get<0>(monsterObjects[monster.first]).objPosition.x, std::get<0>(monsterObjects[monster.first]).objPosition.y);
+			monster.second.SetPosition(std::get<0>(monsterObjects[monster.first]).objPosition.x, std::get<0>(monsterObjects[monster.first]).objPosition.y);
         }
     }
 
-    for (auto& event : WQFS::GetInstance().GetAllEvent()) {
+    for (auto& event : WQFS::GetInstance().worldEvents) {
         if (event.second.GetType() != 0) {
             if (changedir) {
                 eventObjects[event.first].objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
@@ -415,7 +412,7 @@ bool OpenGLCode::CheckCollision(GameObject& object1, GameObject& object2) {
 }
 
 void OpenGLCode::DoCollisions() {
-    for (auto& npc : WQFS::GetInstance().GetAllNPC()) {
+    for (auto& npc : WQFS::GetInstance().npcs) {
         if (!npc.second.GetInDangerous()) {
             for (auto& monster : monsterObjects) {
                 if (CheckCollision(npcObjects[npc.first], std::get<0>(monsterObjects[monster.first])) && dangerousDelay >= 5.0f) {
@@ -435,10 +432,7 @@ void OpenGLCode::DoCollisions() {
         else {
             if (CheckCollision(npcObjects[npc.first], *player) && npc.second.getQuestNumber() != -1) {
                 for (const auto& target : WQFS::GetInstance().QuestTargetObjects) {
-                    std::cout << "NPC : " << target.first.getQuestNumber() << " Event : " << target.second.getQuestNumber() << std::endl;
                     if (target.second.getQuestNumber() == npc.second.getQuestNumber() && target.second.GetType() != 0) {
-						
-
                         std::vector<Item> items = WQFS::GetInstance().CompleteQuest(npc.second);
 
                         for (const auto& item : items) {
@@ -463,28 +457,24 @@ void OpenGLCode::DoCollisions() {
                 }
             }
             if (attackDelay < 0.5f && CheckCollision(std::get<0>(monster.second), *attackBox)) {
-                NPC npc;
-                for (const auto& _npc : WQFS::GetInstance().GetAllNPC()) {
-					std::cout << "NPC: " << _npc.second.getQuestNumber() << " Event : " << WQFS::GetInstance().GetEvent(monster.first).getQuestNumber() << std::endl;
-                    if (_npc.second.getQuestNumber() == WQFS::GetInstance().GetEvent(monster.first).getQuestNumber()) {
-						std::cout << "Found NPC" << std::endl;
-                        npc = _npc.second;
+                for (auto& target : WQFS::GetInstance().npcs) {
+					if (target.second.getQuestNumber() == WQFS::GetInstance().GetEvent(monster.first).getQuestNumber()) {
+                        if (target.second.getQuestNumber() == WQFS::GetInstance().GetEvent(monster.first).getQuestNumber()) {
+                            std::vector<Item> items = WQFS::GetInstance().CompleteQuest(target.second);
+
+                            for (const auto& item : items) {
+                                inventory[item] += 1;
+                            }
+
+                            for (const auto& item : inventory) {
+                                std::cout << item.first.GetName() << " : " << item.second << std::endl;
+                            }
+
+                            dangerousDelay = 0.0f;
+                        }
                     }
 				}
 
-                if (npc.getQuestNumber() == WQFS::GetInstance().GetEvent(monster.first).getQuestNumber()) {
-                    std::vector<Item> items = WQFS::GetInstance().CompleteQuest(npc);
-
-                    for (const auto& item : items) {
-                        inventory[item] += 1;
-                    }
-
-                    for (const auto& item : inventory) {
-                        std::cout << item.first.GetName() << " : " << item.second << std::endl;
-                    }
-
-                    dangerousDelay = 0.0f;
-                }
                 std::get<1>(monster.second) = true;
             }
         }
