@@ -67,12 +67,12 @@ void OpenGLCode::init() {
 	Shader spriteShader = ResourceManager::GetShader("sprite");
 	sRenderer = new SpriteRenderer(spriteShader);
 
-	WQFS::GetInstance().GetInstance().AddNPC("Normal", 0, 0.0f, 0.0f);
-	WQFS::GetInstance().AddEvent("Monster", 0, 0.0f, 0.0f);
-	WQFS::GetInstance().AddEvent("Earthquake", 1, 0.0f, 0.0f);
-	WQFS::GetInstance().AddEvent("Landslide", 2, 0.0f, 0.0f);
+	WQFS::GetInstance().AddNPC("Normal", 0, 0.0f, 0.0f);
 
-	//                         이름,          타입,효과, 희귀도 
+	WQFS::GetInstance().AddEvent("Monster", 0, 0.0f, 0.0f);
+    WQFS::GetInstance().AddEvent("Landslide", 1, 0.0f, 0.0f);
+	WQFS::GetInstance().AddEvent("Earthquake", 2, 0.0f, 0.0f);
+
     WQFS::GetInstance().AddItem("HP Posion",      0, 30, 0);
     WQFS::GetInstance().AddItem("GOOD HP Posion", 0, 50, 1);
     WQFS::GetInstance().AddItem("Stone Sword",    2, 30, 0);
