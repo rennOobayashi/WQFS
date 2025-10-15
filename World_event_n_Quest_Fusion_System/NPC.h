@@ -38,8 +38,23 @@ public:
 		return this->number < other.number;
 	}
 
-	bool operator=(const NPC& other) const {
+	bool operator==(const NPC& other) const {
 		return this->number == other.number;
+	}
+
+	NPC& operator=(const NPC& other) {
+		if (this == &other) {
+			return *this;
+		}
+
+		this->number = other.number;
+		this->questNumber = other.questNumber;
+		this->positionX = other.positionX;
+		this->positionY = other.positionY;
+		this->inDangerous = other.inDangerous;
+		this->type = other.type;
+
+		return *this;
 	}
 };
 

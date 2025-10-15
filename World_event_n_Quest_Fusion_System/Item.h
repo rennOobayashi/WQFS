@@ -15,7 +15,7 @@ private:
 	int number;
 	std::string name;
 	int type;
-	int rarity; // 0~4
+	int rarity; // default 0~4
 	float effect;
 public:
 	Item();
@@ -32,8 +32,22 @@ public:
 		return this->number < other.number;
 	}
 
-	bool operator=(const Item& other) const {
+	bool operator==(const Item& other) const {
 		return this->number == other.number;
+	}
+
+	Item& operator=(const Item& other) {
+		if (this == &other) {
+			return *this;
+		}
+
+		this->number = other.number;
+		this->name = other.name;
+		this->type = other.type;
+		this->rarity = other.rarity;
+		this->effect = other.effect;
+
+		return *this;
 	}
 };
 

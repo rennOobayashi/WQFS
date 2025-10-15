@@ -37,8 +37,22 @@ public:
 		return type < other.type;
 	};
 
-	bool operator=(const WorldEvent& other) const {
+	bool operator==(const WorldEvent& other) const {
 		return this->number == other.number;
+	}
+
+	WorldEvent& operator=(const WorldEvent& other) {
+		if (this == &other) {
+			return *this;
+		}
+
+		this->number = other.number;
+		this->questNumber = other.questNumber;
+		this->positionX = other.positionX;
+		this->positionY = other.positionY;
+		this->type = other.type;
+
+		return *this;
 	}
 };
 
