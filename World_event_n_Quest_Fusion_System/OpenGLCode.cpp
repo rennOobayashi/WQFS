@@ -12,7 +12,7 @@ const float playerVelocity(500.0f);
 const float CameraVelocity(1000.0f);
 
 OpenGLCode::OpenGLCode(unsigned int _width, unsigned int _height)
-	: states(GAME_MENU), width(_width), height(_height), changedir(5.0f), showDangerousTime(1.0f), dangerousDelay(5.0f), mapLoading(false), mapLoadingDelay(0.0f), getItemFirstTime(false), attackDelay(1.0f), isAttacked(false) {
+	: states(GAME_MENU), width(_width), height(_height), changedir(false), showDangerousTime(1.0f), dangerousDelay(5.0f), mapLoading(false), mapLoadingDelay(0.0f), getItemFirstTime(false), attackDelay(1.0f), isAttacked(false) {
     init();
 }
 
@@ -84,6 +84,8 @@ void OpenGLCode::init() {
 
     npcObjects["Normal"] = GameObject(ResourceManager::GetTexture("NPC"), glm::vec2(0.0f, 0.0f), glm::vec2(200.0f), 0.0f, glm::vec3(0.1f, 0.5f, 1.0f));
     std::get<0>(monsterObjects["Monster"]) = GameObject(ResourceManager::GetTexture("Monster"), glm::vec2(width - 200.0f, 0.0f), glm::vec2(200.0f), 0.0f, glm::vec3(1.0f, 0.2f, 0.1f));
+    std::get<1>(monsterObjects["Monster"]) = 2;
+    std::get<2>(monsterObjects["Monster"]) = 0.5f;
     eventObjects["Earthquake"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(width - 400.0f, height - 400.0f), glm::vec2(400.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f));
     eventObjects["Landslide"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(0.0f, height - 350.0f), glm::vec2(350.0f), 0.0f, glm::vec3(0.4f, 0.1f, 1.0f));
     player = new GameObject(ResourceManager::GetTexture("NPC"), playerPos, playerSize, 0.0f, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(playerVelocity));
@@ -129,6 +131,12 @@ void OpenGLCode::update() {
 			isAttacked = false;
         }
 
+        for (auto& monster : monsterObjects) {
+            if (std::get<2>(monster.second) < 0.5f) {
+                std::get<2>(monster.second) += deltaTime;
+            }
+        }
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -139,7 +147,7 @@ void OpenGLCode::update() {
 
 void OpenGLCode::render() {
     for (const auto& monster : WQFS::GetInstance().worldEvents) {
-        if (monster.second.GetType() == 0 && !std::get<1>(monsterObjects[monster.first])) {
+        if (monster.second.GetType() == 0 && std::get<1>(monsterObjects[monster.first]) > 0) {
             std::get<0>(monsterObjects[monster.first]).Draw(*sRenderer);
         }
     }
@@ -244,7 +252,6 @@ void OpenGLCode::Reset() {
 	changeMoveTime = 5.0f;
 }
 
-
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -264,7 +271,7 @@ void OpenGLCode::MoveSelf(float dt) {
 
     for (auto& npc : WQFS::GetInstance().npcs) {
         if (!npc.second.GetInDangerous()) {
-            /*if (changedir) {
+            if (changedir) {
                 npcObjects[npc.first].objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
                 //std::cout << npcObjects[npc.first].objVelocity.x << " " << npcObjects[npc.first].objVelocity.y << std::endl;
             }
@@ -275,11 +282,8 @@ void OpenGLCode::MoveSelf(float dt) {
             npcObjects[npc.first].objPosition.x += npcObjects[npc.first].objVelocity.x * 50 * dt * timeScale;
             npcObjects[npc.first].objPosition.y += npcObjects[npc.first].objVelocity.y * 50 * dt * timeScale;
 
-            npc.second.SetPosition(npcObjects[npc.first].objPosition.x, npcObjects[npc.first].objPosition.y);*/
-
-            npcObjects[npc.first].objPosition.x += 50 * dt * timeScale;
-
             npc.second.SetPosition(npcObjects[npc.first].objPosition.x, npcObjects[npc.first].objPosition.y);
+
         }
 	}
 
@@ -450,32 +454,38 @@ void OpenGLCode::DoCollisions() {
         }
     }
     for (auto& monster : monsterObjects) {
-        if (!std::get<1>(monster.second)) {
+        if (std::get<1>(monster.second) > 0) {
             for (auto& event : eventObjects) {
                 if (CheckCollision(std::get<0>(monster.second), eventObjects[event.first])) {
                     std::get<0>(monster.second).objVelocity = glm::vec2(0.0f);
                 }
             }
-            if (attackDelay < 0.5f && CheckCollision(std::get<0>(monster.second), *attackBox)) {
-                for (auto& target : WQFS::GetInstance().npcs) {
-					if (target.second.getQuestNumber() == WQFS::GetInstance().GetEvent(monster.first).getQuestNumber()) {
-                        if (target.second.getQuestNumber() == WQFS::GetInstance().GetEvent(monster.first).getQuestNumber()) {
-                            std::vector<Item> items = WQFS::GetInstance().CompleteQuest(target.second);
+            
+            if (std::get<2>(monster.second) >= 0.5f && attackDelay < 0.5f && CheckCollision(std::get<0>(monster.second), *attackBox)) {
+                if (std::get<1>(monster.second) <= 0) {
+                    if (WQFS::GetInstance().GetEvent(monster.first).getQuestNumber() != -1) {
+                        for (auto& target : WQFS::GetInstance().npcs) {
+                            if (target.second.getQuestNumber() == WQFS::GetInstance().GetEvent(monster.first).getQuestNumber()) {
+                                std::vector<Item> items = WQFS::GetInstance().CompleteQuest(target.second);
 
-                            for (const auto& item : items) {
-                                inventory[item] += 1;
+                                for (const auto& item : items) {
+                                    inventory[item] += 1;
+                                }
+
+                                for (const auto& item : inventory) {
+                                    std::cout << item.first.GetName() << " : " << item.second << std::endl;
+                                }
+
+                                dangerousDelay = 0.0f;
                             }
-
-                            for (const auto& item : inventory) {
-                                std::cout << item.first.GetName() << " : " << item.second << std::endl;
-                            }
-
-                            dangerousDelay = 0.0f;
                         }
                     }
-				}
+                }
+                else {
+                    --std::get<1>(monster.second);
+                    std::get<2>(monster.second) = 0.0f;
+                }
 
-                std::get<1>(monster.second) = true;
             }
         }
     }

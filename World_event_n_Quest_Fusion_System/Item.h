@@ -31,6 +31,10 @@ public:
 	bool operator<(const Item& other) const {
 		return this->number < other.number;
 	}
+
+	bool operator=(const Item& other) const {
+		return this->number == other.number;
+	}
 };
 
 #endif

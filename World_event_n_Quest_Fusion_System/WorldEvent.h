@@ -36,6 +36,10 @@ public:
 	bool operator<(const WorldEvent& other) const {
 		return type < other.type;
 	};
+
+	bool operator=(const WorldEvent& other) const {
+		return this->number == other.number;
+	}
 };
 
 #endif

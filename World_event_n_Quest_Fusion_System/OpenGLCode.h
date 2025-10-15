@@ -26,7 +26,15 @@ enum GameState {
 	GAME_WIN     //2
 };
 
-typedef std::tuple<GameObject, bool> Monster;
+enum Direction {
+	NONE,
+	UP,
+	DOWN,
+	LEFT,
+	RIGHT
+};
+
+typedef std::tuple<GameObject, int, float> Monster;
 
 class OpenGLCode
 {
@@ -44,6 +52,7 @@ private:
 	float lastFrame;
 	float changeMoveTime, showDangerousTime;
 	float dangerousDelay, mapLoadingDelay, attackDelay;
+	int hp;
 	bool changedir;
 	bool mapLoading, getItemFirstTime, isAttacked;
 
@@ -60,7 +69,6 @@ private:
 	void CameraMove(float dt);
 	void DoCollisions();
 	void Reset();
-	void Attack();
 	bool CheckCollision(GameObject& object1, GameObject& object2);
 public:
 	OpenGLCode(unsigned int _width, unsigned int _height);
