@@ -148,6 +148,17 @@ void OpenGLCode::update() {
 void OpenGLCode::render() {
     for (const auto& monster : WQFS::GetInstance().worldEvents) {
         if (monster.second.GetType() == 0 && std::get<1>(monsterObjects[monster.first]) > 0) {
+
+            if (std::get<2>(monsterObjects[monster.first]) >= 0.5f) {
+                std::get<0>(monsterObjects[monster.first]).objColor = glm::vec3(1.0f, 0.2f, 0.1f);
+            }
+            else if (std::get<2>(monsterObjects[monster.first]) > 0.2f) {
+                std::get<0>(monsterObjects[monster.first]).objColor = glm::vec3(1.0f, 0.0f, 0.0f);
+            }
+            else {
+                std::get<0>(monsterObjects[monster.first]).objColor = glm::vec3(0.0f, 0.0f, 1.0f);
+            }
+
             std::get<0>(monsterObjects[monster.first]).Draw(*sRenderer);
         }
     }
