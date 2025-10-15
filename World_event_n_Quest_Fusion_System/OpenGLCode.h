@@ -48,6 +48,7 @@ private:
 	glm::mat4 view;
 	GameState states;
 	unsigned int width, height;
+	unsigned int mapWidth, mapHeight;
 	float deltaTime;
 	float lastFrame;
 	float changeMoveTime, showDangerousTime;

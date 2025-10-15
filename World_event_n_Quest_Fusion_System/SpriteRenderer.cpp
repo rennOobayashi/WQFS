@@ -36,7 +36,7 @@ void SpriteRenderer::init() {
 	glBindVertexArray(0);
 }
 
-void SpriteRenderer::DrawSprite(Texture& tex, glm::vec2 pos, glm::vec2 size, float rotate, glm::vec3 color) {
+void SpriteRenderer::DrawSprite(Texture& tex, glm::vec2 pos, glm::vec2 size, float rotate, glm::vec3 color, bool isSprite) {
 	shader.use();
 
 	glm::mat4 model = glm::mat4(1.0f);
@@ -50,6 +50,7 @@ void SpriteRenderer::DrawSprite(Texture& tex, glm::vec2 pos, glm::vec2 size, flo
 
 	shader.SetMat4("model", model);
 	shader.SetVec3("texColor", color);
+	shader.SetInt("isSprite", isSprite);
 
 	glActiveTexture(GL_TEXTURE0);
 	tex.Bind();

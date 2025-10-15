@@ -159,14 +159,14 @@ void OpenGLCode::render() {
                 std::get<0>(monsterObjects[monster.first]).objColor = glm::vec3(0.0f, 0.0f, 1.0f);
             }
 
-            std::get<0>(monsterObjects[monster.first]).Draw(*sRenderer);
+            std::get<0>(monsterObjects[monster.first]).Draw(*sRenderer, true);
         }
     }
 
     for (const auto& event : WQFS::GetInstance().worldEvents) {
 		//std::cout << eventObjects[event.first].GetType() << std::endl;
         if (event.second.GetType() != 0) {
-            eventObjects[event.first].Draw(*sRenderer);
+            eventObjects[event.first].Draw(*sRenderer, true);
         }
     }
 
@@ -187,7 +187,7 @@ void OpenGLCode::render() {
             showDangerousTime = 1.0f;
         }
 
-        npcObjects[npc.first].Draw(*sRenderer);
+        npcObjects[npc.first].Draw(*sRenderer, true);
     }
 
     if (attackDelay < 0.5f) {

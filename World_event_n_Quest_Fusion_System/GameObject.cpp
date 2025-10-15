@@ -9,6 +9,6 @@ GameObject::GameObject(Texture sprite, glm::vec2 pos, glm::vec2 size, float rota
 
 GameObject::~GameObject() {}
 
-void GameObject::Draw(SpriteRenderer &spriteRenderer) {
-	spriteRenderer.DrawSprite(objSprite, objPosition, objSize, objRotation, objColor);
+void GameObject::Draw(SpriteRenderer &spriteRenderer, bool isSprite) {
+	spriteRenderer.DrawSprite(objSprite, objPosition, objSize, objRotation, objColor, isSprite);
 }
