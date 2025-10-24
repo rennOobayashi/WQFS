@@ -34,7 +34,7 @@ enum Direction {
 	RIGHT
 };
 
-typedef std::tuple<GameObject, int, float> Monster;
+typedef std::tuple<GameObject, float> Monster;
 
 class OpenGLCode
 {

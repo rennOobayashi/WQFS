@@ -1,11 +1,15 @@
 #include "WorldEvent.h"
 
 WorldEvent::WorldEvent() 
-	: number(0), type(0), positionX(0), positionY(0), questNumber(-1) {}
+	: number(-1), type(-1), hp(-1), positionX(0), positionY(0), questNumber(-1), isVisible(true) { }
 
-void WorldEvent::SetUp(int _number, int _type, float posX, float posY) {
+void WorldEvent::SetUp(int _number, int _type, int _hp, float posX, float posY) {
 	number = _number;
 	type = _type;
+	if (type == 0) {
+		hp = _hp;
+	}
+	std::cout << type << " " << hp << std::endl;
 	positionX = posX;
 	positionY = posY;
 }
@@ -45,4 +49,36 @@ void WorldEvent::setQuestNumber(int n) {
 
 int WorldEvent::getQuestNumber() const {
 	return questNumber;
+}
+
+void WorldEvent::setHp(int _hp) {
+	if (_hp < 0) {
+		hp = 0;
+	}
+	else {
+		hp = _hp;
+	}
+}
+
+int WorldEvent::getHp() const {
+	return hp;
+}
+
+void WorldEvent::takeDamage(int damage) {
+	if (type == 0) {
+		hp -= damage;
+		if (hp < 0) {
+			hp = 0;
+		}
+	}
+
+	std::cout << hp << std::endl;
+}
+
+void WorldEvent::setVisible(bool b) {
+	isVisible = b;
+}
+
+bool WorldEvent::getVisible() const {
+	return isVisible;
 }

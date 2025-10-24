@@ -12,6 +12,7 @@
 #include <map>
 
 typedef std::tuple<std::vector<Item>, bool> Quest; // compensation list, confirmation
+typedef std::pair<NPC*, WorldEvent*> QuestTarget; // npc, event
 
 class WQFS
 {
@@ -40,18 +41,20 @@ public:
 	static std::map<std::string, NPC> npcs;
 	static std::map<std::string, Item> comps;
 	static std::map<int, Quest> questList; //quest number, compensation list
-	static std::map<NPC, WorldEvent> QuestTargetObjects; //npc, Event
+	static std::vector<QuestTarget> QuestTargetObjects; //npc, Event
 
 	static void MakeQuest(NPC &npc, WorldEvent &event);
 	static  std::vector<Item> CompleteQuest(NPC &npc);
 
-	static WorldEvent AddEvent(std::string name, int type, float posX, float posY);
+	static WorldEvent AddEvent(std::string name, int type, int hp, float posX, float posY);
 	static NPC AddNPC(std::string name, int type, float posX, float posY);
 	static Item AddItem(std::string name, int type, float effect, int rarity);
 
 	static WorldEvent& GetEvent(std::string name);
 	static NPC& GetNPC(std::string name);
 	static Item& GetItem(std::string name);
+
+	static void CheckEvent(std::map<Item, int>& inventory);
 
 	static void Clear();
 };
