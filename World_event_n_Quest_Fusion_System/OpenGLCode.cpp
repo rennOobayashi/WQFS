@@ -94,6 +94,11 @@ void OpenGLCode::init() {
     states = GAME_ACTIVE;
 
     view = glm::mat4(0.0f);
+
+    mapWidth = width * 10;
+    mapHeight = height * 10;
+
+    std::cout << mapWidth << " " << mapHeight << std::endl;
 }
 
 void OpenGLCode::update() {
@@ -216,7 +221,7 @@ void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
             attackBox->objRotation = 90.0f;
         }
         //Down
-        if (glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN)) {
+        if ((glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN)) && player->objPosition.y < mapHeight - player->objSize.x) {
             player->objPosition.y += velocityY;
             attackBox->objPosition.y = player->objPosition.y + player->objSize.y - 30.0f;
             attackBox->objPosition.x = player->objPosition.x + 25.0f;
@@ -230,7 +235,7 @@ void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
             attackBox->objRotation = 0.0f;
         }
         //Right
-        if (glfwGetKey(window, GLFW_KEY_D) || glfwGetKey(window, GLFW_KEY_RIGHT)) {
+        if ((glfwGetKey(window, GLFW_KEY_D) || glfwGetKey(window, GLFW_KEY_RIGHT)) && player->objPosition.x < mapWidth - player->objSize.y) {
             player->objPosition.x += velocityX;
             attackBox->objPosition.x = player->objPosition.x + player->objSize.x;
             attackBox->objPosition.y = player->objPosition.y;
@@ -338,22 +343,22 @@ void OpenGLCode::CameraMove(float dt) {
     float nextY = -1;
 
     if (!mapLoading) {
-        if (player->objPosition.x < cameraNextPos.x - (player->objSize.x / 2) && player->objPosition.x > 0) {
+        if (player->objPosition.x > 0 && player->objPosition.x < cameraNextPos.x - (player->objSize.x / 2)) {
             nextX = cameraNextPos.x - (float)width;
             std::cout << "-X" << std::endl <<
                 player->objPosition.x << " " << cameraNextPos.x + 1.0f << std::endl;
         }
-        else if (player->objPosition.x > cameraNextPos.x + (float)width - (player->objSize.x / 2)) {
+        else if (player->objPosition.x < mapWidth - (player->objSize.x / 2) && player->objPosition.x > cameraNextPos.x + (float)width - (player->objSize.x / 2)) {
             nextX = cameraNextPos.x + (float)width;
             std::cout << "+X" << std::endl << 
                 player->objPosition.x << " " << cameraNextPos.x + (float)width - (player->objSize.x / 2) << std::endl;
         }
-        else if (player->objPosition.y < cameraNextPos.y - (player->objSize.y / 2) && player->objPosition.y > 0) {
+        else if (player->objPosition.y > 0 && player->objPosition.y < cameraNextPos.y - (player->objSize.y / 2)) {
             nextY = cameraNextPos.y - (float)height;
             std::cout << "-Y" << std::endl <<
                 player->objPosition.y << " " << cameraNextPos.y + 1.0f << std::endl;
         }
-        else if (player->objPosition.y > cameraNextPos.y + (float)height - (player->objSize.y / 2)) {
+        else if (player->objPosition.y < mapHeight - (player->objSize.y / 2) && player->objPosition.y > cameraNextPos.y + (float)height - (player->objSize.y / 2)) {
             nextY = cameraNextPos.y + (float)height;
             std::cout << "+Y" << std::endl <<
                 player->objPosition.y << " " << cameraNextPos.y + (float)height - (player->objSize.y / 2) << std::endl;
