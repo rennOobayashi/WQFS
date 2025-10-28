@@ -206,7 +206,7 @@ void OpenGLCode::render() {
 
     player->Draw(*sRenderer);
 
-    textRenderer->renderText("test", width / 2, height / 2, 10);
+    textRenderer->renderText("test", width / 2, height / 2, 1.0f);
 
 }
 

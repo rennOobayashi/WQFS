@@ -105,10 +105,10 @@ void TextRenderer::renderText(std::string text, float x, float y, float scale, g
 
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		//렌더 안되면 for 밖으로
-		glBindVertexArray(0);
-		glBindTexture(GL_TEXTURE_2D, 0);
 
 		x += (c.advance >> 6) * scale;
 	}
 
+	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
