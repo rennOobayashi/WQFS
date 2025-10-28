@@ -49,7 +49,7 @@ void TextRenderer::load(std::string font, unsigned int fontSize) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED,
 			face->glyph->bitmap.width, 
 			face->glyph->bitmap.rows, 
-			0, GL_UNSIGNED_BYTE, GL_RED, 
+			0, GL_RED, GL_UNSIGNED_BYTE,
 			face->glyph->bitmap.buffer);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -85,8 +85,8 @@ void TextRenderer::renderText(std::string text, float x, float y, float scale, g
 		float posX = x + c.bearing.x * scale;
 		float posY = y + (characters['H'].bearing.y - c.bearing.y) * scale;
 
-		float w = c.size.x + scale;
-		float h = c.size.y + scale;
+		float w = c.size.x * scale;
+		float h = c.size.y * scale;
 
 		float vertices[6][4] = {
 			{posX    , posY + h, 0.0f, 1.0f},
@@ -104,7 +104,6 @@ void TextRenderer::renderText(std::string text, float x, float y, float scale, g
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-		//렌더 안되면 for 밖으로
 
 		x += (c.advance >> 6) * scale;
 	}

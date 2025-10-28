@@ -12,7 +12,7 @@ const float playerVelocity(500.0f);
 const float CameraVelocity(1000.0f);
 
 OpenGLCode::OpenGLCode(unsigned int _width, unsigned int _height)
-	: states(GAME_MENU), width(_width), height(_height), changedir(false), showDangerousTime(1.0f), dangerousDelay(5.0f), mapLoading(false), mapLoadingDelay(0.0f), getItemFirstTime(false), attackDelay(1.0f), isAttacked(false) {
+	: states(GAME_MENU), width(_width), height(_height), hp(3), changedir(false), showDangerousTime(1.0f), dangerousDelay(5.0f), mapLoading(false), mapLoadingDelay(0.0f), getItemFirstTime(false), attackDelay(1.0f), isAttacked(false) {
     init();
 }
 
@@ -100,7 +100,7 @@ void OpenGLCode::init() {
     std::cout << mapWidth << " " << mapHeight << std::endl;
 
     textRenderer = new TextRenderer(width, height);
-    textRenderer->load("fonts/arial.ttf", 24);
+    textRenderer->load("fonts/arial.ttf", 32);
 }
 
 void OpenGLCode::update() {
@@ -181,7 +181,10 @@ void OpenGLCode::render() {
     }
 
     for (const auto& npc : WQFS::GetInstance().npcs) {
+        npcObjects[npc.first].Draw(*sRenderer, true);
         if (npc.second.GetInDangerous()) {
+            textRenderer->renderText("Quest Here!", npc.second.GetPositionX(), npc.second.GetPositionY(), 2.0f, glm::vec3(0.0f));
+
             showDangerousTime += deltaTime;
 
             if (showDangerousTime >= 1.0f) {
@@ -197,7 +200,6 @@ void OpenGLCode::render() {
             showDangerousTime = 1.0f;
         }
 
-        npcObjects[npc.first].Draw(*sRenderer, true);
     }
 
     if (attackDelay < 0.5f) {
@@ -206,7 +208,10 @@ void OpenGLCode::render() {
 
     player->Draw(*sRenderer);
 
-    textRenderer->renderText("test", width / 2, height / 2, 1.0f);
+    std::stringstream sHp;
+    sHp << hp;
+
+    textRenderer->renderText("HP - " + sHp.str(), 1.0f, 5.0f, 2.0f);
 
 }
 
