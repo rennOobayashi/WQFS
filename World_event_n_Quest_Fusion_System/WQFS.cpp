@@ -17,13 +17,13 @@ std::map<std::string, WorldEvent> WQFS::worldEvents;
 std::map<std::string, NPC> WQFS::npcs;
 std::map<std::string, Item> WQFS::comps;
 std::map<int, Quest> WQFS::questList;
-std::map<NPC, WorldEvent> WQFS::QuestTargetObjects;
+std::vector<QuestTarget> WQFS::QuestTargetObjects;
 
-WorldEvent WQFS::AddEvent(std::string name, int type, float posX, float posY) {
+WorldEvent WQFS::AddEvent(std::string name, int type, int hp, float posX, float posY) {
 	//std::cout << type << " ";
 	WorldEvent newEvent;
-	newEvent.SetUp(WQFS::GetInstance().eventNumber++, type, posX, posY);
-	//std:: cout << newEvent.GetType() << std::endl;
+	newEvent.SetUp(WQFS::GetInstance().eventNumber++, type, hp, posX, posY);
+	std:: cout << newEvent.getHp() << std::endl;
 	worldEvents[name] = newEvent;
 	return newEvent;
 }
@@ -68,7 +68,7 @@ void WQFS::MakeQuest(NPC &npc, WorldEvent &event) {
 	for (int i = 0; i < std::get<0>(WQFS::GetInstance().questList[WQFS::GetInstance().questNumber - 1]).size(); i++) {
 		std::cout << std::get<0>(WQFS::GetInstance().questList[WQFS::GetInstance().questNumber - 1])[i].GetName() << " ";
 	}
-	std::cout << std::endl;
+	std::cout << npc.GetType()  << " " << event.GetType() << std::endl;
 
 	switch (event.GetType()) {
 	case 0: WQFS().MonsterEvent(npc.GetType());
@@ -79,6 +79,34 @@ void WQFS::MakeQuest(NPC &npc, WorldEvent &event) {
 		break;
 	default: std::cout << "Wrong event type!" << std::endl;
 		break;
+	}
+}
+
+void WQFS::CheckEvent(std::map<Item, int>& inventory) {
+	for (auto& event : worldEvents) {
+		if (event.second.getVisible() && event.second.GetType() == 0 && event.second.getHp() <= 0) {
+			std::cout << "몬스터 처치 완료!" << std::endl;
+			for (auto& target : WQFS::GetInstance().QuestTargetObjects) {
+				if (*target.second == event.second) {
+					std::vector<Item> c = WQFS::GetInstance().CompleteQuest(*target.first);
+
+					for (const auto& item : c) {
+						inventory[item] += 1;
+					}
+
+					for (const auto& item : inventory) {
+						std::cout << item.first.GetName() << " : " << item.second << std::endl;
+					}
+
+					if (!target.first->GetInDangerous()) {
+						std::cout << "끝" << target.first->GetInDangerous() << std::endl;
+					}
+
+					break;
+				}
+			}
+			event.second.setVisible(false);
+		}
 	}
 }
 
@@ -352,7 +380,7 @@ void WQFS::SetCompensation(NPC &npc, WorldEvent& event) {
 
 	WQFS::GetInstance().questNumber++;
 
-	QuestTargetObjects[npc] = event;
+	QuestTargetObjects.push_back(QuestTarget(&npc, &event));
 }
 
 
@@ -361,7 +389,7 @@ std::vector<Item> WQFS::CompleteQuest(NPC &npc)  {
 		std::get<1>(questList[npc.getQuestNumber()]) = true;
 		npc.SetInDangerous(false);
 
-		std::cout << "퀘스트 완료!" << std::endl;
+		std::cout << "퀘스트 완료!" << std::endl; 
 
 		return std::get<0>(questList[npc.getQuestNumber()]);
 	}

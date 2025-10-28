@@ -9,6 +9,7 @@
 #include "SpriteRenderer.h"
 #include "GameObject.h"
 #include "WQFS.h"
+#include "TextRenderer.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -34,7 +35,7 @@ enum Direction {
 	RIGHT
 };
 
-typedef std::tuple<GameObject, int, float> Monster;
+typedef std::tuple<GameObject, float> Monster;
 
 class OpenGLCode
 {
@@ -62,6 +63,8 @@ private:
 
 	GameObject* player;
 	GameObject* attackBox;
+
+	TextRenderer* textRenderer;
 
 	void init();
 	void render();
