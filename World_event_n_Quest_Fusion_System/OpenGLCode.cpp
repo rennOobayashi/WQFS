@@ -97,7 +97,7 @@ void OpenGLCode::init() {
     mapWidth = width * 10;
     mapHeight = height * 10;
 
-    std::cout << mapWidth << " " << mapHeight << std::endl;
+    std::cout << "All width / height" <<std::endl << mapWidth << " / " << mapHeight << std::endl;
 
     textRenderer = new TextRenderer(width, height);
     textRenderer->load("fonts/arial.ttf", 32);
