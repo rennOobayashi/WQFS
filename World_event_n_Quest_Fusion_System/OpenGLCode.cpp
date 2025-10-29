@@ -67,18 +67,6 @@ void OpenGLCode::init() {
 	Shader spriteShader = ResourceManager::GetShader("sprite");
 	sRenderer = new SpriteRenderer(spriteShader);
 
-	WQFS::GetInstance().AddNPC("Normal", 0, 0.0f, 0.0f);
-
-	WQFS::GetInstance().AddEvent("Monster", 0, 2, 0.0f, 0.0f);
-    WQFS::GetInstance().AddEvent("Landslide", 1, 2, 0.0f, 0.0f);
-	WQFS::GetInstance().AddEvent("Earthquake", 2, 2, 0.0f, 0.0f);
-
-    WQFS::GetInstance().AddItem("HP Posion",      0, 30, 0);
-    WQFS::GetInstance().AddItem("GOOD HP Posion", 0, 50, 1);
-    WQFS::GetInstance().AddItem("Stone Sword",    2, 30, 0);
-    WQFS::GetInstance().AddItem("Iron",           3, 20, 0);
-    WQFS::GetInstance().AddItem("Gold",           3, 50, 1);
-
     glm::vec2 playerPos(width / 2, height / 2);
     attackCollidePos = glm::vec2(playerPos.x + 20.0f, playerPos.y);
 
@@ -89,6 +77,18 @@ void OpenGLCode::init() {
     eventObjects["Landslide"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(0.0f, height - 350.0f), glm::vec2(350.0f), 0.0f, glm::vec3(0.4f, 0.1f, 1.0f));
     player = new GameObject(ResourceManager::GetTexture("NPC"), playerPos, playerSize, 0.0f, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(playerVelocity));
 	attackBox = new GameObject(ResourceManager::GetTexture("NPC"), attackCollidePos, glm::vec2(50.0f, 100.0f), 0.0f, glm::vec3(1.0f, 0.3f, 0.3f));
+
+    WQFS::GetInstance().AddNPC("Normal", 0, npcObjects["Normal"].objPosition.x, npcObjects["Normal"].objPosition.y, npcObjects["Normal"].objSize.x, npcObjects["Normal"].objSize.y);
+
+    WQFS::GetInstance().AddEvent("Monster", 0, 2, std::get<0>(monsterObjects["Monster"]).objPosition.x, std::get<0>(monsterObjects["Monster"]).objPosition.y, std::get<0>(monsterObjects["Monster"]).objSize.x, std::get<0>(monsterObjects["Monster"]).objSize.y);
+    WQFS::GetInstance().AddEvent("Landslide", 1, 2, eventObjects["Earthquake"].objPosition.x, eventObjects["Earthquake"].objPosition.y, eventObjects["Earthquake"].objSize.x, eventObjects["Earthquake"].objSize.y);
+    WQFS::GetInstance().AddEvent("Earthquake", 2, 2, eventObjects["Landslide"].objPosition.x, eventObjects["Landslide"].objPosition.y, eventObjects["Landslide"].objSize.x, eventObjects["Landslide"].objSize.y);
+
+    WQFS::GetInstance().AddItem("HP Posion", 0, 30, 0);
+    WQFS::GetInstance().AddItem("GOOD HP Posion", 0, 50, 1);
+    WQFS::GetInstance().AddItem("Stone Sword", 2, 30, 0);
+    WQFS::GetInstance().AddItem("Iron", 3, 20, 0);
+    WQFS::GetInstance().AddItem("Gold", 3, 50, 1);
 
     states = GAME_ACTIVE;
 
@@ -122,7 +122,7 @@ void OpenGLCode::update() {
         DoCollisions();
         CameraMove(deltaTime);
 
-        WQFS::GetInstance().CheckEvent(inventory);
+        WQFS::GetInstance().CheckEvent(inventory, player->objSize.x, player->objSize.y, player->objPosition.x, player->objPosition.y);
 
 
         if (!mapLoading) {
@@ -332,7 +332,7 @@ void OpenGLCode::MoveSelf(float dt) {
     }
 
     for (auto& event : WQFS::GetInstance().worldEvents) {
-        if (event.second.GetType() != 0) {
+        if (event.second.GetType() == 1) {
             if (changedir) {
                 eventObjects[event.first].objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
             }
@@ -444,48 +444,12 @@ bool OpenGLCode::CheckCollision(GameObject& object1, GameObject& object2) {
 }
 
 void OpenGLCode::DoCollisions() {
-    for (auto& npc : WQFS::GetInstance().npcs) {
-        if (!npc.second.GetInDangerous()) {
-            for (auto& monster : monsterObjects) {
-                if (WQFS::GetInstance().GetEvent(monster.first).getVisible() && dangerousDelay >= 5.0f && CheckCollision(npcObjects[npc.first], std::get<0>(monsterObjects[monster.first]))) {
-					npc.second.SetInDangerous(true);
-					WQFS::GetInstance().MakeQuest(npc.second, WQFS::GetInstance().GetEvent(monster.first));
-					std::cout << npc.second.getQuestNumber() << std::endl;
-                }
-            }
-            for (auto& event : eventObjects) {
-                if (CheckCollision(npcObjects[npc.first], eventObjects[event.first]) && dangerousDelay >= 5.0f) {
-                    npc.second.SetInDangerous(true);
-                    WQFS::GetInstance().MakeQuest(npc.second, WQFS::GetInstance().GetEvent(event.first));
-                    std::cout << npc.second.getQuestNumber() << std::endl;
-                }
-            }
-        }
-        else {
-            if (CheckCollision(npcObjects[npc.first], *player) && npc.second.getQuestNumber() != -1) {
-                for (auto& target : WQFS::GetInstance().QuestTargetObjects) {
-                    if (target.second->getQuestNumber() == npc.second.getQuestNumber() && target.second->GetType() != 0) {
-                        std::vector<Item> items = WQFS::GetInstance().CompleteQuest(npc.second);
-
-                        for (auto& item : items) {
-                            inventory[item] += 1;
-                        }
-
-                        for (auto& item : inventory) {
-                            std::cout << item.first.GetName() << " : " << item.second << std::endl;
-                        }
-
-                        dangerousDelay = 0.0f;
-                    }
-                }
-            }
-        }
-    }
     for (auto& monster : monsterObjects) {
         if (std::get<1>(monster.second) > 0) {
             for (auto& event : eventObjects) {
                 if (CheckCollision(std::get<0>(monster.second), eventObjects[event.first])) {
-                    std::get<0>(monster.second).objVelocity = glm::vec2(0.0f);
+                    WQFS::GetInstance().GetEvent(monster.first).takeDamage(1);
+                    std::get<1>(monster.second) = 0.0f;
                 }
             }
             

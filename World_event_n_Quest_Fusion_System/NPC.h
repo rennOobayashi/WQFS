@@ -15,13 +15,14 @@ private:
 	int number;
 	int questNumber;
 	float positionX, positionY;
+	float sizeX, sizeY;
 	bool inDangerous;
 	int type;
 public:
 	NPC();
 	~NPC() { }
 
-	void SetUp(int _number, int _type, float pos_x, float pos_y);
+	void SetUp(int _number, int _type, float posX, float posY, float _sizeX, float _sizeY);
 	int GetType() const;
 
 	void SetPositionX(float x);
@@ -29,6 +30,11 @@ public:
 	void SetPositionY(float y);
 	float GetPositionY() const;
 	void SetPosition(float x, float y);
+	void SetSizeX(float x);
+	float GetSizeX() const;
+	void SetSizeY(float y);
+	float GetSizeY() const;
+	void SetSize(float x, float y);
 	void SetInDangerous(bool _inDangerous);
 	bool GetInDangerous() const;
 	void setQuestNumber(int n);
