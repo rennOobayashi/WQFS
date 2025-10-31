@@ -20,18 +20,22 @@ std::map<int, Quest> WQFS::questList;
 std::map<int, QuestByType> WQFS::questListByType;
 std::vector<QuestTarget> WQFS::QuestTargetObjects;
 
-WorldEvent WQFS::AddEvent(std::string name, int type, int hp, float posX, float posY, float sizeX, float sizeY) {
+WorldEvent WQFS::AddEvent(std::string name, int type, int hp, float posX, float posY, float sizeX, float sizeY, double maxTime, double duration) {
 	//std::cout << type << " ";
 	WorldEvent newEvent;
-	newEvent.SetUp(WQFS::GetInstance().eventNumber++, type, hp, posX, posY, sizeX, sizeY);
+	newEvent.SetUp(WQFS::GetInstance().eventNumber++, type, hp, posX, posY, sizeX, sizeY, maxTime, duration);
 	std:: cout << newEvent.getHp() << std::endl;
 	worldEvents[name] = newEvent;
+
+	std::cout << newEvent.GetPositionX() << " " << newEvent.GetPositionY() << " " << newEvent.GetSizeX() << " " << newEvent.GetSizeY() << std::endl;
+	std::cout << worldEvents[name].GetPositionX() << " " << worldEvents[name].GetPositionY() << " " << worldEvents[name].GetSizeX() << " " << worldEvents[name].GetSizeY() << std::endl;
+
 	return newEvent;
 }
 
-NPC WQFS::AddNPC(std::string name, int type, float posX, float posY, float sizeX, float sizeY) {
+NPC WQFS::AddNPC(std::string name, int type, float posX, float posY, float sizeX, float sizeY, double maxTime) {
 	NPC newNPC;
-	newNPC.SetUp(WQFS::GetInstance().npcNumber++, type, posX, posY, sizeX, sizeY);
+	newNPC.SetUp(WQFS::GetInstance().npcNumber++, type, posX, posY, sizeX, sizeY, maxTime);
 	npcs[name] = newNPC;
 	return newNPC;
 }
@@ -55,13 +59,6 @@ Item& WQFS::GetItem(std::string name) {
 	return comps[name];
 }
 
-void WQFS::SetDangerousDelay(float delay) {
-	WQFS::GetInstance().dangerousDelay = delay;
-}
-
-float WQFS::GetDangerousDelay() {
-	return WQFS::GetInstance().dangerousDelay;
-}
 
 void WQFS::Clear() {
 	worldEvents.clear();
@@ -97,24 +94,34 @@ bool WQFS::CheckCollision(float object1X, float object1Y, float object1SizeX, fl
 	bool collisionY = object1Y + object1SizeY >= object2Y &&
 		object2Y + object2SizeY >= object1Y;
 
+	/*std::cout << "X: " << object1X << ", Y: " << object1Y << ", sX: " << object1SizeX << ", sY: " << object1SizeY << std::endl;
+	std::cout << "X: " << object2X << ", Y: " << object2Y << ", sX: " << object2SizeX << ", sY: " << object2SizeY << std::endl;
+	std::cout << "Collision X: " << collisionX << ", Collision Y: " << collisionY << ", All: " << (collisionX && collisionY) << std::endl;*/
+
 	return collisionX && collisionY;
 }
 
-void WQFS::CheckEvent(std::map<Item, int>& inventory, float playerSizeX, float playerSizeY, float playerX, float playerY) {
+void WQFS::CheckQuest(std::map<Item, int>& inventory, float playerSizeX, float playerSizeY, float playerX, float playerY) {
+
 	for (auto& npc : WQFS::GetInstance().npcs) {
-		if (!npc.second.GetInDangerous()) {
+		if (!npc.second.GetInDangerous() && npc.second.GetCanDangerous()) {
 			for (auto& monster : WQFS::GetInstance().worldEvents) {
 				if (monster.second.GetType() == 0) {
-					if (WQFS::GetInstance().GetEvent(monster.first).getVisible() && WQFS::GetInstance().dangerousDelayTime >= WQFS::GetInstance().dangerousDelay &&
+					if (WQFS::GetInstance().GetEvent(monster.first).getVisible() &&
 							WQFS::GetInstance().CheckCollision(npc.second.GetPositionX(), npc.second.GetPositionY(), npc.second.GetSizeX(), npc.second.GetSizeY(), monster.second.GetPositionX(), monster.second.GetPositionY(), monster.second.GetSizeX(), monster.second.GetSizeY())) {
 						npc.second.SetInDangerous(true);
 						WQFS::GetInstance().MakeQuest(npc.second, WQFS::GetInstance().GetEvent(monster.first));
-						std::cout << npc.second.getQuestNumber() << std::endl;
+						std::cout << npc.second.getQuestNumber() << "monster" << std::endl;
 					}
 				}
 			}
+			
 			for (auto& wEvent : WQFS::GetInstance().worldEvents) {
-				if (wEvent.second.GetType() != 0 && WQFS::GetInstance().CheckCollision(npc.second.GetPositionX(), npc.second.GetPositionY(), npc.second.GetSizeX(), npc.second.GetSizeY(), wEvent.second.GetPositionX(), wEvent.second.GetPositionY(), wEvent.second.GetSizeX(), wEvent.second.GetSizeY())) {
+				if (wEvent.second.GetType() != 0) {
+					//std::cout << wEvent.second.getDoEvent() << WQFS::GetInstance().CheckCollision(npc.second.GetPositionX(), npc.second.GetPositionY(), npc.second.GetSizeX(), npc.second.GetSizeY(), wEvent.second.GetPositionX(), wEvent.second.GetPositionY(), wEvent.second.GetSizeX(), wEvent.second.GetSizeY()) << std::endl;
+				}
+				if (wEvent.second.GetType() != 0 && wEvent.second.getDoEvent() && WQFS::GetInstance().CheckCollision(npc.second.GetPositionX(), npc.second.GetPositionY(), npc.second.GetSizeX(), npc.second.GetSizeY(), wEvent.second.GetPositionX(), wEvent.second.GetPositionY(), wEvent.second.GetSizeX(), wEvent.second.GetSizeY())) {
+					std::cout << "퀘스트 발생!" << std::endl;
 					npc.second.SetInDangerous(true);
 					WQFS::GetInstance().MakeQuest(npc.second, WQFS::GetInstance().GetEvent(wEvent.first));
 					std::cout << npc.second.getQuestNumber() << std::endl;
@@ -134,20 +141,22 @@ void WQFS::CheckEvent(std::map<Item, int>& inventory, float playerSizeX, float p
 						for (auto& item : inventory) {
 							std::cout << item.first.GetName() << " : " << item.second << std::endl;
 						}
-
-						WQFS::GetInstance().dangerousDelayTime = 0.0f;
+						
+						npc.second.ResetTimer();
 					}
 				}
 			}
+			
 		}
 	}
 
 	for (auto& event : worldEvents) {
 		if (event.second.getVisible() && event.second.GetType() == 0 && event.second.getHp() <= 0) {
 			std::cout << "몬스터 처치 완료!" << std::endl;
-			for (auto& target : WQFS::GetInstance().QuestTargetObjects) {
-				if (*target.second == event.second) {
-					std::vector<Item> c = WQFS::GetInstance().CompleteQuest(*target.first);
+			
+			for (auto& npc : WQFS::GetInstance().npcs) {
+				if (npc.second.getQuestNumber() == event.second.getQuestNumber()) {
+					std::vector<Item> c = WQFS::GetInstance().CompleteQuest(npc.second);
 
 					for (const auto& item : c) {
 						inventory[item] += 1;
@@ -157,19 +166,21 @@ void WQFS::CheckEvent(std::map<Item, int>& inventory, float playerSizeX, float p
 						std::cout << item.first.GetName() << " : " << item.second << std::endl;
 					}
 
-					if (!target.first->GetInDangerous()) {
-						std::cout << "끝" << target.first->GetInDangerous() << std::endl;
-					}
-
+					npc.second.ResetTimer();
+					std::cout << "끝" << npc.second.GetInDangerous() << std::endl;
 					break;
 				}
 			}
+			/*for (auto& target : WQFS::GetInstance().QuestTargetObjects) {
+				if (*target.second == event.second) {
+				}
+			}*/
 			event.second.setVisible(false);
 		}
 	}
 }
 
-void WQFS::CheckEvent(std::map<int, int>& inventory, float playerSizeX, float playerSizeY, float playerX, float playerY) {
+void WQFS::CheckQuest(std::map<int, int>& inventory, float playerSizeX, float playerSizeY, float playerX, float playerY) {
 	for (auto& event : worldEvents) {
 		if (event.second.getVisible() && event.second.GetType() == 0 && event.second.getHp() <= 0) {
 			std::cout << "몬스터 처치 완료!" << std::endl;
@@ -193,6 +204,22 @@ void WQFS::CheckEvent(std::map<int, int>& inventory, float playerSizeX, float pl
 				}
 			}
 			event.second.setVisible(false);
+		}
+	}
+}
+
+void WQFS::CheckEvent() {
+	for (auto& npc : WQFS::GetInstance().npcs) {
+		if (!npc.second.GetCanDangerous()) {
+			npc.second.Timer();
+		}
+	}
+	for (auto& event : WQFS::GetInstance().worldEvents) {
+		if (!event.second.getDoEvent()) {
+			event.second.Timer();
+		}
+		else {
+			event.second.ResetTimer();
 		}
 	}
 }
@@ -470,11 +497,11 @@ void WQFS::SetCompensation(NPC &npc, WorldEvent& event) {
 	QuestTargetObjects.push_back(QuestTarget(&npc, &event));
 }
 
-
 std::vector<Item> WQFS::CompleteQuest(NPC &npc)  {
 	if (!std::get<1>(questList[npc.getQuestNumber()])) {
 		std::get<1>(questList[npc.getQuestNumber()]) = true;
 		npc.SetInDangerous(false);
+		npc.setQuestNumber(-1);
 
 		std::cout << "퀘스트 완료!" << std::endl; 
 
