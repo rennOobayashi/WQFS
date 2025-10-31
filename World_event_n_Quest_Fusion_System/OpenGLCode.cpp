@@ -212,7 +212,7 @@ void OpenGLCode::render() {
             }
         }
         else {
-            if (!npc.second.GetCanDangerous()) {
+            if(!npc.second.GetCanDangerous()) {
                 textRenderer->renderText("Delay!", npc.second.GetPositionX(), npc.second.GetPositionY(), 2.0f, glm::vec3(0.0f));
             }
             npcObjects[npc.first].objColor = glm::vec3(0.1f, 0.5f, 1.0f);
@@ -328,11 +328,8 @@ void OpenGLCode::MoveSelf(float dt) {
 
             npcObjects[npc.first].objPosition.x += npcObjects[npc.first].objVelocity.x * 50 * dt * timeScale;
             npcObjects[npc.first].objPosition.y += npcObjects[npc.first].objVelocity.y * 50 * dt * timeScale;
-
-            npc.second.SetPosition(npcObjects[npc.first].objPosition.x, npcObjects[npc.first].objPosition.y);
             */
-
-
+            
             //Up
             if (glfwGetKey(window, GLFW_KEY_I)) {
                 npcObjects[npc.first].objPosition.y -= 100 * dt * timeScale;

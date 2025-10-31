@@ -70,10 +70,11 @@ public:
 		this->sizeX = other.sizeX;
 		this->sizeY = other.sizeY;
 		this->inDangerous = other.inDangerous;
+		this->canDangerous = other.canDangerous;
 		this->type = other.type;
 		this->start = other.start;
+		this->timer = other.timer;
 		this->maxTime = other.maxTime;
-		this->canDangerous = other.canDangerous;
 
 		return *this;
 	}

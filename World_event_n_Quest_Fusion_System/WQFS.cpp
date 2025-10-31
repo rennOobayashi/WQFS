@@ -25,7 +25,7 @@ WorldEvent WQFS::AddEvent(std::string name, int type, int hp, float posX, float 
 	WorldEvent newEvent;
 	newEvent.SetUp(WQFS::GetInstance().eventNumber++, type, hp, posX, posY, sizeX, sizeY, maxTime, duration);
 	std:: cout << newEvent.getHp() << std::endl;
-	worldEvents[name] = newEvent;
+	WQFS::GetInstance().worldEvents[name] = newEvent;
 
 	std::cout << newEvent.GetPositionX() << " " << newEvent.GetPositionY() << " " << newEvent.GetSizeX() << " " << newEvent.GetSizeY() << std::endl;
 	std::cout << worldEvents[name].GetPositionX() << " " << worldEvents[name].GetPositionY() << " " << worldEvents[name].GetSizeX() << " " << worldEvents[name].GetSizeY() << std::endl;
@@ -36,27 +36,31 @@ WorldEvent WQFS::AddEvent(std::string name, int type, int hp, float posX, float 
 NPC WQFS::AddNPC(std::string name, int type, float posX, float posY, float sizeX, float sizeY, double maxTime) {
 	NPC newNPC;
 	newNPC.SetUp(WQFS::GetInstance().npcNumber++, type, posX, posY, sizeX, sizeY, maxTime);
-	npcs[name] = newNPC;
+	WQFS::GetInstance().npcs[name] = newNPC;
+
+	std::cout << newNPC.GetPositionX() << " " << newNPC.GetPositionY() << " " << newNPC.GetSizeX() << " " << newNPC.GetSizeY() << std::endl;
+	std::cout << npcs[name].GetPositionX() << " " << npcs[name].GetPositionY() << " " << npcs[name].GetSizeX() << " " << npcs[name].GetSizeY() << std::endl;
+
 	return newNPC;
 }
 
 Item WQFS::AddItem(std::string name, int type, float effect, int rarity) {
 	Item newItem;
 	newItem.SetUp(WQFS::GetInstance().itemNumber++, name, type, effect, rarity);
-	comps[name] = newItem;
+	WQFS::GetInstance().comps[name] = newItem;
 	return newItem;
 }
 
 WorldEvent& WQFS::GetEvent(std::string name) {
-	return worldEvents[name];
+	return WQFS::GetInstance().worldEvents[name];
 }
 
 NPC& WQFS::GetNPC(std::string name) {
-	return npcs[name];
+	return WQFS::GetInstance().npcs[name];
 }
 
 Item& WQFS::GetItem(std::string name) {
-	return comps[name];
+	return WQFS::GetInstance().comps[name];
 }
 
 
@@ -107,8 +111,8 @@ void WQFS::CheckQuest(std::map<Item, int>& inventory, float playerSizeX, float p
 		if (!npc.second.GetInDangerous() && npc.second.GetCanDangerous()) {
 			for (auto& monster : WQFS::GetInstance().worldEvents) {
 				if (monster.second.GetType() == 0) {
-					if (WQFS::GetInstance().GetEvent(monster.first).getVisible() &&
-							WQFS::GetInstance().CheckCollision(npc.second.GetPositionX(), npc.second.GetPositionY(), npc.second.GetSizeX(), npc.second.GetSizeY(), monster.second.GetPositionX(), monster.second.GetPositionY(), monster.second.GetSizeX(), monster.second.GetSizeY())) {
+					if (WQFS::GetInstance().GetEvent(monster.first).getVisible() && WQFS::GetInstance().CheckCollision(npc.second.GetPositionX(), npc.second.GetPositionY(), npc.second.GetSizeX(), npc.second.GetSizeY(), monster.second.GetPositionX(), monster.second.GetPositionY(), monster.second.GetSizeX(), monster.second.GetSizeY())) {
+						std::cout << "몬스터 퀘스트 발생!" << std::endl;
 						npc.second.SetInDangerous(true);
 						WQFS::GetInstance().MakeQuest(npc.second, WQFS::GetInstance().GetEvent(monster.first));
 						std::cout << npc.second.getQuestNumber() << "monster" << std::endl;
@@ -175,34 +179,6 @@ void WQFS::CheckQuest(std::map<Item, int>& inventory, float playerSizeX, float p
 				if (*target.second == event.second) {
 				}
 			}*/
-			event.second.setVisible(false);
-		}
-	}
-}
-
-void WQFS::CheckQuest(std::map<int, int>& inventory, float playerSizeX, float playerSizeY, float playerX, float playerY) {
-	for (auto& event : worldEvents) {
-		if (event.second.getVisible() && event.second.GetType() == 0 && event.second.getHp() <= 0) {
-			std::cout << "몬스터 처치 완료!" << std::endl;
-			for (auto& target : WQFS::GetInstance().QuestTargetObjects) {
-				if (*target.second == event.second) {
-					std::vector<int> c = WQFS::GetInstance().CompleteQuestByType(*target.first);
-
-					for (const auto& item : c) {
-						inventory[item] += 1;
-					}
-
-					for (const auto& item : inventory) {
-						std::cout << item.first << " : " << item.second << std::endl;
-					}
-
-					if (!target.first->GetInDangerous()) {
-						std::cout << "끝" << target.first->GetInDangerous() << std::endl;
-					}
-
-					break;
-				}
-			}
 			event.second.setVisible(false);
 		}
 	}
