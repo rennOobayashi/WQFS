@@ -81,8 +81,8 @@ void OpenGLCode::init() {
     WQFS::GetInstance().AddNPC("Normal", 0, npcObjects["Normal"].objPosition.x, npcObjects["Normal"].objPosition.y, npcObjects["Normal"].objSize.x, npcObjects["Normal"].objSize.y, 5.0f);
 
     WQFS::GetInstance().AddEvent("Monster", 0, 2, std::get<0>(monsterObjects["Monster"]).objPosition.x, std::get<0>(monsterObjects["Monster"]).objPosition.y, std::get<0>(monsterObjects["Monster"]).objSize.x, std::get<0>(monsterObjects["Monster"]).objSize.y, -1, -1);
-    WQFS::GetInstance().AddEvent("Landslide", 1, 2, eventObjects["Landslide"].objPosition.x, eventObjects["Landslide"].objPosition.y, eventObjects["Landslide"].objSize.x, eventObjects["Landslide"].objSize.y, 5.0f, 3.0f);
-    WQFS::GetInstance().AddEvent("Earthquake", 2, 2, eventObjects["Earthquake"].objPosition.x, eventObjects["Earthquake"].objPosition.y, eventObjects["Earthquake"].objSize.x, eventObjects["Earthquake"].objSize.y, 10.0f, 7.0f);
+    WQFS::GetInstance().AddEvent("Landslide", 1, 2, eventObjects["Landslide"].objPosition.x, eventObjects["Landslide"].objPosition.y, eventObjects["Landslide"].objSize.x, eventObjects["Landslide"].objSize.y, 5.0f, 5.0f);
+    WQFS::GetInstance().AddEvent("Earthquake", 2, 2, eventObjects["Earthquake"].objPosition.x, eventObjects["Earthquake"].objPosition.y, eventObjects["Earthquake"].objSize.x, eventObjects["Earthquake"].objSize.y, 5.0f, 3.0f);
 	
     for (const auto& npc : WQFS::GetInstance().npcs) {
         defaultColors[npc.first] = npcObjects[npc.first].objColor;
@@ -184,20 +184,23 @@ void OpenGLCode::render() {
     }
 
     for (const auto& event : WQFS::GetInstance().worldEvents) {
+        eventObjects[event.first].Draw(*sRenderer, true);
+
         if (event.second.GetType() != 0) {
             if (event.second.getDoEvent()) {
+                textRenderer->renderText("Dangerous!", event.second.GetPositionX(), event.second.GetPositionY(), 2.0f, glm::vec3(0.0f));
                 eventObjects[event.first].objColor = glm::vec3(1.0f, 0.0f, 0.0f);
             }
             else {
                 eventObjects[event.first].objColor = defaultColors[event.first];
             }
 
-            eventObjects[event.first].Draw(*sRenderer, true);
         }
     }
 
     for (const auto& npc : WQFS::GetInstance().npcs) {
         npcObjects[npc.first].Draw(*sRenderer, true);
+
         if (npc.second.GetInDangerous()) {
             textRenderer->renderText("Quest Here!", npc.second.GetPositionX(), npc.second.GetPositionY(), 2.0f, glm::vec3(0.0f));
 
