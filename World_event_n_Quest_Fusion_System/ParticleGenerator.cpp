@@ -40,10 +40,9 @@ void ParticleGenerator::Update(float dt, GameObject& object, unsigned int newPar
 
 	for (unsigned int i = 0; i < amount; ++i) {
 		Particle& p = particles[i];
+		p.life -= dt;
 
 		if (p.life > 0.0f) {
-			p.life -= dt;
-
 			p.Position -= p.Velocity * dt;
 			p.Color.a -= dt * 2.5f;
 		}
@@ -51,7 +50,14 @@ void ParticleGenerator::Update(float dt, GameObject& object, unsigned int newPar
 }
 
 unsigned int ParticleGenerator::FirstUnusedParticle() {
-	for (unsigned int i = 0; i < amount; ++i) {
+	for (unsigned int i = lastUsedParticle; i < amount; ++i) {
+		if (particles[i].life <= 0.0f) {
+			lastUsedParticle = i;
+			return i;
+		}
+	}
+
+	for (unsigned int i = 0; i < lastUsedParticle; ++i) {
 		if (particles[i].life <= 0.0f) {
 			lastUsedParticle = i;
 			return i;
@@ -78,7 +84,7 @@ void ParticleGenerator::Draw() {
 
 	for (Particle particle : particles) {
 		if (particle.life > 0.0f) {
-			pShader.SetVec2("offest", particle.Position);
+			pShader.SetVec2("offset", particle.Position);
 			pShader.SetVec4("color", particle.Color);
 			pTexture.Bind();
 			glBindVertexArray(pao);

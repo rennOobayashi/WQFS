@@ -10,6 +10,7 @@
 #include "GameObject.h"
 #include "WQFS.h"
 #include "TextRenderer.h"
+#include "ParticleGenerator.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -66,6 +67,8 @@ private:
 	GameObject* attackBox;
 
 	TextRenderer* textRenderer;
+
+	ParticleGenerator* particleGenerator;
 
 	void init();
 	void render();

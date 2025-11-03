@@ -10,6 +10,7 @@ uniform vec2 offset;
 
 void main() {
     float scale = 10.0f;
-    texCoords = vertex.zw;z
+    texCoords = vertex.zw;
+    particleColor = color;
     gl_Position = projection * vec4((vertex.xy * scale) + offset, 0.0, 1.0);
 }
