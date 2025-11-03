@@ -1,6 +1,8 @@
 #ifndef WORLDEVENT_H
 #define WORLDEVENT_H
 
+#include <Windows.h>
+#include <time.h>
 #include <iostream>
 
 // Default world event types:
@@ -19,13 +21,19 @@ private:
 	int hp;
 	bool isVisible;
 	bool doEvent;
-
-	void init();
+	clock_t start;
+	clock_t eventStart;
+	double eventTimer;
+	double maxTime;
+	double durationTimer;
+	double duration;
 public:
 	WorldEvent();
 	~WorldEvent() { }
 
-	void SetUp(int _number, int _type, int _hp, float posX, float posY, float sizeX, float sizeY);
+	void SetUp(int _number, int _type, int _hp, float posX, float posY, float sizeX, float sizeY, double _maxTime, double _duration);
+	void Timer();
+	void ResetTimer();
 
 	void SetPositionX(float x);
 	float GetPositionX() const;
@@ -65,9 +73,17 @@ public:
 		this->questNumber = other.questNumber;
 		this->positionX = other.positionX;
 		this->positionY = other.positionY;
+		this->sizeX = other.sizeX;
+		this->sizeY = other.sizeY;
 		this->type = other.type;
 		this->hp = other.hp;
 		this->isVisible = other.isVisible;
+		this->start = other.start;
+		this->eventTimer = other.eventTimer;
+		this->maxTime = other.maxTime;
+		this->durationTimer = other.durationTimer;
+		this->duration = other.duration;
+		this->doEvent = other.doEvent;
 
 		return *this;
 	}

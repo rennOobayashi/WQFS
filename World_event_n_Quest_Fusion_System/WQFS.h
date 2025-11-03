@@ -21,18 +21,17 @@ class WQFS
 private:
 	int questNumber;
 	int npcNumber, eventNumber, itemNumber;
-	float dangerousDelay, dangerousDelayTime;
 
-	WQFS() : questNumber(0),  npcNumber(0), eventNumber(0), itemNumber(0), dangerousDelay(10), dangerousDelayTime(5) {}
+	WQFS() : questNumber(0),  npcNumber(0), eventNumber(0), itemNumber(0) { }
 	// 복사 방지
 	WQFS(const WQFS&) = delete;
 	WQFS& operator=(const WQFS&) = delete;
 	~WQFS() { };
 
 	void SetCompensation(NPC &npc, WorldEvent &event);
-	void MonsterEvent(int npcType) ;
-	void DynamicEvent(int npcType) ;
-	void StaticEvent(int npcType) ;
+	void MonsterEvent(int npcType);
+	void DynamicEvent(int npcType);
+	void StaticEvent(int npcType);
 	bool CheckCollision(float object1X, float object1Y, float object1SizeX, float object1SizeY, float object2X, float object2Y, float object2SizeX, float object2SizeY);
 public:
 	static WQFS& GetInstance() {
@@ -52,19 +51,18 @@ public:
 	static  std::vector<Item> CompleteQuest(NPC &npc);
 	static  std::vector<int> CompleteQuestByType(NPC& npc);
 
-	static WorldEvent AddEvent(std::string name, int type, int hp, float posX, float posY, float sizeX, float sizeY);
-	static NPC AddNPC(std::string name, int type, float posX, float posY, float sizeX, float sizeY);
+	static WorldEvent AddEvent(std::string name, int type, int hp, float posX, float posY, float sizeX, float sizeY, double maxTime, double duration);
+	static NPC AddNPC(std::string name, int type, float posX, float posY, float sizeX, float sizeY, double maxTime);
 	static Item AddItem(std::string name, int type, float effect, int rarity);
 
 	static WorldEvent& GetEvent(std::string name);
 	static NPC& GetNPC(std::string name);
 	static Item& GetItem(std::string name);
 
-	static void CheckEvent(std::map<Item, int>& inventory, float playerSizeX, float playerSizeY, float playerX, float playerY);
-	static void CheckEvent(std::map<int, int>& inventory, float playerSizeX, float playerSizeY, float playerX, float playerY);
+	static void CheckQuest(std::map<Item, int>& inventory, float playerSizeX, float playerSizeY, float playerX, float playerY);
+	static void CheckQuest(std::map<int, int>& inventory, float playerSizeX, float playerSizeY, float playerX, float playerY);
 
-	static void SetDangerousDelay(float delay);
-	static float GetDangerousDelay();
+	static void CheckEvent();
 
 	static void Clear();
 };

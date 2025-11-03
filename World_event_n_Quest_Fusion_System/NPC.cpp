@@ -1,14 +1,31 @@
 #include "NPC.h"
 
-NPC::NPC() : number(0), inDangerous(false), type(0), positionX(0), positionY(0), sizeX(0), sizeY(0), questNumber(-1) { }
+NPC::NPC() : number(0), inDangerous(false), canDangerous(false), type(0), positionX(0), positionY(0), sizeX(0), sizeY(0), questNumber(-1), start(clock()), timer(0.0f), maxTime(5.0f) {}
 
-void NPC::SetUp(int _number, int _type, float posX, float posY, float _sizeX, float _sizeY) {
+void NPC::SetUp(int _number, int _type, float posX, float posY, float _sizeX, float _sizeY, double _maxTime) {
 	number = _number;
 	type = _type;
 	positionX = posX;
 	positionY = posY;
 	sizeX = _sizeX;
 	sizeY = _sizeY;
+	maxTime = _maxTime;
+	canDangerous = true;
+}
+
+void NPC::Timer() {
+	if (!canDangerous && timer <= maxTime) {
+		timer = (double)(clock() - start) / CLOCKS_PER_SEC;
+	}
+	else {
+		canDangerous = true;
+	}
+}
+
+void NPC::ResetTimer() {
+	start = clock();
+	timer = 0.0f;
+	canDangerous = false;
 }
 
 int NPC::GetType() const {
@@ -21,6 +38,14 @@ void NPC::SetInDangerous(bool _inDangerous) {
 
 bool NPC::GetInDangerous() const {
 	return inDangerous;
+}
+
+void NPC::SetCanDangerous(bool _canDangerous) {
+	canDangerous = _canDangerous;
+}
+
+bool NPC::GetCanDangerous() const {
+	return canDangerous;
 }
 
 void NPC::SetPositionX(float x) {
