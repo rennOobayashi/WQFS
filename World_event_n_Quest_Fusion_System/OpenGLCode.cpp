@@ -16,6 +16,8 @@ OpenGLCode::OpenGLCode(unsigned int _width, unsigned int _height)
     init();
 }
 
+OpenGLCode::~OpenGLCode() {}
+
 OpenGLCode::~OpenGLCode() {
     delete player;
 	delete sRenderer;
