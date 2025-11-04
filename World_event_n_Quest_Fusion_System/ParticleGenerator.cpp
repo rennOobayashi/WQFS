@@ -1,7 +1,7 @@
 #include "ParticleGenerator.h"
 
 ParticleGenerator::ParticleGenerator(Shader shader, Texture texture, unsigned int _amount) 
-	: pShader(shader), pTexture(texture), amount(_amount) {
+	: pShader(shader), pTexture(texture), amount(_amount), lastUsedParticle(0) {
 	init();
 }
 
@@ -21,8 +21,8 @@ void ParticleGenerator::init() {
 	glGenVertexArrays(1, &pao);
 	glGenBuffers(1, &pbo);
 	glBindVertexArray(pao);
-	glBindBuffer(GL_VERTEX_ARRAY, pbo);
-	glBufferData(GL_VERTEX_ARRAY, sizeof(particleQuad), particleQuad, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, pbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(particleQuad), particleQuad, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 	glBindVertexArray(0);
@@ -33,6 +33,7 @@ void ParticleGenerator::init() {
 }
 
 void ParticleGenerator::Update(float dt, GameObject& object, unsigned int newParticle, glm::vec2 offset) {
+
 	for (unsigned int i = 0; i < newParticle; ++i) {
 		int unusedParticle = FirstUnusedParticle();
 		RespawnParticle(particles[unusedParticle], object, offset);
@@ -74,8 +75,8 @@ void ParticleGenerator::RespawnParticle(Particle& particle, GameObject& object, 
 
 	particle.Position = object.objPosition + random + offset;
 	particle.Color = glm::vec4(color, color, color, 1.0f);
-	particle.life = 0.15f;
 	particle.Velocity = object.objVelocity * 0.1f;
+	particle.life = 0.15f;
 }
 
 void ParticleGenerator::Draw() {
@@ -93,5 +94,5 @@ void ParticleGenerator::Draw() {
 		}
 	}
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }

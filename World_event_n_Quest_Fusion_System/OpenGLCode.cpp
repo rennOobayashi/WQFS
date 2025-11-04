@@ -56,10 +56,13 @@ void OpenGLCode::init() {
     glm::mat4 projection = glm::ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f);
 
     ResourceManager::LoadShader("verfrag/vertex.vs", "verfrag/fragment.fs", nullptr, "sprite");
-    ResourceManager::LoadShader("verfrag/particle_vertex.vs", "verfrag/particle_fragment.fs", nullptr, "particle");
+    ResourceManager::LoadShader("verfrag/particle_vertex.vs", "verfrag/particle_fragment.fs", nullptr, "Particle");
 
     ResourceManager::GetShader("sprite").use().SetInt("sprite", 0);
     ResourceManager::GetShader("sprite").use().SetMat4("projection", projection);
+
+    ResourceManager::GetShader("Particle").use().SetInt("sprite", 0);
+    ResourceManager::GetShader("Particle").use().SetMat4("projection", projection);
 
     ResourceManager::LoadTexture("Texture/NPC.png", true, "NPC");
     ResourceManager::LoadTexture("Texture/Monster.png", true, "Monster");
@@ -112,10 +115,10 @@ void OpenGLCode::init() {
     textRenderer = new TextRenderer(width, height);
     textRenderer->load("fonts/arial.ttf", 32);
 
-    particleGenerator = new ParticleGenerator(ResourceManager::GetShader("particle"), ResourceManager::GetTexture("Event"), 20);
+    Shader pShader = ResourceManager::GetShader("Particle");
+    Texture pTexture = ResourceManager::GetTexture("NPC");
+    particleGenerator = new ParticleGenerator(pShader, pTexture, 400);
 
-    ResourceManager::GetShader("particle").use().SetInt("sprite", 0);
-    ResourceManager::GetShader("particle").use().SetMat4("projection", projection);
 }
 
 void OpenGLCode::update() {
@@ -141,7 +144,7 @@ void OpenGLCode::update() {
         WQFS::GetInstance().CheckEvent();
 
         //particleGenerator->Update(deltaTime, eventObjects["Landslide"], 1, glm::vec2(eventObjects["Landslide"].objSize.x / 2));
-        particleGenerator->Update(deltaTime, *player, 2, glm::vec2(10.0f));
+        particleGenerator->Update(deltaTime, *player, 2, glm::vec2(player->objSize.x / 4));
 
 
         if (!mapLoading) {
@@ -237,7 +240,7 @@ void OpenGLCode::render() {
         attackBox->Draw(*sRenderer);
     }
 
-    //particleGenerator->Draw();
+    particleGenerator->Draw();
 
     player->Draw(*sRenderer);
 

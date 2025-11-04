@@ -10,14 +10,14 @@
 #include "Texture.h"
 #include "GameObject.h"
 
-struct Particle 
+struct Particle
 {
 	glm::vec2 Position;
 	glm::vec2 Velocity;
 	glm::vec4 Color;
 	float life;
 
-	Particle() : Position(0.0f), Velocity(0.0f), Color(0.0f), life(0.0f) {}
+	Particle() : Position(0.0f), Velocity(0.0f), Color(1.0f), life(0.0f) {}
 };
 
 class ParticleGenerator
@@ -28,14 +28,14 @@ private:
 	Texture pTexture;
 	unsigned int amount;
 	unsigned int pao;
-	unsigned int lastUsedParticle = 0;
+	unsigned int lastUsedParticle;
 
 	void init();
 	unsigned int FirstUnusedParticle();
 	void RespawnParticle(Particle& particle, GameObject& object, glm::vec2 offset);
 public:
 	ParticleGenerator(Shader shader, Texture texture, unsigned int _amount);
-	void Update(float dt, GameObject &object, unsigned int newParticle, glm::vec2 offset = glm::vec2(0.0f));
+	void Update(float dt, GameObject& object, unsigned int newParticle, glm::vec2 offset = glm::vec2(0.0f));
 	void Draw();
 };
 
