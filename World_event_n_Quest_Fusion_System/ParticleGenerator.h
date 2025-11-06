@@ -29,13 +29,14 @@ private:
 	unsigned int amount;
 	unsigned int pao;
 	unsigned int lastUsedParticle;
+	float respawnDelay = 1.0f;
 
 	void init();
 	unsigned int FirstUnusedParticle();
-	void RespawnParticle(Particle& particle, GameObject& object, glm::vec2 offset);
+	void RespawnParticle(Particle& particle, GameObject& object, glm::vec2 offset, glm::vec2 direction);
 public:
 	ParticleGenerator(Shader shader, Texture texture, unsigned int _amount);
-	void Update(float dt, GameObject& object, unsigned int newParticle, glm::vec2 offset = glm::vec2(0.0f));
+	void Update(float dt, GameObject& object, unsigned int newParticle, glm::vec2 offset = glm::vec2(0.0f), glm::vec2 direction = glm::vec2(0.0f, 1.0f));
 	void Draw();
 };
 

@@ -115,9 +115,7 @@ void OpenGLCode::init() {
     textRenderer = new TextRenderer(width, height);
     textRenderer->load("fonts/arial.ttf", 32);
 
-    Shader pShader = ResourceManager::GetShader("Particle");
-    Texture pTexture = ResourceManager::GetTexture("NPC");
-    particleGenerator = new ParticleGenerator(pShader, pTexture, 400);
+    particleGenerator = new ParticleGenerator(ResourceManager::GetShader("Particle"), ResourceManager::GetTexture("Event"), 20);
 
 }
 
@@ -143,8 +141,8 @@ void OpenGLCode::update() {
         WQFS::GetInstance().CheckQuest(inventory, player->objSize.x, player->objSize.y, player->objPosition.x, player->objPosition.y);
         WQFS::GetInstance().CheckEvent();
 
-        //particleGenerator->Update(deltaTime, eventObjects["Landslide"], 1, glm::vec2(eventObjects["Landslide"].objSize.x / 2));
-        particleGenerator->Update(deltaTime, *player, 2, glm::vec2(player->objSize.x / 4));
+        particleGenerator->Update(deltaTime, eventObjects["Landslide"], 1, glm::vec2(100.0f, 0.0f));
+        //particleGenerator->Update(deltaTime, *player, 2, glm::vec2(player->objSize.x / 4));
 
 
         if (!mapLoading) {

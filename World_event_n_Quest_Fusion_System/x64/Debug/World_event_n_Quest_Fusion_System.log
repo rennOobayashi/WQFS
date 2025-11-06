@@ -1,2 +1,5 @@
 ﻿  ParticleGenerator.cpp
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\ParticleGenerator.cpp(79,16): warning C4244: '초기화 중': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\ParticleGenerator.cpp(80,16): warning C4244: '초기화 중': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\ParticleGenerator.cpp(100,26): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   World_event_n_Quest_Fusion_System.vcxproj -> C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\x64\Debug\World_event_n_Quest_Fusion_System.exe

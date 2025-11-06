@@ -32,11 +32,17 @@ void ParticleGenerator::init() {
 	}
 }
 
-void ParticleGenerator::Update(float dt, GameObject& object, unsigned int newParticle, glm::vec2 offset) {
+void ParticleGenerator::Update(float dt, GameObject& object, unsigned int newParticle, glm::vec2 offset, glm::vec2 direction) {
+	if (respawnDelay < 0.4f) {
+		respawnDelay += dt;
+	}
 
 	for (unsigned int i = 0; i < newParticle; ++i) {
-		int unusedParticle = FirstUnusedParticle();
-		RespawnParticle(particles[unusedParticle], object, offset);
+		if (respawnDelay >= 0.4f) {
+			int unusedParticle = FirstUnusedParticle();
+			RespawnParticle(particles[unusedParticle], object, offset, direction);
+			respawnDelay = 0;
+		}
 	}
 
 	for (unsigned int i = 0; i < amount; ++i) {
@@ -44,8 +50,8 @@ void ParticleGenerator::Update(float dt, GameObject& object, unsigned int newPar
 		p.life -= dt;
 
 		if (p.life > 0.0f) {
-			p.Position -= p.Velocity * dt;
-			p.Color.a -= dt * 2.5f;
+			p.Position += p.Velocity * dt;
+			//p.Color.a -= dt * 2.5f;
 		}
 	}
 }
@@ -69,24 +75,32 @@ unsigned int ParticleGenerator::FirstUnusedParticle() {
 	return 0;
 }
 
-void ParticleGenerator::RespawnParticle(Particle& particle, GameObject& object, glm::vec2 offset) {
-	float random = ((rand() % 100) - 50) / 7.0f;
-	float color = 0.7f + ((rand() % 100) / 100.0f);
+void ParticleGenerator::RespawnParticle(Particle& particle, GameObject& object, glm::vec2 offset, glm::vec2 direction) {
+	float randomX = (rand() % (int)object.objPosition.x);
+	float randomY = rand() % 10;
+	float randomVelX = (rand() & 2) - 0.5f;
+	std::cout << randomVelX << std::endl;
+	float color = 0.3f + ((rand() % 100) / 100.0f);
+	glm::vec2 random = glm::vec2(randomX, randomY);
 
 	particle.Position = object.objPosition + random + offset;
 	particle.Color = glm::vec4(color, color, color, 1.0f);
-	particle.Velocity = object.objVelocity * 0.1f;
-	particle.life = 0.15f;
+	particle.Velocity = glm::vec2(randomVelX, direction.y) * 500.0f;
+	particle.life = 2.5f;
 }
 
 void ParticleGenerator::Draw() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	float scale;
+
 	pShader.use();
 
 	for (Particle particle : particles) {
 		if (particle.life > 0.0f) {
+			scale = (rand() % 50) + 50;
 			pShader.SetVec2("offset", particle.Position);
 			pShader.SetVec4("color", particle.Color);
+			pShader.SetFloat("scale", scale);
 			pTexture.Bind();
 			glBindVertexArray(pao);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
