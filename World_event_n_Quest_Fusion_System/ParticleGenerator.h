@@ -9,11 +9,13 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "GameObject.h"
+#include "SpriteRenderer.h"
 
 struct Particle
 {
 	glm::vec2 Position;
 	glm::vec2 Velocity;
+	glm::vec2 Size;
 	glm::vec4 Color;
 	float life;
 
@@ -37,7 +39,8 @@ private:
 public:
 	ParticleGenerator(Shader shader, Texture texture, unsigned int _amount);
 	void Update(float dt, GameObject& object, unsigned int newParticle, glm::vec2 offset = glm::vec2(0.0f), glm::vec2 direction = glm::vec2(0.0f, 1.0f));
-	void Draw();
+	void Idle(float dt);
+	void Draw(SpriteRenderer& spriteRenderer, bool isSprite = false);
 };
 
 #endif

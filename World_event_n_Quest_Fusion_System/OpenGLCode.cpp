@@ -14,6 +14,8 @@ const float CameraVelocity(1000.0f);
 OpenGLCode::OpenGLCode(unsigned int _width, unsigned int _height)
 	: states(GAME_MENU), width(_width), height(_height), hp(3), changedir(false), showDangerousTime(1.0f), dangerousDelay(5.0f), mapLoading(false), mapLoadingDelay(0.0f), getItemFirstTime(false), attackDelay(1.0f), isAttacked(false) {
     init();
+    srand((unsigned int)time(NULL));
+
 }
 
 OpenGLCode::~OpenGLCode() {
@@ -56,7 +58,6 @@ void OpenGLCode::init() {
     glm::mat4 projection = glm::ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f);
 
     ResourceManager::LoadShader("verfrag/vertex.vs", "verfrag/fragment.fs", nullptr, "sprite");
-    ResourceManager::LoadShader("verfrag/particle_vertex.vs", "verfrag/particle_fragment.fs", nullptr, "Particle");
 
     ResourceManager::GetShader("sprite").use().SetInt("sprite", 0);
     ResourceManager::GetShader("sprite").use().SetMat4("projection", projection);
@@ -85,7 +86,7 @@ void OpenGLCode::init() {
     WQFS::GetInstance().AddNPC("Normal", 0, npcObjects["Normal"].objPosition.x, npcObjects["Normal"].objPosition.y, npcObjects["Normal"].objSize.x, npcObjects["Normal"].objSize.y, 5.0f);
 
     WQFS::GetInstance().AddEvent("Monster", 0, 2, std::get<0>(monsterObjects["Monster"]).objPosition.x, std::get<0>(monsterObjects["Monster"]).objPosition.y, std::get<0>(monsterObjects["Monster"]).objSize.x, std::get<0>(monsterObjects["Monster"]).objSize.y, -1, -1);
-    WQFS::GetInstance().AddEvent("Landslide", 1, 2, eventObjects["Landslide"].objPosition.x, eventObjects["Landslide"].objPosition.y, eventObjects["Landslide"].objSize.x, eventObjects["Landslide"].objSize.y, 10.0f, 5.0f);
+    WQFS::GetInstance().AddEvent("Landslide", 1, 2, eventObjects["Landslide"].objPosition.x, eventObjects["Landslide"].objPosition.y, eventObjects["Landslide"].objSize.x, eventObjects["Landslide"].objSize.y, 3.0f, 3.0f);
     WQFS::GetInstance().AddEvent("Earthquake", 2, 2, eventObjects["Earthquake"].objPosition.x, eventObjects["Earthquake"].objPosition.y, eventObjects["Earthquake"].objSize.x, eventObjects["Earthquake"].objSize.y, 5.0f, 3.0f);
 	
     for (const auto& npc : WQFS::GetInstance().npcs) {
@@ -115,7 +116,7 @@ void OpenGLCode::init() {
     textRenderer = new TextRenderer(width, height);
     textRenderer->load("fonts/arial.ttf", 32);
 
-    particleGenerator = new ParticleGenerator(ResourceManager::GetShader("Particle"), ResourceManager::GetTexture("Event"), 20);
+    particleGenerator = new ParticleGenerator(ResourceManager::GetShader("sprite"), ResourceManager::GetTexture("Event"), 40);
 
 }
 
@@ -141,8 +142,18 @@ void OpenGLCode::update() {
         WQFS::GetInstance().CheckQuest(inventory, player->objSize.x, player->objSize.y, player->objPosition.x, player->objPosition.y);
         WQFS::GetInstance().CheckEvent();
 
-        particleGenerator->Update(deltaTime, eventObjects["Landslide"], 1, glm::vec2(100.0f, 0.0f));
-        //particleGenerator->Update(deltaTime, *player, 2, glm::vec2(player->objSize.x / 4));
+
+        for (const auto& event : WQFS::GetInstance().worldEvents) {
+            if (event.second.GetType() == 1) {
+                if (event.second.getDoEvent()) {
+                    particleGenerator->Update(deltaTime, eventObjects["Landslide"], 1, glm::vec2(100.0f, 0.0f));
+                }
+                else {
+                    particleGenerator->Idle(deltaTime);
+                }
+            }
+        }
+
 
 
         if (!mapLoading) {
@@ -238,9 +249,17 @@ void OpenGLCode::render() {
         attackBox->Draw(*sRenderer);
     }
 
-    particleGenerator->Draw();
 
     player->Draw(*sRenderer);
+
+    particleGenerator->Draw(*sRenderer);
+
+    for (const auto& event : WQFS::GetInstance().worldEvents) {
+        if (event.second.GetType() == 1) {
+            if (event.second.getDoEvent()) {
+            }
+        }
+    }
 
     std::stringstream sHp;
     sHp << hp;

@@ -113,6 +113,7 @@ void WQFS::CheckQuest(std::map<Item, int>& inventory, float playerSizeX, float p
 				if (monster.second.GetType() == 0) {
 					if (WQFS::GetInstance().GetEvent(monster.first).getVisible() && WQFS::GetInstance().CheckCollision(npc.second.GetPositionX(), npc.second.GetPositionY(), npc.second.GetSizeX(), npc.second.GetSizeY(), monster.second.GetPositionX(), monster.second.GetPositionY(), monster.second.GetSizeX(), monster.second.GetSizeY())) {
 						std::cout << "몬스터 퀘스트 발생!" << std::endl;
+						std::cout << "몬스터 퀘스트 발생!" << std::endl;
 						npc.second.SetInDangerous(true);
 						WQFS::GetInstance().MakeQuest(npc.second, WQFS::GetInstance().GetEvent(monster.first));
 						std::cout << npc.second.getQuestNumber() << "monster" << std::endl;
@@ -207,8 +208,6 @@ void WQFS::SetCompensation(NPC &npc, WorldEvent& event) {
 	bool isMp = false;
 	bool isWeapon = false;
 	bool isExchange = false;
-
-	srand((unsigned int)time(NULL));
 
 	for (const auto& comp : comps) {
 		if (isHp && isMp && isWeapon && isExchange) {
