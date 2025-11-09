@@ -24,6 +24,7 @@ private:
 	clock_t start;
 	double timer;
 	double maxTime;
+	double pauseDuration;
 public:
 	NPC();
 	~NPC() { }
@@ -49,6 +50,8 @@ public:
 	bool GetCanDangerous() const;
 	void setQuestNumber(int n);
 	int getQuestNumber() const;
+	void SetPauseDuration(double duration);
+	double GetPauseDuration() const;
 
 	bool operator<(const NPC& other) const {
 		return this->number < other.number;
@@ -75,6 +78,7 @@ public:
 		this->start = other.start;
 		this->timer = other.timer;
 		this->maxTime = other.maxTime;
+		this->pauseDuration = other.pauseDuration;
 
 		return *this;
 	}

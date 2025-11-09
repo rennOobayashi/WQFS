@@ -85,9 +85,9 @@ void OpenGLCode::init() {
 
     WQFS::GetInstance().AddNPC("Normal", 0, npcObjects["Normal"].objPosition.x, npcObjects["Normal"].objPosition.y, npcObjects["Normal"].objSize.x, npcObjects["Normal"].objSize.y, 5.0f);
 
-    WQFS::GetInstance().AddEvent("Monster", 0, 2, std::get<0>(monsterObjects["Monster"]).objPosition.x, std::get<0>(monsterObjects["Monster"]).objPosition.y, std::get<0>(monsterObjects["Monster"]).objSize.x, std::get<0>(monsterObjects["Monster"]).objSize.y, -1, -1);
-    WQFS::GetInstance().AddEvent("Landslide", 1, 2, eventObjects["Landslide"].objPosition.x, eventObjects["Landslide"].objPosition.y, eventObjects["Landslide"].objSize.x, eventObjects["Landslide"].objSize.y, 3.0f, 3.0f);
-    WQFS::GetInstance().AddEvent("Earthquake", 2, 2, eventObjects["Earthquake"].objPosition.x, eventObjects["Earthquake"].objPosition.y, eventObjects["Earthquake"].objSize.x, eventObjects["Earthquake"].objSize.y, 5.0f, 3.0f);
+    WQFS::GetInstance().AddEvent("Monster", 0, 2, std::get<0>(monsterObjects["Monster"]).objPosition.x, std::get<0>(monsterObjects["Monster"]).objPosition.y, std::get<0>(monsterObjects["Monster"]).objSize.x, std::get<0>(monsterObjects["Monster"]).objSize.y, -1.0f, -1.0f, 0.0f);
+    WQFS::GetInstance().AddEvent("Landslide", 1, 2, eventObjects["Landslide"].objPosition.x, eventObjects["Landslide"].objPosition.y, eventObjects["Landslide"].objSize.x, eventObjects["Landslide"].objSize.y, 3.0f, 3.0f, 0.3f);
+    WQFS::GetInstance().AddEvent("Earthquake", 2, 2, eventObjects["Earthquake"].objPosition.x, eventObjects["Earthquake"].objPosition.y, eventObjects["Earthquake"].objSize.x, eventObjects["Earthquake"].objSize.y, 2.0f, 1.0f, 0.0f);
 	
     for (const auto& npc : WQFS::GetInstance().npcs) {
         defaultColors[npc.first] = npcObjects[npc.first].objColor;
@@ -118,6 +118,8 @@ void OpenGLCode::init() {
 
     particleGenerator = new ParticleGenerator(ResourceManager::GetShader("sprite"), ResourceManager::GetTexture("Event"), 40);
 
+    pauseDelay = 0.15f;
+    pauseDelayTimer = 1.0f;
 }
 
 void OpenGLCode::update() {
@@ -135,46 +137,54 @@ void OpenGLCode::update() {
         view = glm::lookAt(glm::vec3(cameraPos, 0.0f), glm::vec3(cameraPos, 0.0f) + cameraFront, cameraUp);
         ResourceManager::GetShader("sprite").use().SetMat4("view", view);
 
-        render();
-        DoCollisions();
-        CameraMove(deltaTime);
-
-        WQFS::GetInstance().CheckQuest(inventory, player->objSize.x, player->objSize.y, player->objPosition.x, player->objPosition.y);
-        WQFS::GetInstance().CheckEvent();
-
-
-        for (const auto& event : WQFS::GetInstance().worldEvents) {
-            if (event.second.GetType() == 1) {
-                if (event.second.getDoEvent()) {
-                    particleGenerator->Update(deltaTime, eventObjects["Landslide"], 1, glm::vec2(100.0f, 0.0f));
-                }
-                else {
-                    particleGenerator->Idle(deltaTime);
-                }
-            }
+        if (pauseDelayTimer <= pauseDelay) {
+			pauseDelayTimer += deltaTime;
         }
 
-
+        render();
 
         if (!mapLoading) {
-            MoveSelf(deltaTime);
             ProcessInput(window, deltaTime);
         }
 
-        if (dangerousDelay < 5.0f) {
-            dangerousDelay += deltaTime;
-		}
+        if (states != GAME_MENU) {
+            DoCollisions();
+            CameraMove(deltaTime);
 
-        if (attackDelay < 0.7f) {
-            attackDelay += deltaTime;
-        }
-        else if (attackDelay >= 0.5f){
-			isAttacked = false;
-        }
+            WQFS::GetInstance().CheckQuest(inventory, player->objSize.x, player->objSize.y, player->objPosition.x, player->objPosition.y);
+            WQFS::GetInstance().CheckEvent();
 
-        for (auto& monster : monsterObjects) {
-            if (std::get<1>(monster.second) < 0.5f) {
-                std::get<1>(monster.second) += deltaTime;
+
+            for (const auto& event : WQFS::GetInstance().worldEvents) {
+                if (event.second.GetType() == 1) {
+                    if (event.second.getDoEvent()) {
+                        particleGenerator->Update(deltaTime, eventObjects["Landslide"], 1, glm::vec2(100.0f, 0.0f));
+                    }
+                    else {
+                        particleGenerator->Idle(deltaTime);
+                    }
+                }
+            }
+
+            if (!mapLoading) {
+                MoveSelf(deltaTime);
+            }
+
+            if (dangerousDelay < 5.0f) {
+                dangerousDelay += deltaTime;
+            }
+
+            if (attackDelay < 0.7f) {
+                attackDelay += deltaTime;
+            }
+            else if (attackDelay >= 0.5f) {
+                isAttacked = false;
+            }
+
+            for (auto& monster : monsterObjects) {
+                if (std::get<1>(monster.second) < 0.5f) {
+                    std::get<1>(monster.second) += deltaTime;
+                }
             }
         }
 
@@ -188,7 +198,7 @@ void OpenGLCode::update() {
 
 void OpenGLCode::render() {
     for (const auto& monster : WQFS::GetInstance().worldEvents) {
-		//std::cout << monster.second.getVisible() << std::endl;
+        //std::cout << monster.second.getVisible() << std::endl;
         if (monster.second.GetType() == 0 && monster.second.getVisible()) {
             if (std::get<1>(monsterObjects[monster.first]) >= 0.5f) {
                 std::get<0>(monsterObjects[monster.first]).objColor = glm::vec3(1.0f, 0.2f, 0.1f);
@@ -208,7 +218,7 @@ void OpenGLCode::render() {
         eventObjects[event.first].Draw(*sRenderer, true);
 
         if (event.second.GetType() != 0) {
-            if (event.second.getDoEvent()) {
+            if (event.second.GetIsCanCollid()) {
                 textRenderer->renderText("Dangerous!", event.second.GetPositionX(), event.second.GetPositionY(), 2.0f, glm::vec3(0.0f));
                 eventObjects[event.first].objColor = glm::vec3(1.0f, 0.0f, 0.0f);
             }
@@ -236,7 +246,7 @@ void OpenGLCode::render() {
             }
         }
         else {
-            if(!npc.second.GetCanDangerous()) {
+            if (!npc.second.GetCanDangerous()) {
                 textRenderer->renderText("Delay!", npc.second.GetPositionX(), npc.second.GetPositionY(), 2.0f, glm::vec3(0.0f));
             }
             npcObjects[npc.first].objColor = glm::vec3(0.1f, 0.5f, 1.0f);
@@ -267,12 +277,23 @@ void OpenGLCode::render() {
     textRenderer->renderText("HP - " + sHp.str(), 1.0f, 5.0f, 2.0f);
     textRenderer->renderText("Quest List", width - (32 * 10), 5.0f, 2.0f);
 
+    if (states == GAME_MENU) {
+        textRenderer->renderText("Pause", width / 2, height / 2, 2.0f);
+    }
 }
 
 void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE)) {
-        std::cout << "EXIT" << std::endl;
-        glfwSetWindowShouldClose(window, true);
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) && pauseDelayTimer > pauseDelay) {
+        if (states == GAME_ACTIVE) {
+            states = GAME_MENU;
+			WQFS::GetInstance().Pause();
+        }
+        else if (states == GAME_MENU) {
+            states = GAME_ACTIVE;
+            WQFS::GetInstance().Resume();
+        }
+
+        pauseDelayTimer = 0.0f;
     }
 
     if (states == GAME_ACTIVE) {

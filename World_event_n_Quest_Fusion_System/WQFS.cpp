@@ -20,15 +20,14 @@ std::map<int, Quest> WQFS::questList;
 std::map<int, QuestByType> WQFS::questListByType;
 std::vector<QuestTarget> WQFS::QuestTargetObjects;
 
-WorldEvent WQFS::AddEvent(std::string name, int type, int hp, float posX, float posY, float sizeX, float sizeY, double maxTime, double duration) {
+WorldEvent WQFS::AddEvent(std::string name, int type, int hp, float posX, float posY, float sizeX, float sizeY, double maxTime, double duration, double collidDelay) {
 	//std::cout << type << " ";
 	WorldEvent newEvent;
-	newEvent.SetUp(WQFS::GetInstance().eventNumber++, type, hp, posX, posY, sizeX, sizeY, maxTime, duration);
+	newEvent.SetUp(WQFS::GetInstance().eventNumber++, type, hp, posX, posY, sizeX, sizeY, maxTime, duration, collidDelay);
 	std:: cout << newEvent.getHp() << std::endl;
 	WQFS::GetInstance().worldEvents[name] = newEvent;
 
-	std::cout << newEvent.GetPositionX() << " " << newEvent.GetPositionY() << " " << newEvent.GetSizeX() << " " << newEvent.GetSizeY() << std::endl;
-	std::cout << worldEvents[name].GetPositionX() << " " << worldEvents[name].GetPositionY() << " " << worldEvents[name].GetSizeX() << " " << worldEvents[name].GetSizeY() << std::endl;
+	std::cout << collidDelay << "s" << std::endl;
 
 	return newEvent;
 }
@@ -106,7 +105,6 @@ bool WQFS::CheckCollision(float object1X, float object1Y, float object1SizeX, fl
 }
 
 void WQFS::CheckQuest(std::map<Item, int>& inventory, float playerSizeX, float playerSizeY, float playerX, float playerY) {
-
 	for (auto& npc : WQFS::GetInstance().npcs) {
 		if (!npc.second.GetInDangerous() && npc.second.GetCanDangerous()) {
 			for (auto& monster : WQFS::GetInstance().worldEvents) {
@@ -125,7 +123,7 @@ void WQFS::CheckQuest(std::map<Item, int>& inventory, float playerSizeX, float p
 				if (wEvent.second.GetType() != 0) {
 					//std::cout << wEvent.second.getDoEvent() << WQFS::GetInstance().CheckCollision(npc.second.GetPositionX(), npc.second.GetPositionY(), npc.second.GetSizeX(), npc.second.GetSizeY(), wEvent.second.GetPositionX(), wEvent.second.GetPositionY(), wEvent.second.GetSizeX(), wEvent.second.GetSizeY()) << std::endl;
 				}
-				if (wEvent.second.GetType() != 0 && wEvent.second.getDoEvent() && WQFS::GetInstance().CheckCollision(npc.second.GetPositionX(), npc.second.GetPositionY(), npc.second.GetSizeX(), npc.second.GetSizeY(), wEvent.second.GetPositionX(), wEvent.second.GetPositionY(), wEvent.second.GetSizeX(), wEvent.second.GetSizeY())) {
+				if (wEvent.second.GetType() != 0 && wEvent.second.GetIsCanCollid() && WQFS::GetInstance().CheckCollision(npc.second.GetPositionX(), npc.second.GetPositionY(), npc.second.GetSizeX(), npc.second.GetSizeY(), wEvent.second.GetPositionX(), wEvent.second.GetPositionY(), wEvent.second.GetSizeX(), wEvent.second.GetSizeY())) {
 					std::cout << "퀘스트 발생!" << std::endl;
 					npc.second.SetInDangerous(true);
 					WQFS::GetInstance().MakeQuest(npc.second, WQFS::GetInstance().GetEvent(wEvent.first));
@@ -176,29 +174,46 @@ void WQFS::CheckQuest(std::map<Item, int>& inventory, float playerSizeX, float p
 					break;
 				}
 			}
-			/*for (auto& target : WQFS::GetInstance().QuestTargetObjects) {
-				if (*target.second == event.second) {
-				}
-			}*/
 			event.second.setVisible(false);
 		}
 	}
 }
 
 void WQFS::CheckEvent() {
+	if (!WQFS::GetInstance().isPaused) {
+		for (auto& npc : WQFS::GetInstance().npcs) {
+			if (!npc.second.GetCanDangerous()) {
+				npc.second.Timer();
+			}
+		}
+		for (auto& event : WQFS::GetInstance().worldEvents) {
+			if (!event.second.GetIsCanCollid()) {
+				event.second.Timer();
+			}
+			else {
+				event.second.ResetTimer();
+			}
+		}
+	}
+}
+
+void WQFS::Pause() {
+	WQFS::GetInstance().pauseStart = clock();
+	WQFS::GetInstance().isPaused = true;
+}
+
+void WQFS::Resume() {
+	double pauseDuration;
+	pauseDuration = (double)(clock() - WQFS::GetInstance().pauseStart) / CLOCKS_PER_SEC;
+
 	for (auto& npc : WQFS::GetInstance().npcs) {
-		if (!npc.second.GetCanDangerous()) {
-			npc.second.Timer();
-		}
+		npc.second.SetPauseDuration(pauseDuration);
 	}
+
 	for (auto& event : WQFS::GetInstance().worldEvents) {
-		if (!event.second.getDoEvent()) {
-			event.second.Timer();
-		}
-		else {
-			event.second.ResetTimer();
-		}
+		event.second.SetPauseDuration(pauseDuration);
 	}
+	WQFS::GetInstance().isPaused = false;
 }
 
 void WQFS::SetCompensation(NPC &npc, WorldEvent& event) {

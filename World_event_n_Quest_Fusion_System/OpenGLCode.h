@@ -56,6 +56,7 @@ private:
 	float lastFrame;
 	float changeMoveTime, showDangerousTime;
 	float dangerousDelay, mapLoadingDelay, attackDelay;
+	float pauseDelayTimer, pauseDelay;
 	int hp;
 	bool changedir;
 	bool mapLoading, getItemFirstTime, isAttacked;

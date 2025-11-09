@@ -21,6 +21,8 @@ class WQFS
 private:
 	int questNumber;
 	int npcNumber, eventNumber, itemNumber;
+	bool isPaused;
+	clock_t pauseStart;
 
 	WQFS() : questNumber(0),  npcNumber(0), eventNumber(0), itemNumber(0) { }
 	// 복사 방지
@@ -51,7 +53,7 @@ public:
 	static  std::vector<Item> CompleteQuest(NPC &npc);
 	static  std::vector<int> CompleteQuestByType(NPC& npc);
 
-	static WorldEvent AddEvent(std::string name, int type, int hp, float posX, float posY, float sizeX, float sizeY, double maxTime, double duration);
+	static WorldEvent AddEvent(std::string name, int type, int hp, float posX, float posY, float sizeX, float sizeY, double maxTime, double duration, double collidDelay);
 	static NPC AddNPC(std::string name, int type, float posX, float posY, float sizeX, float sizeY, double maxTime);
 	static Item AddItem(std::string name, int type, float effect, int rarity);
 
@@ -63,6 +65,9 @@ public:
 	static void CheckQuest(std::map<int, int>& inventory, float playerSizeX, float playerSizeY, float playerX, float playerY);
 
 	static void CheckEvent();
+
+	static void Pause();
+	static void Resume();
 
 	static void Clear();
 };

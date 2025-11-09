@@ -14,7 +14,7 @@ void NPC::SetUp(int _number, int _type, float posX, float posY, float _sizeX, fl
 }
 
 void NPC::Timer() {
-	if (!canDangerous && timer <= maxTime) {
+	if (!canDangerous && timer <= maxTime + pauseDuration) {
 		timer = (double)(clock() - start) / CLOCKS_PER_SEC;
 	}
 	else {
@@ -25,6 +25,7 @@ void NPC::Timer() {
 void NPC::ResetTimer() {
 	start = clock();
 	timer = 0.0f;
+	pauseDuration = 0.0f;
 	canDangerous = false;
 }
 
@@ -88,11 +89,17 @@ void NPC::SetSize(float x, float y) {
 	sizeY = y;
 }
 
-
 void NPC::setQuestNumber(int n) {
 	questNumber = n;
 }
 
 int NPC::getQuestNumber() const {
 	return questNumber;
+}
+
+void NPC::SetPauseDuration(double duration) {
+	pauseDuration = duration;
+}
+double NPC::GetPauseDuration() const {
+	return pauseDuration;
 }

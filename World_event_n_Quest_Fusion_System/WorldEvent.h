@@ -21,17 +21,20 @@ private:
 	int hp;
 	bool isVisible;
 	bool doEvent;
+	bool isCanCollid;
 	clock_t start;
 	clock_t eventStart;
 	double eventTimer;
 	double maxTime;
 	double durationTimer;
 	double duration;
+	double collideDelay;
+	double pauseDuration;
 public:
 	WorldEvent();
 	~WorldEvent() { }
 
-	void SetUp(int _number, int _type, int _hp, float posX, float posY, float sizeX, float sizeY, double _maxTime, double _duration);
+	void SetUp(int _number, int _type, int _hp, float posX, float posY, float sizeX, float sizeY, double _maxTime, double _duration, double _collideDelay);
 	void Timer();
 	void ResetTimer();
 
@@ -55,6 +58,10 @@ public:
 	bool getVisible() const;
 	void setDoEvent(bool b);
 	bool getDoEvent() const;
+	void GetIsCanCollid(bool b);
+	bool GetIsCanCollid() const;
+	void SetPauseDuration(double duration);
+	double GetPauseDuration() const;
 
 	bool operator<(const WorldEvent& other) const {
 		return type < other.type;
@@ -84,6 +91,9 @@ public:
 		this->durationTimer = other.durationTimer;
 		this->duration = other.duration;
 		this->doEvent = other.doEvent;
+		this->collideDelay = other.collideDelay;
+		this->isCanCollid = other.isCanCollid;
+		this->pauseDuration = other.pauseDuration;
 
 		return *this;
 	}
