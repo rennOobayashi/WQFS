@@ -77,7 +77,7 @@ unsigned int ParticleGenerator::FirstUnusedParticle() {
 void ParticleGenerator::RespawnParticle(Particle& particle, GameObject& object, glm::vec2 offset, glm::vec2 direction) {
 	float randomX = (rand() % (int)object.objPosition.x);
 	float randomY = (rand() % 10) - 10.0f;
-	float randomVelX = (rand() & 1) - 0.3f;
+	float randomVelX = (rand() & 10) / 10.0f - 0.3f;
 	float ramdomSize = (rand() % 20) + 70.0f;
 	float gColor = ((rand() % 20) / 100.0f) + 0.3f;
 	float bColor = ((rand() % 10) / 100.0f) + 0.2f;

@@ -275,10 +275,17 @@ void OpenGLCode::render() {
     sHp << hp;
 
     textRenderer->renderText("HP - " + sHp.str(), 1.0f, 5.0f, 2.0f);
-    textRenderer->renderText("Quest List", width - (32 * 10), 5.0f, 2.0f);
+
 
     if (states == GAME_MENU) {
-        textRenderer->renderText("Pause", width / 2, height / 2, 2.0f);
+        textRenderer->renderText("Pause", (width / 2) - 100.0f, 10.0f, 3.0f, glm::vec3(0.0f));
+
+        textRenderer->renderText("Quest List", (width / 2) - 110.0f, 100.0f, 2.0f, glm::vec3(0.0f, 0.7f, 1.0f));
+
+        int cnt = 1;
+        for (std::string s : WQFS::GetInstance().GetQuestListByString(5)) {
+            textRenderer->renderText(s, 100.0f, 150.0f * cnt++, 1.25f, glm::vec3(0.3f, 0.9f, 1.0f));
+        }
     }
 }
 
@@ -332,6 +339,12 @@ void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
         if (glfwGetKey(window, GLFW_KEY_SPACE) && attackDelay >= 0.7f) {
             attackDelay = 0.0f;
 			isAttacked = true;
+        }
+    }
+    else {
+        if (glfwGetKey(window, GLFW_KEY_SPACE)) {
+            std::cout << "<<<EXIT>>>" << std::endl;
+            glfwSetWindowShouldClose(window, true);
         }
     }
 }

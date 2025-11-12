@@ -6,14 +6,13 @@
 #include "Item.h"
 
 #include <iostream>
+#include <string>
 #include <vector>
 #include <Windows.h>
 #include <time.h>
 #include <map>
 
-typedef std::tuple<std::vector<Item>, bool> Quest; // compensation list, confirmation
-//추후 Item Type으로도 가능하게 변경
-typedef std::tuple<std::vector<int>, bool> QuestByType; // compensation list, confirmation
+typedef std::tuple<std::vector<Item>, int, bool> Quest; // compensation list, confirmation
 typedef std::pair<NPC*, WorldEvent*> QuestTarget; // npc, event
 
 class WQFS
@@ -30,10 +29,7 @@ private:
 	WQFS& operator=(const WQFS&) = delete;
 	~WQFS() { };
 
-	void SetCompensation(NPC &npc, WorldEvent &event);
-	void MonsterEvent(int npcType);
-	void DynamicEvent(int npcType);
-	void StaticEvent(int npcType);
+	void SetCompensation(NPC &npc, WorldEvent &event, int questType);
 	bool CheckCollision(float object1X, float object1Y, float object1SizeX, float object1SizeY, float object2X, float object2Y, float object2SizeX, float object2SizeY);
 public:
 	static WQFS& GetInstance() {
@@ -46,12 +42,11 @@ public:
 	static std::map<std::string, NPC> npcs;
 	static std::map<std::string, Item> comps;
 	static std::map<int, Quest> questList; //quest number, compensation list
-	static std::map<int, QuestByType> questListByType; //quest number, compensation list
 	static std::vector<QuestTarget> QuestTargetObjects; //npc, Event
+	static std::map<int, int> questRemaining;
 
 	static void MakeQuest(NPC &npc, WorldEvent &event);
 	static  std::vector<Item> CompleteQuest(NPC &npc);
-	static  std::vector<int> CompleteQuestByType(NPC& npc);
 
 	static WorldEvent AddEvent(std::string name, int type, int hp, float posX, float posY, float sizeX, float sizeY, double maxTime, double duration, double collidDelay);
 	static NPC AddNPC(std::string name, int type, float posX, float posY, float sizeX, float sizeY, double maxTime);
@@ -62,12 +57,15 @@ public:
 	static Item& GetItem(std::string name);
 
 	static void CheckQuest(std::map<Item, int>& inventory, float playerSizeX, float playerSizeY, float playerX, float playerY);
-	static void CheckQuest(std::map<int, int>& inventory, float playerSizeX, float playerSizeY, float playerX, float playerY);
-
+	
 	static void CheckEvent();
 
 	static void Pause();
 	static void Resume();
+
+	static void DiscountRemainingObstacles(int questNumber);
+
+	static std::vector<std::string> GetQuestListByString(int maxQusetList);
 
 	static void Clear();
 };
