@@ -80,6 +80,7 @@ void OpenGLCode::init() {
     std::get<1>(monsterObjects["Monster"]) = 0.5f;
     eventObjects["Landslide"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2((width / 2) - 250.0f, (height / 2) - 250.0f), glm::vec2(500.0f), 0.0f, glm::vec3(0.4f, 0.1f, 1.0f));
     eventObjects["Earthquake"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(0.0f, height - 400.0f), glm::vec2(400.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f));
+    eventObjects["Tsunami"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(width * 1.5f, height * 2), glm::vec2(250.0f, 400.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f));
     player = new GameObject(ResourceManager::GetTexture("NPC"), playerPos, playerSize, 0.0f, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(playerVelocity));
 	attackBox = new GameObject(ResourceManager::GetTexture("NPC"), attackCollidePos, glm::vec2(50.0f, 100.0f), 0.0f, glm::vec3(1.0f, 0.3f, 0.3f));
 
@@ -88,7 +89,8 @@ void OpenGLCode::init() {
     WQFS::GetInstance().AddEvent("Monster", 0, 2, std::get<0>(monsterObjects["Monster"]).objPosition.x, std::get<0>(monsterObjects["Monster"]).objPosition.y, std::get<0>(monsterObjects["Monster"]).objSize.x, std::get<0>(monsterObjects["Monster"]).objSize.y, -1.0f, -1.0f, 0.0f);
     WQFS::GetInstance().AddEvent("Landslide", 1, 2, eventObjects["Landslide"].objPosition.x, eventObjects["Landslide"].objPosition.y, eventObjects["Landslide"].objSize.x, eventObjects["Landslide"].objSize.y, 3.0f, 3.0f, 0.3f);
     WQFS::GetInstance().AddEvent("Earthquake", 2, 2, eventObjects["Earthquake"].objPosition.x, eventObjects["Earthquake"].objPosition.y, eventObjects["Earthquake"].objSize.x, eventObjects["Earthquake"].objSize.y, 2.0f, 1.0f, 0.0f);
-	
+    WQFS::GetInstance().AddEvent("Tsunami", 2, 2, eventObjects["Tsunami"].objPosition.x, eventObjects["Tsunami"].objPosition.y, eventObjects["Earthquake"].objSize.x, eventObjects["Earthquake"].objSize.y, 2.0f, 1.0f, 0.0f);
+
     for (const auto& npc : WQFS::GetInstance().npcs) {
         defaultColors[npc.first] = npcObjects[npc.first].objColor;
 	}
