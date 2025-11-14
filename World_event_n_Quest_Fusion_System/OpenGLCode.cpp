@@ -68,6 +68,7 @@ void OpenGLCode::init() {
     ResourceManager::LoadTexture("Texture/NPC.png", true, "NPC");
     ResourceManager::LoadTexture("Texture/Monster.png", true, "Monster");
     ResourceManager::LoadTexture("Texture/Event.png", true, "Event");
+    ResourceManager::LoadTexture("Texture/Event.png", true, "Tree");
 
 	Shader spriteShader = ResourceManager::GetShader("sprite");
 	sRenderer = new SpriteRenderer(spriteShader);
@@ -80,16 +81,26 @@ void OpenGLCode::init() {
     std::get<1>(monsterObjects["Monster"]) = 0.5f;
     eventObjects["Landslide"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2((width / 2) - 250.0f, (height / 2) - 250.0f), glm::vec2(500.0f), 0.0f, glm::vec3(0.4f, 0.1f, 1.0f));
     eventObjects["Earthquake"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(0.0f, height - 400.0f), glm::vec2(400.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f));
-    eventObjects["Tsunami"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(width * 1.5f, height * 2), glm::vec2(250.0f, 400.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f));
+    eventObjects["Tsunami"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(width * 2 - 250.0f, height / 2), glm::vec2(250.0f, 400.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f));
     player = new GameObject(ResourceManager::GetTexture("NPC"), playerPos, playerSize, 0.0f, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(playerVelocity));
 	attackBox = new GameObject(ResourceManager::GetTexture("NPC"), attackCollidePos, glm::vec2(50.0f, 100.0f), 0.0f, glm::vec3(1.0f, 0.3f, 0.3f));
 
     WQFS::GetInstance().AddNPC("Normal", 0, npcObjects["Normal"].objPosition.x, npcObjects["Normal"].objPosition.y, npcObjects["Normal"].objSize.x, npcObjects["Normal"].objSize.y, 5.0f);
 
     WQFS::GetInstance().AddEvent("Monster", 0, 2, std::get<0>(monsterObjects["Monster"]).objPosition.x, std::get<0>(monsterObjects["Monster"]).objPosition.y, std::get<0>(monsterObjects["Monster"]).objSize.x, std::get<0>(monsterObjects["Monster"]).objSize.y, -1.0f, -1.0f, 0.0f);
-    WQFS::GetInstance().AddEvent("Landslide", 1, 2, eventObjects["Landslide"].objPosition.x, eventObjects["Landslide"].objPosition.y, eventObjects["Landslide"].objSize.x, eventObjects["Landslide"].objSize.y, 3.0f, 3.0f, 0.3f);
-    WQFS::GetInstance().AddEvent("Earthquake", 2, 2, eventObjects["Earthquake"].objPosition.x, eventObjects["Earthquake"].objPosition.y, eventObjects["Earthquake"].objSize.x, eventObjects["Earthquake"].objSize.y, 2.0f, 1.0f, 0.0f);
-    WQFS::GetInstance().AddEvent("Tsunami", 2, 2, eventObjects["Tsunami"].objPosition.x, eventObjects["Tsunami"].objPosition.y, eventObjects["Earthquake"].objSize.x, eventObjects["Earthquake"].objSize.y, 2.0f, 1.0f, 0.0f);
+    WQFS::GetInstance().AddEvent("Landslide", 1, 2, eventObjects["Landslide"].objPosition.x, eventObjects["Landslide"].objPosition.y, eventObjects["Landslide"].objSize.x, eventObjects["Landslide"].objSize.y, 10.0f, 5.0f, 0.3f);
+    WQFS::GetInstance().AddEvent("Earthquake", 1, 2, eventObjects["Earthquake"].objPosition.x, eventObjects["Earthquake"].objPosition.y, eventObjects["Earthquake"].objSize.x, eventObjects["Earthquake"].objSize.y, 5.0f, 3.0f, 0.0f);
+    WQFS::GetInstance().AddEvent("Tsunami", 2, 2, eventObjects["Tsunami"].objPosition.x, eventObjects["Tsunami"].objPosition.y, eventObjects["Tsunami"].objSize.x, eventObjects["Tsunami"].objSize.y, -1.0f, -1.0f, -1.0f);
+
+	WQFS::GetInstance().GetEvent("Earthquake").SetIsMove(true);
+
+    for (auto& event : WQFS::GetInstance().worldEvents) {
+        if (event.second.GetType() == 2) {
+            defaultPosition[event.first] = std::make_tuple(eventObjects[event.first].objPosition, false, 0.0f, 1.0f, 3.0f, 0);
+        }
+	}
+
+    landslide.push_back("Landslide");
 
     for (const auto& npc : WQFS::GetInstance().npcs) {
         defaultColors[npc.first] = npcObjects[npc.first].objColor;
@@ -122,6 +133,8 @@ void OpenGLCode::init() {
 
     pauseDelay = 0.15f;
     pauseDelayTimer = 1.0f;
+
+	level.Load("level/1.lvl", width, height);
 }
 
 void OpenGLCode::update() {
@@ -159,12 +172,16 @@ void OpenGLCode::update() {
 
             for (const auto& event : WQFS::GetInstance().worldEvents) {
                 if (event.second.GetType() == 1) {
-                    if (event.second.getDoEvent()) {
-                        particleGenerator->Update(deltaTime, eventObjects["Landslide"], 1, glm::vec2(100.0f, 0.0f));
-                    }
-                    else {
-                        particleGenerator->Idle(deltaTime);
-                    }
+                    for (const auto& ls : landslide) {
+                        if (ls == event.first) {
+                            if (event.second.getDoEvent()) {
+                                particleGenerator->Update(deltaTime, eventObjects[event.first], 1, glm::vec2(100.0f, 0.0f));
+                            }
+                            else {
+                                particleGenerator->Idle(deltaTime);
+                            }
+                        }
+					}
                 }
             }
 
@@ -199,6 +216,8 @@ void OpenGLCode::update() {
 }
 
 void OpenGLCode::render() {
+	level.Draw(*sRenderer);
+
     for (const auto& monster : WQFS::GetInstance().worldEvents) {
         //std::cout << monster.second.getVisible() << std::endl;
         if (monster.second.GetType() == 0 && monster.second.getVisible()) {
@@ -265,13 +284,6 @@ void OpenGLCode::render() {
     player->Draw(*sRenderer);
 
     particleGenerator->Draw(*sRenderer);
-
-    for (const auto& event : WQFS::GetInstance().worldEvents) {
-        if (event.second.GetType() == 1) {
-            if (event.second.getDoEvent()) {
-            }
-        }
-    }
 
     std::stringstream sHp;
     sHp << hp;
@@ -376,9 +388,9 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 void OpenGLCode::MoveSelf(float dt) {
-    float timeScale = 2.0f;
+    float timeScale = 1.0f;
 
-    if (changeMoveTime >= 2.5f) {
+    if (changeMoveTime >= 30.0f) {
         changedir = true;
 
         changeMoveTime = 0;
@@ -439,20 +451,58 @@ void OpenGLCode::MoveSelf(float dt) {
     }
 
     for (auto& event : WQFS::GetInstance().worldEvents) {
-        if (event.second.GetType() == 2) {
-            if (changedir) {
-                eventObjects[event.first].objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
+        if (changedir) {
+            if (event.second.GetType() == 1) {
+                if (event.second.GetIsMove()) {
+                    unsigned int x = rand() % mapWidth;
+                    unsigned int y = rand() % mapHeight;
+
+                    eventObjects[event.first].objPosition = glm::vec2(x - eventObjects[event.first].objSize.x, y - eventObjects[event.first].objSize.y);
+
+                    if (eventObjects[event.first].objPosition.x <= 0) {
+						eventObjects[event.first].objPosition.x = 0.0f;
+                    }
+                    if (eventObjects[event.first].objPosition.y <= 0) {
+						eventObjects[event.first].objPosition.y = 0.0f;
+                    }
+                }
+                event.second.SetPosition(eventObjects[event.first].objPosition.x, eventObjects[event.first].objPosition.y);
             }
-
-            if ((eventObjects[event.first].objPosition.x < 0 && eventObjects[event.first].objVelocity.x == -1)) eventObjects[event.first].objVelocity.x = 0;
-            if ((eventObjects[event.first].objPosition.y < 0 && eventObjects[event.first].objVelocity.y == -1)) eventObjects[event.first].objVelocity.y = 0;
-
-            eventObjects[event.first].objPosition.x += eventObjects[event.first].objVelocity.x * 10 * dt * timeScale;
-            eventObjects[event.first].objPosition.y += eventObjects[event.first].objVelocity.y * 10 * dt * timeScale;
-
-			event.second.SetPosition(eventObjects[event.first].objPosition.x, eventObjects[event.first].objPosition.y);
         }
 	}
+
+
+    for (auto& def : defaultPosition) {
+        std::get<2>(def.second) += dt * timeScale;
+
+        if (!std::get<1>(def.second) && std::get<2>(def.second) > std::get<3>(def.second)) {
+            std::get<1>(def.second) = true;
+            std::get<2>(def.second) = 0;
+        }
+        if (std::get<1>(def.second) && std::get<2>(def.second) > std::get<4>(def.second)) {
+            std::get<1>(def.second) = false;
+            std::get<2>(def.second) = 0;
+        }
+
+        if (std::get<1>(def.second)) {
+            switch (std::get<5>(def.second)) {
+                case 0: eventObjects[def.first].objPosition.x -= 300 * dt * timeScale; break;
+                case 1: eventObjects[def.first].objPosition.x += 300 * dt * timeScale; break;
+                case 2: eventObjects[def.first].objPosition.y -= 300 * dt * timeScale; break;
+                case 3: eventObjects[def.first].objPosition.y += 300 * dt * timeScale; break;
+            }
+
+            WQFS::GetInstance().GetEvent(def.first).SetPosition(eventObjects[def.first].objPosition.x, eventObjects[def.first].objPosition.y);
+			WQFS::GetInstance().GetEvent(def.first).setDoEvent(true);
+            WQFS::GetInstance().GetEvent(def.first).SetIsCanCollid(true);
+		}
+        else {
+			eventObjects[def.first].objPosition = std::get<0>(def.second);
+            WQFS::GetInstance().GetEvent(def.first).SetPosition(eventObjects[def.first].objPosition.x, eventObjects[def.first].objPosition.y);
+            WQFS::GetInstance().GetEvent(def.first).setDoEvent(false);
+            WQFS::GetInstance().GetEvent(def.first).SetIsCanCollid(false);
+        }
+    }
 
 	if (changedir)  changedir = false;
 }

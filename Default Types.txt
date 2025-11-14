@@ -7,9 +7,9 @@ NPC All             3   (All(One(50), Two(30), Three(15), All(5)))
 
 Event
 
-0. Monster Event
-1. Static Event
-2. Dynamic Event
+0. Monster
+1. Event
+
 
 Item
 

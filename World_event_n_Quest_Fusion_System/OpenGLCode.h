@@ -11,6 +11,7 @@
 #include "WQFS.h"
 #include "TextRenderer.h"
 #include "ParticleGenerator.h"
+#include "LevelGenerator.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -37,6 +38,7 @@ enum Direction {
 };
 
 typedef std::tuple<GameObject, float> Monster;
+typedef std::tuple<glm::vec2, bool, float, float, float, int> Moving; //default position, isCanMove, timer, eventdelay, dodelay, moveDirection(0 = left, 1 = right, 2 = up, 3 = down)
 
 class OpenGLCode
 {
@@ -47,6 +49,9 @@ private:
 	std::map<int, GameObject> questObjects; //quest number, object
 	std::map<Item, int> inventory; //Item, count
 	std::map<std::string, glm::vec3> defaultColors;
+	std::map<std::string, Moving> defaultPosition;
+	std::vector<std::string> landslide;
+	LevelGenerator level;
 
 	glm::mat4 view;
 	GameState states;

@@ -1,7 +1,7 @@
 #include "WorldEvent.h"
 
 WorldEvent::WorldEvent() 
-	: number(-1), type(-1), hp(0), positionX(0), positionY(0), sizeX(0), sizeY(0), questNumber(-1), isVisible(true), doEvent(false), isCanCollid(false), start(clock()), eventStart(0), eventTimer(0.0f), maxTime(0.0f), duration(0.0f), durationTimer(0.0f), collideDelay(0.0f) { }
+	: number(-1), type(-1), hp(0), positionX(0), positionY(0), sizeX(0), sizeY(0), questNumber(-1), isVisible(true), doEvent(false), isCanCollid(false), start(clock()), eventStart(0), eventTimer(0.0f), maxTime(0.0f), duration(0.0f), durationTimer(0.0f), collideDelay(0.0f), isMove(false) { }
 
 void WorldEvent::SetUp(int _number, int _type, int _hp, float posX, float posY, float _sizeX, float _sizeY, double _maxTime, double _duration, double _collideDelay) {
 	number = _number;
@@ -36,13 +36,13 @@ void WorldEvent::Timer() {
 	}
 
 	if (!doEvent && eventTimer > maxTime + pauseDuration) {
-		std::cout << "이벤트 시작" << std::endl;
+		//std::cout << "이벤트 시작" << std::endl;
 		eventStart = clock();
 		doEvent = true;
 	}
 
 	if (!isCanCollid && eventTimer > maxTime + collideDelay + pauseDuration) {
-		std::cout << "충돌 시작" << collideDelay << std::endl;
+		//std::cout << "충돌 시작" << collideDelay << std::endl;
 		isCanCollid = true;
 	}
 	else if (!isCanCollid && eventTimer <= maxTime + collideDelay + pauseDuration) {
@@ -59,7 +59,7 @@ void WorldEvent::ResetTimer() {
 		durationTimer = (double)(clock() - eventStart) / CLOCKS_PER_SEC;
 	}
 	else {
-		std::cout << "이벤트 끝" << std::endl;
+		//std::cout << "이벤트 끝" << std::endl;
 		start = clock();
 		eventTimer = 0.0f;
 		durationTimer = 0.0f;
@@ -166,7 +166,7 @@ bool WorldEvent::getDoEvent() const {
 	return doEvent;
 }
 
-void WorldEvent::GetIsCanCollid(bool b) {
+void WorldEvent::SetIsCanCollid(bool b) {
 	isCanCollid = b;
 }
 
@@ -179,4 +179,11 @@ void WorldEvent::SetPauseDuration(double duration) {
 }
 double WorldEvent::GetPauseDuration() const {
 	return pauseDuration;
+}
+
+void WorldEvent::SetIsMove(bool b) {
+	isMove = b;
+}
+bool WorldEvent::GetIsMove() const {
+	return isMove;
 }

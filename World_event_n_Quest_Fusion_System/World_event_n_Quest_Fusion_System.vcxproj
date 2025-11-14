@@ -129,6 +129,7 @@
     <ClCompile Include="..\..\..\..\..\..\glad\src\glad.c" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Item.cpp" />
+    <ClCompile Include="LevelGenerator.cpp" />
     <ClCompile Include="NPC.cpp" />
     <ClCompile Include="OpenGLCode.cpp" />
     <ClCompile Include="ParticleGenerator.cpp" />
@@ -145,6 +146,7 @@
   <ItemGroup>
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Item.h" />
+    <ClInclude Include="LevelGenerator.h" />
     <ClInclude Include="NPC.h" />
     <ClInclude Include="OpenGLCode.h" />
     <ClInclude Include="ParticleGenerator.h" />

@@ -22,6 +22,7 @@ private:
 	bool isVisible;
 	bool doEvent;
 	bool isCanCollid;
+	bool isMove;
 	clock_t start;
 	clock_t eventStart;
 	double eventTimer;
@@ -58,8 +59,10 @@ public:
 	bool getVisible() const;
 	void setDoEvent(bool b);
 	bool getDoEvent() const;
-	void GetIsCanCollid(bool b);
+	void SetIsCanCollid(bool b);
 	bool GetIsCanCollid() const;
+	void SetIsMove(bool b);
+	bool GetIsMove() const;
 	void SetPauseDuration(double duration);
 	double GetPauseDuration() const;
 
@@ -94,6 +97,7 @@ public:
 		this->collideDelay = other.collideDelay;
 		this->isCanCollid = other.isCanCollid;
 		this->pauseDuration = other.pauseDuration;
+		this->isMove = other.isMove;
 
 		return *this;
 	}
