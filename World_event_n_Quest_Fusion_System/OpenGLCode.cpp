@@ -65,10 +65,13 @@ void OpenGLCode::init() {
     ResourceManager::GetShader("Particle").use().SetInt("sprite", 0);
     ResourceManager::GetShader("Particle").use().SetMat4("projection", projection);
 
+    ResourceManager::LoadTexture("Texture/Player.png", true, "Player");
+    ResourceManager::LoadTexture("Texture/PlayerMove.png", true, "PlayerMove");
     ResourceManager::LoadTexture("Texture/NPC.png", true, "NPC");
     ResourceManager::LoadTexture("Texture/Monster.png", true, "Monster");
     ResourceManager::LoadTexture("Texture/Event.png", true, "Event");
-    ResourceManager::LoadTexture("Texture/Event.png", true, "Tree");
+    ResourceManager::LoadTexture("Texture/Tree.png", true, "Tree");
+    ResourceManager::LoadTexture("Texture/Tide_by_Gemini.png", true, "Tsunami");
 
 	Shader spriteShader = ResourceManager::GetShader("sprite");
 	sRenderer = new SpriteRenderer(spriteShader);
@@ -81,8 +84,8 @@ void OpenGLCode::init() {
     std::get<1>(monsterObjects["Monster"]) = 0.5f;
     eventObjects["Landslide"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2((width / 2) - 250.0f, (height / 2) - 250.0f), glm::vec2(500.0f), 0.0f, glm::vec3(0.4f, 0.1f, 1.0f));
     eventObjects["Earthquake"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(0.0f, height - 400.0f), glm::vec2(400.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f));
-    eventObjects["Tsunami"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(width * 2 - 250.0f, height / 2), glm::vec2(250.0f, 400.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f));
-    player = new GameObject(ResourceManager::GetTexture("NPC"), playerPos, playerSize, 0.0f, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(playerVelocity));
+    eventObjects["Tsunami"] = GameObject(ResourceManager::GetTexture("Tsunami"), glm::vec2(width * 2 - 250.0f, height / 2), glm::vec2(250.0f, 250.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f));
+    player = new GameObject(ResourceManager::GetTexture("Player"), playerPos, playerSize, 0.0f, glm::vec3(1.0f), glm::vec2(playerVelocity));
 	attackBox = new GameObject(ResourceManager::GetTexture("NPC"), attackCollidePos, glm::vec2(50.0f, 100.0f), 0.0f, glm::vec3(1.0f, 0.3f, 0.3f));
 
     WQFS::GetInstance().AddNPC("Normal", 0, npcObjects["Normal"].objPosition.x, npcObjects["Normal"].objPosition.y, npcObjects["Normal"].objSize.x, npcObjects["Normal"].objSize.y, 5.0f);
@@ -90,17 +93,17 @@ void OpenGLCode::init() {
     WQFS::GetInstance().AddEvent("Monster", 0, 2, std::get<0>(monsterObjects["Monster"]).objPosition.x, std::get<0>(monsterObjects["Monster"]).objPosition.y, std::get<0>(monsterObjects["Monster"]).objSize.x, std::get<0>(monsterObjects["Monster"]).objSize.y, -1.0f, -1.0f, 0.0f);
     WQFS::GetInstance().AddEvent("Landslide", 1, 2, eventObjects["Landslide"].objPosition.x, eventObjects["Landslide"].objPosition.y, eventObjects["Landslide"].objSize.x, eventObjects["Landslide"].objSize.y, 10.0f, 5.0f, 0.3f);
     WQFS::GetInstance().AddEvent("Earthquake", 1, 2, eventObjects["Earthquake"].objPosition.x, eventObjects["Earthquake"].objPosition.y, eventObjects["Earthquake"].objSize.x, eventObjects["Earthquake"].objSize.y, 5.0f, 3.0f, 0.0f);
-    WQFS::GetInstance().AddEvent("Tsunami", 2, 2, eventObjects["Tsunami"].objPosition.x, eventObjects["Tsunami"].objPosition.y, eventObjects["Tsunami"].objSize.x, eventObjects["Tsunami"].objSize.y, -1.0f, -1.0f, -1.0f);
+    WQFS::GetInstance().AddEvent("Tsunami", 2, 2, eventObjects["Tsunami"].objPosition.x, eventObjects["Tsunami"].objPosition.y, eventObjects["Tsunami"].objSize.x, eventObjects["Tsunami"].objSize.y, 10.0f, 3.0f, 0.0f);
 
 	WQFS::GetInstance().GetEvent("Earthquake").SetIsMove(true);
 
-    for (auto& event : WQFS::GetInstance().worldEvents) {
-        if (event.second.GetType() == 2) {
-            defaultPosition[event.first] = std::make_tuple(eventObjects[event.first].objPosition, false, 0.0f, 1.0f, 3.0f, 0);
-        }
-	}
-
     landslide.push_back("Landslide");
+
+    for (const auto& def : WQFS::GetInstance().worldEvents) {
+        if (def.second.GetType() == 2) {
+            defaultPosition[def.first] = std::make_pair(eventObjects[def.first].objPosition, 0);
+		}
+    }
 
     for (const auto& npc : WQFS::GetInstance().npcs) {
         defaultColors[npc.first] = npcObjects[npc.first].objColor;
@@ -146,7 +149,7 @@ void OpenGLCode::update() {
         lastFrame = currentFrame;
 
 
-        glClearColor(0.2f, 0.7f, 0.3f, 1.0f);
+        glClearColor(170 / 255.0f, 170 / 255.0f, 170 / 255.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         view = glm::lookAt(glm::vec3(cameraPos, 0.0f), glm::vec3(cameraPos, 0.0f) + cameraFront, cameraUp);
@@ -240,7 +243,9 @@ void OpenGLCode::render() {
 
         if (event.second.GetType() != 0) {
             if (event.second.GetIsCanCollid()) {
-                textRenderer->renderText("Dangerous!", event.second.GetPositionX(), event.second.GetPositionY(), 2.0f, glm::vec3(0.0f));
+                if (CheckCollision(glm::vec2(cameraPos.x + (width / 2), cameraPos.y + (height / 2)), glm::vec2(width, height), glm::vec2(event.second.GetPositionX(), event.second.GetPositionY()), glm::vec2(10 * 32 * 2, 32 * 2))) {
+                    textRenderer->renderText("Dangerous!", event.second.GetPositionX() - cameraPos.x, event.second.GetPositionY() - cameraPos.y, 2.0f, glm::vec3(0.0f));
+                }
                 eventObjects[event.first].objColor = glm::vec3(1.0f, 0.0f, 0.0f);
             }
             else {
@@ -254,7 +259,9 @@ void OpenGLCode::render() {
         npcObjects[npc.first].Draw(*sRenderer, true);
 
         if (npc.second.GetInDangerous()) {
-            textRenderer->renderText("Quest Here!", npc.second.GetPositionX(), npc.second.GetPositionY(), 2.0f, glm::vec3(0.0f));
+            if (CheckCollision(glm::vec2(cameraPos.x + (width / 2), cameraPos.y + (height / 2)), glm::vec2(width, height), glm::vec2(npc.second.GetPositionX(), npc.second.GetPositionY()), glm::vec2(11 * 32 * 2, 32 * 2))) {
+                textRenderer->renderText("Quest Here!", npc.second.GetPositionX() - cameraPos.x, npc.second.GetPositionY() - cameraPos.y, 2.0f, glm::vec3(0.0f));
+            }
 
             showDangerousTime += deltaTime;
 
@@ -268,7 +275,9 @@ void OpenGLCode::render() {
         }
         else {
             if (!npc.second.GetCanDangerous()) {
-                textRenderer->renderText("Delay!", npc.second.GetPositionX(), npc.second.GetPositionY(), 2.0f, glm::vec3(0.0f));
+                if (CheckCollision(glm::vec2(cameraPos.x + (width / 2), cameraPos.y + (height / 2)), glm::vec2(width, height), glm::vec2(npc.second.GetPositionX(), npc.second.GetPositionY()), glm::vec2(6 * 32 * 2, 32 * 2))) {
+                    textRenderer->renderText("Delay!", npc.second.GetPositionX() - cameraPos.x, npc.second.GetPositionY() - cameraPos.y, 2.0f, glm::vec3(0.0f));
+                }
             }
             npcObjects[npc.first].objColor = glm::vec3(0.1f, 0.5f, 1.0f);
             showDangerousTime = 1.0f;
@@ -281,7 +290,7 @@ void OpenGLCode::render() {
     }
 
 
-    player->Draw(*sRenderer);
+    player->Draw(*sRenderer, true);
 
     particleGenerator->Draw(*sRenderer);
 
@@ -341,6 +350,7 @@ void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
             attackBox->objPosition.x = player->objPosition.x - 50.0f;
             attackBox->objPosition.y = player->objPosition.y;
             attackBox->objRotation = 0.0f;
+			player->flipX = false;
         }
         //Right
         if ((glfwGetKey(window, GLFW_KEY_D) || glfwGetKey(window, GLFW_KEY_RIGHT)) && player->objPosition.x < mapWidth - player->objSize.y) {
@@ -348,6 +358,7 @@ void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
             attackBox->objPosition.x = player->objPosition.x + player->objSize.x;
             attackBox->objPosition.y = player->objPosition.y;
             attackBox->objRotation = 0.0f;
+            player->flipX = true;
         }
         //Attack, Interept
         if (glfwGetKey(window, GLFW_KEY_SPACE) && attackDelay >= 0.7f) {
@@ -473,19 +484,8 @@ void OpenGLCode::MoveSelf(float dt) {
 
 
     for (auto& def : defaultPosition) {
-        std::get<2>(def.second) += dt * timeScale;
-
-        if (!std::get<1>(def.second) && std::get<2>(def.second) > std::get<3>(def.second)) {
-            std::get<1>(def.second) = true;
-            std::get<2>(def.second) = 0;
-        }
-        if (std::get<1>(def.second) && std::get<2>(def.second) > std::get<4>(def.second)) {
-            std::get<1>(def.second) = false;
-            std::get<2>(def.second) = 0;
-        }
-
-        if (std::get<1>(def.second)) {
-            switch (std::get<5>(def.second)) {
+        if (WQFS::GetInstance().GetEvent(def.first).GetIsCanCollid()) {
+            switch (std::get<1>(def.second)) {
                 case 0: eventObjects[def.first].objPosition.x -= 300 * dt * timeScale; break;
                 case 1: eventObjects[def.first].objPosition.x += 300 * dt * timeScale; break;
                 case 2: eventObjects[def.first].objPosition.y -= 300 * dt * timeScale; break;
@@ -493,14 +493,10 @@ void OpenGLCode::MoveSelf(float dt) {
             }
 
             WQFS::GetInstance().GetEvent(def.first).SetPosition(eventObjects[def.first].objPosition.x, eventObjects[def.first].objPosition.y);
-			WQFS::GetInstance().GetEvent(def.first).setDoEvent(true);
-            WQFS::GetInstance().GetEvent(def.first).SetIsCanCollid(true);
 		}
         else {
 			eventObjects[def.first].objPosition = std::get<0>(def.second);
             WQFS::GetInstance().GetEvent(def.first).SetPosition(eventObjects[def.first].objPosition.x, eventObjects[def.first].objPosition.y);
-            WQFS::GetInstance().GetEvent(def.first).setDoEvent(false);
-            WQFS::GetInstance().GetEvent(def.first).SetIsCanCollid(false);
         }
     }
 
@@ -596,6 +592,15 @@ bool OpenGLCode::CheckCollision(GameObject& object1, GameObject& object2) {
 		object2.objPosition.x + object2.objSize.x >= object1.objPosition.x;
     bool collisionY = object1.objPosition.y + object1.objSize.y >= object2.objPosition.y &&
 		object2.objPosition.y + object2.objSize.y >= object1.objPosition.y;
+
+    return collisionX && collisionY;
+}
+
+bool OpenGLCode::CheckCollision(glm::vec2 object1Pos, glm::vec2 object1Size, glm::vec2 object2Pos, glm::vec2 object2Size) {
+    bool collisionX = object1Pos.x + object1Size.x >= object2Pos.x &&
+        object2Pos.x + object2Size.x >= object1Pos.x;
+    bool collisionY = object1Pos.y + object1Size.y >= object2Pos.y &&
+        object2Pos.y + object2Size.y >= object1Pos.y;
 
     return collisionX && collisionY;
 }

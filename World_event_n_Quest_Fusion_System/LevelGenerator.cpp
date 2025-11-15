@@ -9,7 +9,7 @@ void LevelGenerator::init(std::vector<std::vector<unsigned int>> tileData, unsig
 
 	for (unsigned int y = 0; y < height; ++y) {
 		for (unsigned int x = 0; x < width; ++x) {
-			if (tileData[y][x] == 1) {
+			if (tileData[y][x] == 2) {
 				glm::vec2 pos(unit_width * x, unit_height * y);
 				glm::vec2 size(unit_width, unit_height);
 				GameObject obj(ResourceManager::GetTexture("Tree"), pos, size, 0.0f, glm::vec3(0.8f, 0.8f, 0.7f));
@@ -72,6 +72,6 @@ void LevelGenerator::Load(const char* file, unsigned int level_width, unsigned i
 
 void LevelGenerator::Draw(SpriteRenderer& renderer) {
 	for (GameObject& wall : walls) {
-		wall.Draw(renderer);
+		wall.Draw(renderer, true);
 	}
 }

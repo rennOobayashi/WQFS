@@ -38,7 +38,7 @@ enum Direction {
 };
 
 typedef std::tuple<GameObject, float> Monster;
-typedef std::tuple<glm::vec2, bool, float, float, float, int> Moving; //default position, isCanMove, timer, eventdelay, dodelay, moveDirection(0 = left, 1 = right, 2 = up, 3 = down)
+typedef std::pair<glm::vec2, int> Moving; //default position, moveDirection(0 = left, 1 = right, 2 = up, 3 = down)
 
 class OpenGLCode
 {
@@ -84,6 +84,7 @@ private:
 	void DoCollisions();
 	void Reset();
 	bool CheckCollision(GameObject& object1, GameObject& object2);
+	bool CheckCollision(glm::vec2 object1Pos, glm::vec2 object1Size, glm::vec2 object2Pos, glm::vec2 object2Size);
 public:
 	OpenGLCode(unsigned int _width, unsigned int _height);
 	~OpenGLCode(); //Destructor

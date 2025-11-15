@@ -12,8 +12,10 @@ class GameObject
 public:
 	glm::vec2 objPosition, objSize, objVelocity;
 	glm::vec3 objColor;
-	float objRotation;
 	Texture objSprite;
+	float objRotation;
+	bool flipX;
+	bool flipY;
 
 	GameObject();
 	GameObject(Texture sprite, glm::vec2 pos, glm::vec2 size, float rotation = 0, glm::vec3 color = glm::vec3(0.0f), glm::vec2 velocity = glm::vec2(0.0f));
