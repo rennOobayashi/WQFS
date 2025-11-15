@@ -4,37 +4,21 @@ void LevelGenerator::init(std::vector<std::vector<unsigned int>> tileData, unsig
 	unsigned int width = tileData[0].size(); //x
 	unsigned int height = tileData.size(); //y
 	//Casting reliably with static_cast
-	float unit_width = levelWidth / static_cast<float>(width);
-	float unit_height = levelHeight / height;
+	float unitWidth = levelWidth / static_cast<float>(width);
+	float unitHeight = levelHeight / height;
 
 	for (unsigned int y = 0; y < height; ++y) {
 		for (unsigned int x = 0; x < width; ++x) {
-			if (tileData[y][x] == 2) {
-				glm::vec2 pos(unit_width * x, unit_height * y);
-				glm::vec2 size(unit_width, unit_height);
-				GameObject obj(ResourceManager::GetTexture("Tree"), pos, size, 0.0f, glm::vec3(0.8f, 0.8f, 0.7f));
-				walls.push_back(obj);
+			GameObject obj;
+			glm::vec2 pos(unitWidth * x, unitHeight * y);
+			glm::vec2 size(unitWidth, unitHeight);
+			switch (tileData[y][x]) {
+				case 1:
+					obj = GameObject(ResourceManager::GetTexture("Tree"), pos, size, 0.0f, glm::vec3(1.0f));
+					break;
 			}
-			/*else if (tileData[y][x] > 1) {
-				glm::vec3 color = glm::vec3(1.0f);
 
-				switch (tileData[y][x]) {
-				case 2: color = glm::vec3(0.2f, 0.6f, 1.0f);
-					break;
-				case 3: color = glm::vec3(0.1f, 0.7f, 0.2f);
-					break;
-				case 4: color = glm::vec3(0.4f, 0.8f, 0.8f);
-					break;
-				case 5: color = glm::vec3(0.4f, 0.3f, 0.0f);
-					break;
-				default: std::cout << "Wrong tile code" << std::endl;
-				}
-
-				glm::vec2 pos(unit_width * x, unit_height * y);
-				glm::vec2 size(unit_width, unit_height);
-				GameObject obj(ResourceManager::GetTexture("Tree"), pos, size, 0.0f, color);
-				walls.push_back(obj);
-			}*/
+			walls.push_back(obj);
 		}
 	}
 }
