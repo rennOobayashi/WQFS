@@ -63,7 +63,7 @@ public:
 	static void Pause();
 	static void Resume();
 
-	static void DiscountRemainingObstacles(NPC NPC);
+	static void DiscountRemainingObstacles(int questNumber);
 
 	static std::vector<std::string> GetQuestListByString(int maxQusetList);
 

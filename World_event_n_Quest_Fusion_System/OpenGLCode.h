@@ -38,8 +38,8 @@ enum Direction {
 };
 
 typedef std::tuple<GameObject, float> Monster;
+typedef std::tuple<std::vector<GameObject>, bool, bool> QuestObject; //obstacle list, isGenerated
 typedef std::pair<glm::vec2, int> Moving; //default position, moveDirection(0 = left, 1 = right, 2 = up, 3 = down)
-typedef std::pair < std::vector<GameObject>, bool> Obstacle; //obstacle list, isGenerated
 
 class OpenGLCode
 {
@@ -51,7 +51,7 @@ private:
 	std::map<Item, int> inventory; //Item, count
 	std::map<std::string, glm::vec3> defaultColors;
 	std::map<std::string, Moving> defaultPosition;
-	std::map<int, Obstacle> ObstacleObjects;
+	std::map<int, QuestObject> QuestObjects;
 	std::vector<std::string> landslide;
 	LevelGenerator level;
 
@@ -75,7 +75,7 @@ private:
 
 	GameObject* player;
 	GameObject* attackBox;
-	GameObject* returnItem;
+	GameObject* questGameObject;
 
 	TextRenderer* textRenderer;
 
@@ -88,7 +88,7 @@ private:
 	void CameraMove(float dt);
 	void DoCollisions();
 	void Reset();
-	void MakeObstacles(int questNumber);
+	void MakeQusetObject(int questNumber, glm::vec2 offset);
 	bool CheckCollision(GameObject& object1, GameObject& object2);
 	bool CheckCollision(glm::vec2 object1Pos, glm::vec2 object1Size, glm::vec2 object2Pos, glm::vec2 object2Size);
 public:

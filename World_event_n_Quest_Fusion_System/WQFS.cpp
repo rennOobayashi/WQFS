@@ -88,6 +88,9 @@ void WQFS::MakeQuest(NPC &npc, WorldEvent &event) {
 	if (questType == 2) {
 		questRemaining[npc.getQuestNumber()] = (rand() % 3) + 3;
 	}
+	if (questType == 3) {
+		questRemaining[npc.getQuestNumber()] = (rand() % 3) + 1;
+	}
 
 	std::cout << "보상 ";
 
@@ -157,7 +160,7 @@ void WQFS::CheckQuest(std::map<Item, int>& inventory, float playerSizeX, float p
 				}
 			}
 
-			if (std::get<1>(questList[npc.second.getQuestNumber()]) == 2 && questRemaining[npc.second.getQuestNumber()] <= 0) {
+			if ((std::get<1>(questList[npc.second.getQuestNumber()]) == 2 || std::get<1>(questList[npc.second.getQuestNumber()]) == 3) && questRemaining[npc.second.getQuestNumber()] <= 0) {
 				std::vector<Item> items = WQFS::GetInstance().CompleteQuest(npc.second);
 
 				for (auto& item : items) {
@@ -513,6 +516,14 @@ std::vector<Item> WQFS::CompleteQuest(NPC &npc)  {
 	if (!std::get<2>(questList[npc.getQuestNumber()])) {
 		std::get<2>(questList[npc.getQuestNumber()]) = true;
 		npc.SetInDangerous(false);
+
+		for (auto& target : WQFS::GetInstance().QuestTargetObjects) {
+			if (target.first->getQuestNumber() == npc.getQuestNumber()) {
+				target.second->setQuestNumber(-1);
+				break;
+			}
+		}
+
 		npc.setQuestNumber(-1);
 
 		std::cout << "퀘스트 완료!" << std::endl; 
@@ -535,12 +546,13 @@ std::vector<std::string> WQFS::GetQuestListByString(int maxQuestList) {
 
 		std::string strData = "";
 		for (const auto target : QuestTargetObjects) {
-			if (quest.first == target.first->getQuestNumber()) {
-				strData = std::to_string(quest.first + 1) + ". ";
+			if (target.first->getQuestNumber() != -1 && quest.first == target.first->getQuestNumber()) {
+				strData = std::to_string(quest.first + 1) + ". "; 
 
+				std::cout << std::get<1>(quest.second) << std::endl;
 				switch (std::get<1>(quest.second)) {
-				case 0: strData += "Save NPC.\r\n";	break;
-				case 1: strData += "Retrieve  NPC's Item.\r\n";	break;
+				case 0: strData += "Save NPC.";	break;
+				case 1: strData += "Retrieve  NPC's Item.";	break;
 				case 2: strData += "Return the item to the NPC. (Remaining: " + std::to_string((WQFS::GetInstance().questRemaining[quest.first])) + ")";	break;
 				case 3: strData += "Remove obstacles for NPC (Remaining: " + std::to_string(WQFS::GetInstance().questRemaining[quest.first]) + ")";	break;
 				default: strData += "";  break;
@@ -563,6 +575,6 @@ std::vector<std::string> WQFS::GetQuestListByString(int maxQuestList) {
 	}
 }
 
-void WQFS::DiscountRemainingObstacles(NPC NPC) {
-	--questRemaining[NPC.getQuestNumber()];
+void WQFS::DiscountRemainingObstacles(int questNumber) {
+	--questRemaining[questNumber];
 }

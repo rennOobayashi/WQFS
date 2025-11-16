@@ -11,20 +11,20 @@ const glm::vec2 playerSize(70.0f);
 const float playerVelocity(300.0f);
 const float CameraVelocity(1000.0f);
 
-glm::vec2 obstacleOffset[5] = {
-    glm::vec2(-300.0f, 300.0f),
-    glm::vec2(500.0f, -200.0f),
-    glm::vec2(-700.0f, -400.0f),
-    glm::vec2(900.0f, 150.0f),
-    glm::vec2(10.0f, 350.0f),
+glm::vec2 obstaclePosition[5] = {
+    glm::vec2(-50.0f, 50.0f),
+    glm::vec2(25.0f, -20.0f),
+    glm::vec2(-70.0f, -40.0f),
+    glm::vec2(90.0f, 15.0f),
+    glm::vec2(10.0f, 35.0f),
 };
 
-float obstacleColors[5][3] = {
-    {255 / 255.0f, 255 / 255.0, 255 / 255.0},
-    {199 / 255.0f, 199 / 255.0, 199 / 255.0},
-    {107 / 255.0f, 107 / 255.0, 107 / 255.0},
-    {125 / 255.0f, 125 / 255.0, 125 / 255.0},
-    { 77 / 255.0f,  77 / 255.0,  77 / 255.0},
+glm::vec3 obstacleColors[5] = {
+    glm::vec3(255 / 255.0f, 255 / 255.0, 255 / 255.0),
+    glm::vec3(199 / 255.0f, 199 / 255.0, 199 / 255.0),
+    glm::vec3(107 / 255.0f, 107 / 255.0, 107 / 255.0),
+    glm::vec3(125 / 255.0f, 125 / 255.0, 125 / 255.0),
+    glm::vec3( 77 / 255.0f,  77 / 255.0,  77 / 255.0),
 };
 
 OpenGLCode::OpenGLCode(unsigned int _width, unsigned int _height)
@@ -96,7 +96,7 @@ void OpenGLCode::init() {
     glm::vec2 playerPos(width / 2, height / 2);
     attackCollidePos = glm::vec2(playerPos.x + 20.0f, playerPos.y);
 
-    npcObjects["Normal"] = GameObject(ResourceManager::GetTexture("NPC"), glm::vec2(0.0f, 0.0f), glm::vec2(200.0f), 0.0f, glm::vec3(0.1f, 0.5f, 1.0f));
+    npcObjects["Normal"] = GameObject(ResourceManager::GetTexture("NPC"), glm::vec2(0.0f, 0.0f), glm::vec2(60.0f), 0.0f, glm::vec3(0.1f, 0.5f, 1.0f));
     std::get<0>(monsterObjects["Monster"]) = GameObject(ResourceManager::GetTexture("Monster"), glm::vec2(width - 200.0f, 0.0f), glm::vec2(200.0f), 0.0f, glm::vec3(1.0f, 0.2f, 0.1f));
     std::get<1>(monsterObjects["Monster"]) = 0.5f;
     eventObjects["Landslide"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2((width / 2) - 250.0f, (height / 2) - 250.0f), glm::vec2(500.0f), 0.0f, glm::vec3(0.4f, 0.1f, 1.0f));
@@ -104,7 +104,7 @@ void OpenGLCode::init() {
     eventObjects["Tsunami"] = GameObject(ResourceManager::GetTexture("Tsunami"), glm::vec2(width * 2 - 250.0f, height / 2), glm::vec2(120.0f), 0.0f, glm::vec3(1.0f));
     player = new GameObject(ResourceManager::GetTexture("Player"), playerPos, playerSize, 0.0f, glm::vec3(1.0f), glm::vec2(playerVelocity));
 	attackBox = new GameObject(ResourceManager::GetTexture("NPC"), attackCollidePos, glm::vec2(50.0f, 100.0f), 0.0f, glm::vec3(1.0f, 0.3f, 0.3f));
-    returnItem = new GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(0.0f), glm::vec2(10.0f), 0.0f, glm::vec3(1.0f));
+    questGameObject = new GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(0.0f), glm::vec2(25.0f), 0.0f, glm::vec3(1.0f));
 
     WQFS::GetInstance().AddNPC("Normal", 0, npcObjects["Normal"].objPosition.x, npcObjects["Normal"].objPosition.y, npcObjects["Normal"].objSize.x, npcObjects["Normal"].objSize.y, 5.0f);
 
@@ -185,6 +185,7 @@ void OpenGLCode::update() {
 
         if (states != GAME_MENU) {
             DoCollisions();
+
             CameraMove(deltaTime);
 
             WQFS::GetInstance().CheckQuest(inventory, player->objSize.x, player->objSize.y, player->objPosition.x, player->objPosition.y);
@@ -281,6 +282,12 @@ void OpenGLCode::render() {
     }
 
     for (const auto& npc : WQFS::GetInstance().npcs) {
+        for (auto& remainingObject : WQFS::GetInstance().questRemaining) {
+            if (npc.second.getQuestNumber() == remainingObject.first && !std::get<1>(QuestObjects[remainingObject.first])) {
+                MakeQusetObject(remainingObject.first, glm::vec2(npc.second.GetPositionX(), npc.second.GetPositionY()));
+            }
+		}
+
         npcObjects[npc.first].Draw(*sRenderer, true);
 
         if (npc.second.GetInDangerous()) {
@@ -309,6 +316,25 @@ void OpenGLCode::render() {
         }
 
     }
+
+    for (auto& questObject : QuestObjects) {
+
+        for (int i = 0; i < std::get<0>(questObject.second).size(); i++) {
+            if (isAttacked && std::get<2>(questObject.second) && CheckCollision(std::get<0>(questObject.second)[i], *attackBox)) {
+                std::get<0>(questObject.second).erase(std::get<0>(questObject.second).begin() + i);
+                WQFS::GetInstance().DiscountRemainingObstacles(questObject.first);
+                i = 0;
+                continue;
+            }
+            else if (CheckCollision(std::get<0>(questObject.second)[i], *player)) {
+                std::get<0>(questObject.second).erase(std::get<0>(questObject.second).begin() + i);
+				WQFS::GetInstance().DiscountRemainingObstacles(questObject.first);
+                i = 0;
+				continue;
+            }
+            std::get<0>(questObject.second)[i].Draw(*sRenderer, true);
+		}
+	}
 
     if (attackDelay < 0.5f) {
         attackBox->Draw(*sRenderer);
@@ -436,8 +462,18 @@ void OpenGLCode::Reset() {
 	changeMoveTime = 5.0f;
 }
 
-void OpenGLCode::MakeObstacles(int questNumber) {
+void OpenGLCode::MakeQusetObject(int questNumber, glm::vec2 offset) {
+    for (int i = 0; i < WQFS::GetInstance().questRemaining[questNumber]; i++) {
+        questGameObject->objPosition = obstaclePosition[i] + offset;
+        questGameObject->objColor = obstacleColors[i];
+        std::get<0>(QuestObjects[questNumber]).push_back(*questGameObject);
+		std::cout << "Generate Quest Object at (" << questGameObject->objPosition.x << ", " << questGameObject->objPosition.y << ")" << std::endl;
+    }
+    std::get<1>(QuestObjects[questNumber]) = true;
 
+    if (std::get<1>(WQFS::GetInstance().questList[questNumber]) == 3) {
+        std::get<2>(QuestObjects[questNumber]) = true;
+    }
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
