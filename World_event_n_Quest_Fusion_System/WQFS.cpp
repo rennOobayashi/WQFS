@@ -85,6 +85,10 @@ void WQFS::MakeQuest(NPC &npc, WorldEvent &event) {
 
 	WQFS::GetInstance().SetCompensation(npc, event, questType);
 
+	if (questType == 2) {
+		questRemaining[npc.getQuestNumber()] = (rand() % 3) + 3;
+	}
+
 	std::cout << "보상 ";
 
 	for (int i = 0; i < std::get<0>(WQFS::GetInstance().questList[WQFS::GetInstance().questNumber - 1]).size(); i++) {
@@ -151,6 +155,20 @@ void WQFS::CheckQuest(std::map<Item, int>& inventory, float playerSizeX, float p
 						npc.second.ResetTimer();
 					}
 				}
+			}
+
+			if (std::get<1>(questList[npc.second.getQuestNumber()]) == 2 && questRemaining[npc.second.getQuestNumber()] <= 0) {
+				std::vector<Item> items = WQFS::GetInstance().CompleteQuest(npc.second);
+
+				for (auto& item : items) {
+					inventory[item] += 1;
+				}
+
+				for (auto& item : inventory) {
+					std::cout << item.first.GetName() << " : " << item.second << std::endl;
+				}
+
+				npc.second.ResetTimer();
 			}
 			
 		}
@@ -545,6 +563,6 @@ std::vector<std::string> WQFS::GetQuestListByString(int maxQuestList) {
 	}
 }
 
-void WQFS::DiscountRemainingObstacles(int questType) {
-	--questRemaining[questType];
+void WQFS::DiscountRemainingObstacles(NPC NPC) {
+	--questRemaining[NPC.getQuestNumber()];
 }

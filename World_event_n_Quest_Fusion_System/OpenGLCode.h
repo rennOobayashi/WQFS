@@ -24,13 +24,13 @@
 #include <map>
 
 enum GameState {
-	GAME_ACTIVE, //0
-	GAME_MENU,   //1
-	GAME_WIN     //2
+	GAME_ACTIVE, 
+	GAME_MAIN_MENU,
+	GAME_MENU, 
+	GAME_WIN  
 };
 
 enum Direction {
-	NONE,
 	UP,
 	DOWN,
 	LEFT,
@@ -39,6 +39,7 @@ enum Direction {
 
 typedef std::tuple<GameObject, float> Monster;
 typedef std::pair<glm::vec2, int> Moving; //default position, moveDirection(0 = left, 1 = right, 2 = up, 3 = down)
+typedef std::pair < std::vector<GameObject>, bool> Obstacle; //obstacle list, isGenerated
 
 class OpenGLCode
 {
@@ -50,6 +51,7 @@ private:
 	std::map<Item, int> inventory; //Item, count
 	std::map<std::string, glm::vec3> defaultColors;
 	std::map<std::string, Moving> defaultPosition;
+	std::map<int, Obstacle> ObstacleObjects;
 	std::vector<std::string> landslide;
 	LevelGenerator level;
 
@@ -62,15 +64,18 @@ private:
 	float changeMoveTime, showDangerousTime;
 	float dangerousDelay, mapLoadingDelay, attackDelay;
 	float pauseDelayTimer, pauseDelay;
+	float moveAnimationTimer;
 	int hp;
 	bool changedir;
 	bool mapLoading, getItemFirstTime, isAttacked;
+	bool isMoving;
 
 	GLFWwindow* window;
 	SpriteRenderer* sRenderer;
 
 	GameObject* player;
 	GameObject* attackBox;
+	GameObject* returnItem;
 
 	TextRenderer* textRenderer;
 
@@ -83,6 +88,7 @@ private:
 	void CameraMove(float dt);
 	void DoCollisions();
 	void Reset();
+	void MakeObstacles(int questNumber);
 	bool CheckCollision(GameObject& object1, GameObject& object2);
 	bool CheckCollision(glm::vec2 object1Pos, glm::vec2 object1Size, glm::vec2 object2Pos, glm::vec2 object2Size);
 public:

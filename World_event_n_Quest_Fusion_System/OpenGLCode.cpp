@@ -7,12 +7,28 @@ glm::vec2 cameraNextPos(0.0f, 0.0f);
 glm::vec3 cameraFront(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp(0.0f, 1.0f, 0.0f);
 glm::vec2 attackCollidePos(0.0f, 0.0f);
-const glm::vec2 playerSize(100.0f, 100.0f);
-const float playerVelocity(500.0f);
+const glm::vec2 playerSize(70.0f);
+const float playerVelocity(300.0f);
 const float CameraVelocity(1000.0f);
 
+glm::vec2 obstacleOffset[5] = {
+    glm::vec2(-300.0f, 300.0f),
+    glm::vec2(500.0f, -200.0f),
+    glm::vec2(-700.0f, -400.0f),
+    glm::vec2(900.0f, 150.0f),
+    glm::vec2(10.0f, 350.0f),
+};
+
+float obstacleColors[5][3] = {
+    {255 / 255.0f, 255 / 255.0, 255 / 255.0},
+    {199 / 255.0f, 199 / 255.0, 199 / 255.0},
+    {107 / 255.0f, 107 / 255.0, 107 / 255.0},
+    {125 / 255.0f, 125 / 255.0, 125 / 255.0},
+    { 77 / 255.0f,  77 / 255.0,  77 / 255.0},
+};
+
 OpenGLCode::OpenGLCode(unsigned int _width, unsigned int _height)
-	: states(GAME_MENU), width(_width), height(_height), hp(3), changedir(false), showDangerousTime(1.0f), dangerousDelay(5.0f), mapLoading(false), mapLoadingDelay(0.0f), getItemFirstTime(false), attackDelay(1.0f), isAttacked(false) {
+	: states(GAME_MENU), width(_width), height(_height), hp(3), changedir(false), showDangerousTime(1.0f), dangerousDelay(5.0f), mapLoading(false), mapLoadingDelay(0.0f), getItemFirstTime(false), attackDelay(1.0f), isAttacked(false), isMoving(false), moveAnimationTimer(0.0f) {
     init();
     srand((unsigned int)time(NULL));
 
@@ -72,6 +88,7 @@ void OpenGLCode::init() {
     ResourceManager::LoadTexture("Texture/Event.png", true, "Event");
     ResourceManager::LoadTexture("Texture/Tree.png", true, "Tree");
     ResourceManager::LoadTexture("Texture/Tide_by_Gemini.png", true, "Tsunami");
+    ResourceManager::LoadTexture("Texture/GroundTile.png", true, "GroundTile");
 
 	Shader spriteShader = ResourceManager::GetShader("sprite");
 	sRenderer = new SpriteRenderer(spriteShader);
@@ -84,9 +101,10 @@ void OpenGLCode::init() {
     std::get<1>(monsterObjects["Monster"]) = 0.5f;
     eventObjects["Landslide"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2((width / 2) - 250.0f, (height / 2) - 250.0f), glm::vec2(500.0f), 0.0f, glm::vec3(0.4f, 0.1f, 1.0f));
     eventObjects["Earthquake"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(0.0f, height - 400.0f), glm::vec2(400.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f));
-    eventObjects["Tsunami"] = GameObject(ResourceManager::GetTexture("Tsunami"), glm::vec2(width * 2 - 250.0f, height / 2), glm::vec2(250.0f, 250.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f));
+    eventObjects["Tsunami"] = GameObject(ResourceManager::GetTexture("Tsunami"), glm::vec2(width * 2 - 250.0f, height / 2), glm::vec2(120.0f), 0.0f, glm::vec3(1.0f));
     player = new GameObject(ResourceManager::GetTexture("Player"), playerPos, playerSize, 0.0f, glm::vec3(1.0f), glm::vec2(playerVelocity));
 	attackBox = new GameObject(ResourceManager::GetTexture("NPC"), attackCollidePos, glm::vec2(50.0f, 100.0f), 0.0f, glm::vec3(1.0f, 0.3f, 0.3f));
+    returnItem = new GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(0.0f), glm::vec2(10.0f), 0.0f, glm::vec3(1.0f));
 
     WQFS::GetInstance().AddNPC("Normal", 0, npcObjects["Normal"].objPosition.x, npcObjects["Normal"].objPosition.y, npcObjects["Normal"].objSize.x, npcObjects["Normal"].objSize.y, 5.0f);
 
@@ -124,8 +142,8 @@ void OpenGLCode::init() {
 
     view = glm::mat4(0.0f);
 
-    mapWidth = width * 10;
-    mapHeight = height * 10;
+    mapWidth = width * 5;
+    mapHeight = height * 5;
 
     std::cout << "All width / height" <<std::endl << mapWidth << " / " << mapHeight << std::endl;
 
@@ -137,7 +155,7 @@ void OpenGLCode::init() {
     pauseDelay = 0.15f;
     pauseDelayTimer = 1.0f;
 
-	level.Load("level/1.lvl", width, height);
+	level.Load("level/1.lvl", mapWidth, mapHeight);
 }
 
 void OpenGLCode::update() {
@@ -201,6 +219,13 @@ void OpenGLCode::update() {
             }
             else if (attackDelay >= 0.5f) {
                 isAttacked = false;
+            }
+
+            if (isMoving) {
+                moveAnimationTimer += deltaTime;
+            }
+            else {
+                moveAnimationTimer = 0.0f;
             }
 
             for (auto& monster : monsterObjects) {
@@ -289,6 +314,16 @@ void OpenGLCode::render() {
         attackBox->Draw(*sRenderer);
     }
 
+    if (moveAnimationTimer > 0.5f) {
+        moveAnimationTimer = 0.0f;
+    }
+    else if (moveAnimationTimer > 0.25f) {
+        player->objSprite = ResourceManager::GetTexture("Player");
+    }
+    else if (moveAnimationTimer > 0.0f) {
+		player->objSprite = ResourceManager::GetTexture("PlayerMove");
+    }
+
 
     player->Draw(*sRenderer, true);
 
@@ -336,6 +371,7 @@ void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
 			attackBox->objPosition.y = player->objPosition.y - 70.0f;
             attackBox->objPosition.x = player->objPosition.x + 25.0f;
             attackBox->objRotation = 90.0f;
+			isMoving = true;
         }
         //Down
         if ((glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN)) && player->objPosition.y < mapHeight - player->objSize.x) {
@@ -343,6 +379,7 @@ void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
             attackBox->objPosition.y = player->objPosition.y + player->objSize.y - 30.0f;
             attackBox->objPosition.x = player->objPosition.x + 25.0f;
             attackBox->objRotation = 90.0f;
+            isMoving = true;
         }
         //Left
         if ((glfwGetKey(window, GLFW_KEY_A) || glfwGetKey(window, GLFW_KEY_LEFT)) && player->objPosition.x > 0) {
@@ -350,6 +387,7 @@ void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
             attackBox->objPosition.x = player->objPosition.x - 50.0f;
             attackBox->objPosition.y = player->objPosition.y;
             attackBox->objRotation = 0.0f;
+            isMoving = true;
 			player->flipX = false;
         }
         //Right
@@ -358,12 +396,17 @@ void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
             attackBox->objPosition.x = player->objPosition.x + player->objSize.x;
             attackBox->objPosition.y = player->objPosition.y;
             attackBox->objRotation = 0.0f;
+            isMoving = true;
             player->flipX = true;
         }
         //Attack, Interept
         if (glfwGetKey(window, GLFW_KEY_SPACE) && attackDelay >= 0.7f) {
             attackDelay = 0.0f;
 			isAttacked = true;
+        }
+        if (!(glfwGetKey(window, GLFW_KEY_W) || glfwGetKey(window, GLFW_KEY_UP)) && !(glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN))&& !(glfwGetKey(window, GLFW_KEY_A) || glfwGetKey(window, GLFW_KEY_LEFT))&& !(glfwGetKey(window, GLFW_KEY_D) || glfwGetKey(window, GLFW_KEY_RIGHT))) {
+			isMoving = false;
+            moveAnimationTimer = 0.0f;
         }
     }
     else {
@@ -391,6 +434,10 @@ void OpenGLCode::Reset() {
     eventObjects["Earthquake"].objVelocity = glm::vec2(0.0f);
     eventObjects["Landslide"].objVelocity = glm::vec2(0.0f);
 	changeMoveTime = 5.0f;
+}
+
+void OpenGLCode::MakeObstacles(int questNumber) {
+
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)

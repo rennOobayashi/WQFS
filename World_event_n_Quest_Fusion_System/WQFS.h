@@ -12,7 +12,7 @@
 #include <time.h>
 #include <map>
 
-typedef std::tuple<std::vector<Item>, int, bool> Quest; // compensation list, confirmation
+typedef std::tuple<std::vector<Item>, int, bool> Quest; // compensation list, type, confirmation
 typedef std::pair<NPC*, WorldEvent*> QuestTarget; // npc, event
 
 class WQFS
@@ -63,7 +63,7 @@ public:
 	static void Pause();
 	static void Resume();
 
-	static void DiscountRemainingObstacles(int questNumber);
+	static void DiscountRemainingObstacles(NPC NPC);
 
 	static std::vector<std::string> GetQuestListByString(int maxQusetList);
 

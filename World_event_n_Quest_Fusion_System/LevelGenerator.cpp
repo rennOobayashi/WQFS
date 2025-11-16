@@ -13,7 +13,13 @@ void LevelGenerator::init(std::vector<std::vector<unsigned int>> tileData, unsig
 			glm::vec2 pos(unitWidth * x, unitHeight * y);
 			glm::vec2 size(unitWidth, unitHeight);
 			switch (tileData[y][x]) {
-				case 1:
+				case 1: //Route tile
+					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(200 / 255.0f));
+					break;
+				case 2: //Ocean tile
+					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(185 / 255.0f));
+					break;
+				case 3: //Tree tile
 					obj = GameObject(ResourceManager::GetTexture("Tree"), pos, size, 0.0f, glm::vec3(1.0f));
 					break;
 			}
