@@ -1,2 +1,6 @@
-.vs
-.git
+*.pdb
+*.obj
+*.exe
+x64/
+Debug/
+.vs/

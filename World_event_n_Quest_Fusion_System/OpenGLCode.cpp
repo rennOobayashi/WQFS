@@ -155,7 +155,7 @@ void OpenGLCode::init() {
     pauseDelay = 0.15f;
     pauseDelayTimer = 1.0f;
 
-	level.Load("level/1.lvl", mapWidth, mapHeight);
+	level.Load("level/2.lvl", mapWidth, mapHeight);
 }
 
 void OpenGLCode::update() {
@@ -245,7 +245,7 @@ void OpenGLCode::update() {
 }
 
 void OpenGLCode::render() {
-	level.Draw(*sRenderer);
+	level.Draw(*sRenderer, cameraPos, glm::vec2(width, height));
 
     for (const auto& monster : WQFS::GetInstance().worldEvents) {
         //std::cout << monster.second.getVisible() << std::endl;
@@ -265,11 +265,11 @@ void OpenGLCode::render() {
     }
 
     for (const auto& event : WQFS::GetInstance().worldEvents) {
-        eventObjects[event.first].Draw(*sRenderer, true);
+        if (event.second.GetType() == 1) {
+            eventObjects[event.first].Draw(*sRenderer, true);
 
-        if (event.second.GetType() != 0) {
             if (event.second.GetIsCanCollid()) {
-                if (CheckCollision(glm::vec2(cameraPos.x + (width / 2), cameraPos.y + (height / 2)), glm::vec2(width, height), glm::vec2(event.second.GetPositionX(), event.second.GetPositionY()), glm::vec2(10 * 32 * 2, 32 * 2))) {
+                if (CheckCollision(cameraPos, glm::vec2(width, height), glm::vec2(event.second.GetPositionX(), event.second.GetPositionY()), glm::vec2(10 * 32 * 2, 32 * 2))) {
                     textRenderer->renderText("Dangerous!", event.second.GetPositionX() - cameraPos.x, event.second.GetPositionY() - cameraPos.y, 2.0f, glm::vec3(0.0f));
                 }
                 eventObjects[event.first].objColor = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -277,7 +277,11 @@ void OpenGLCode::render() {
             else {
                 eventObjects[event.first].objColor = defaultColors[event.first];
             }
-
+        }
+        else if (event.second.GetType() == 2) {
+            if (event.second.GetIsCanCollid()) {
+                eventObjects[event.first].Draw(*sRenderer, true);
+            }
         }
     }
 

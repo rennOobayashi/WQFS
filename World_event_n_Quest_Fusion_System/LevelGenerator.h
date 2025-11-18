@@ -16,12 +16,13 @@ class LevelGenerator
 {
 private:
 	void init(std::vector<std::vector<unsigned int>> tileData, unsigned int levelWidth, unsigned int levelHeight);
+	bool CheckCollision(glm::vec2 object1Pos, glm::vec2 object1Size, glm::vec2 object2Pos, glm::vec2 object2Size);
 public:
 	std::vector<GameObject> walls;
 
 	LevelGenerator() {}
 	void Load(const char* file, unsigned int level_width, unsigned int level_height);
-	void Draw(SpriteRenderer& renderer);
+	void Draw(SpriteRenderer& renderer, glm::vec2 cameraPos, glm::vec2 windowSize);
 };
 
 #endif

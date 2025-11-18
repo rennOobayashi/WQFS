@@ -1,0 +1,14 @@
+Timer
+5
+3 ~ 7
+7 >= timer >= 3
+
+init, reset
+float random = (rand % (5 + 1)  = max 4 ) + 2
+
+10  5
+5 ~ 15
+float random = (rand % (10 + 1) = max 10 ) + 5
+if  (random <= 0)
+ random = 1;
+
