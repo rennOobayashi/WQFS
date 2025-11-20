@@ -25,17 +25,19 @@ private:
 	bool isMove;
 	clock_t start;
 	clock_t eventStart;
-	double eventTimer;
-	double maxTime;
-	double durationTimer;
-	double duration;
-	double collideDelay;
-	double pauseDuration;
+	float eventTimer;
+	float maxTime;
+	float durationTimer;
+	float duration;
+	float collideDelay;
+	float pauseDuration;
+	int errorValue;
+	int errorTime;
 public:
 	WorldEvent();
 	~WorldEvent() { }
 
-	void SetUp(int _number, int _type, int _hp, float posX, float posY, float sizeX, float sizeY, double _maxTime, double _duration, double _collideDelay);
+	void SetUp(int _number, int _type, int _hp, float posX, float posY, float sizeX, float sizeY, float _maxTime, float _duration, float _collideDelay, int _errorValue);
 	void Timer();
 	void ResetTimer();
 
@@ -63,8 +65,8 @@ public:
 	bool GetIsCanCollid() const;
 	void SetIsMove(bool b);
 	bool GetIsMove() const;
-	void SetPauseDuration(double duration);
-	double GetPauseDuration() const;
+	void SetPauseDuration(float duration);
+	float GetPauseDuration() const;
 
 	bool operator<(const WorldEvent& other) const {
 		return type < other.type;
@@ -98,6 +100,8 @@ public:
 		this->isCanCollid = other.isCanCollid;
 		this->pauseDuration = other.pauseDuration;
 		this->isMove = other.isMove;
+		this->errorTime = other.errorTime;
+		this->errorValue = other.errorValue;
 
 		return *this;
 	}

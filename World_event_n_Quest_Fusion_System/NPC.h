@@ -22,9 +22,9 @@ private:
 	bool canDangerous;
 	int type;
 	clock_t start;
-	double timer;
-	double maxTime;
-	double pauseDuration;
+	float timer;
+	float maxTime;
+	float pauseDuration;
 public:
 	NPC();
 	~NPC() { }
@@ -50,8 +50,8 @@ public:
 	bool GetCanDangerous() const;
 	void setQuestNumber(int n);
 	int getQuestNumber() const;
-	void SetPauseDuration(double duration);
-	double GetPauseDuration() const;
+	void SetPauseDuration(float duration);
+	float GetPauseDuration() const;
 
 	bool operator<(const NPC& other) const {
 		return this->number < other.number;

@@ -20,10 +20,10 @@ std::map<int, Quest> WQFS::questList;
 std::vector<QuestTarget> WQFS::QuestTargetObjects;
 std::map<int, int> WQFS::questRemaining;
 
-WorldEvent WQFS::AddEvent(std::string name, int type, int hp, float posX, float posY, float sizeX, float sizeY, double maxTime, double duration, double collidDelay) {
+WorldEvent WQFS::AddEvent(std::string name, int type, int hp, float posX, float posY, float sizeX, float sizeY, float maxTime, float duration, float collidDelay, float errorValue) {
 	//std::cout << type << " ";
 	WorldEvent newEvent;
-	newEvent.SetUp(WQFS::GetInstance().eventNumber++, type, hp, posX, posY, sizeX, sizeY, maxTime, duration, collidDelay);
+	newEvent.SetUp(WQFS::GetInstance().eventNumber++, type, hp, posX, posY, sizeX, sizeY, maxTime, duration, collidDelay, errorValue);
 	std:: cout << newEvent.getHp() << std::endl;
 	WQFS::GetInstance().worldEvents[name] = newEvent;
 

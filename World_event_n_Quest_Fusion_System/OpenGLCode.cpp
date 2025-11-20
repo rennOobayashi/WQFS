@@ -108,10 +108,10 @@ void OpenGLCode::init() {
 
     WQFS::GetInstance().AddNPC("Normal", 0, npcObjects["Normal"].objPosition.x, npcObjects["Normal"].objPosition.y, npcObjects["Normal"].objSize.x, npcObjects["Normal"].objSize.y, 5.0f);
 
-    WQFS::GetInstance().AddEvent("Monster", 0, 2, std::get<0>(monsterObjects["Monster"]).objPosition.x, std::get<0>(monsterObjects["Monster"]).objPosition.y, std::get<0>(monsterObjects["Monster"]).objSize.x, std::get<0>(monsterObjects["Monster"]).objSize.y, -1.0f, -1.0f, 0.0f);
-    WQFS::GetInstance().AddEvent("Landslide", 1, 2, eventObjects["Landslide"].objPosition.x, eventObjects["Landslide"].objPosition.y, eventObjects["Landslide"].objSize.x, eventObjects["Landslide"].objSize.y, 10.0f, 5.0f, 0.3f);
-    WQFS::GetInstance().AddEvent("Earthquake", 1, 2, eventObjects["Earthquake"].objPosition.x, eventObjects["Earthquake"].objPosition.y, eventObjects["Earthquake"].objSize.x, eventObjects["Earthquake"].objSize.y, 5.0f, 3.0f, 0.0f);
-    WQFS::GetInstance().AddEvent("Tsunami", 2, 2, eventObjects["Tsunami"].objPosition.x, eventObjects["Tsunami"].objPosition.y, eventObjects["Tsunami"].objSize.x, eventObjects["Tsunami"].objSize.y, 10.0f, 3.0f, 0.0f);
+    WQFS::GetInstance().AddEvent("Monster", 0, 2, std::get<0>(monsterObjects["Monster"]).objPosition.x, std::get<0>(monsterObjects["Monster"]).objPosition.y, std::get<0>(monsterObjects["Monster"]).objSize.x, std::get<0>(monsterObjects["Monster"]).objSize.y, -1.0f, -1.0f, 0.0f, 0.0f);
+    WQFS::GetInstance().AddEvent("Landslide", 1, 2, eventObjects["Landslide"].objPosition.x, eventObjects["Landslide"].objPosition.y, eventObjects["Landslide"].objSize.x, eventObjects["Landslide"].objSize.y, 10.0f, 5.0f, 0.5f, 3.0f);
+    WQFS::GetInstance().AddEvent("Earthquake", 1, 2, eventObjects["Earthquake"].objPosition.x, eventObjects["Earthquake"].objPosition.y, eventObjects["Earthquake"].objSize.x, eventObjects["Earthquake"].objSize.y, 5.0f, 3.0f, 0.0f, 1.0f);
+    WQFS::GetInstance().AddEvent("Tsunami", 2, 2, eventObjects["Tsunami"].objPosition.x, eventObjects["Tsunami"].objPosition.y, eventObjects["Tsunami"].objSize.x, eventObjects["Tsunami"].objSize.y, 10.0f, 3.0f, 0.0f, 2.0f);
 
 	WQFS::GetInstance().GetEvent("Earthquake").SetIsMove(true);
 
@@ -155,7 +155,7 @@ void OpenGLCode::init() {
     pauseDelay = 0.15f;
     pauseDelayTimer = 1.0f;
 
-	level.Load("level/2.lvl", mapWidth, mapHeight);
+	level.Load("level/1.lvl", mapWidth, mapHeight);
 }
 
 void OpenGLCode::update() {

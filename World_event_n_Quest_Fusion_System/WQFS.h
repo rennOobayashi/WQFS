@@ -48,7 +48,7 @@ public:
 	static void MakeQuest(NPC &npc, WorldEvent &event);
 	static  std::vector<Item> CompleteQuest(NPC &npc);
 
-	static WorldEvent AddEvent(std::string name, int type, int hp, float posX, float posY, float sizeX, float sizeY, double maxTime, double duration, double collidDelay);
+	static WorldEvent AddEvent(std::string name, int type, int hp, float posX, float posY, float sizeX, float sizeY, float maxTime, float duration, float collidDelay, float errorValue);
 	static NPC AddNPC(std::string name, int type, float posX, float posY, float sizeX, float sizeY, double maxTime);
 	static Item AddItem(std::string name, int type, float effect, int rarity);
 

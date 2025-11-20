@@ -1,9 +1,9 @@
 #include "WorldEvent.h"
 
 WorldEvent::WorldEvent() 
-	: number(-1), type(-1), hp(0), positionX(0), positionY(0), sizeX(0), sizeY(0), questNumber(-1), isVisible(true), doEvent(false), isCanCollid(false), start(clock()), eventStart(0), eventTimer(0.0f), maxTime(0.0f), duration(0.0f), durationTimer(0.0f), collideDelay(0.0f), isMove(false) { }
+	: number(-1), type(-1), hp(0), positionX(0), positionY(0), sizeX(0), sizeY(0), questNumber(-1), isVisible(true), doEvent(false), isCanCollid(false), start(clock()), eventStart(0), eventTimer(0.0f), maxTime(0.0f), duration(0.0f), durationTimer(0.0f), collideDelay(0.0f), isMove(false), errorValue(0) { }
 
-void WorldEvent::SetUp(int _number, int _type, int _hp, float posX, float posY, float _sizeX, float _sizeY, double _maxTime, double _duration, double _collideDelay) {
+void WorldEvent::SetUp(int _number, int _type, int _hp, float posX, float posY, float _sizeX, float _sizeY, float _maxTime, float _duration, float _collideDelay, int _errorValue) {
 	number = _number;
 	type = _type;
 	if (type == 0) {
@@ -22,41 +22,49 @@ void WorldEvent::SetUp(int _number, int _type, int _hp, float posX, float posY, 
 		maxTime = _maxTime;
 		duration = _duration;
 		collideDelay = _collideDelay;
+		errorValue = _errorValue;
+
+		errorTime = ((rand() % int(maxTime)) + 1) + errorValue;
+		if (errorTime < errorValue) {
+			errorTime = errorValue;
+		}
 	}
 	else {
 		maxTime = -1.0f;
 		_duration = -1.0f;
 		collideDelay = 0.0f;
+		errorValue = _errorValue;
 	}
+	
 }
 
 void WorldEvent::Timer() {
-	if (maxTime == -1) {
+	if (maxTime <= 0) {
 		return;
 	}
 
-	if (!doEvent && eventTimer > maxTime + pauseDuration) {
+	if (!doEvent && eventTimer > errorTime + pauseDuration) {
 		//std::cout << "이벤트 시작" << std::endl;
 		eventStart = clock();
 		doEvent = true;
 	}
 
-	if (!isCanCollid && eventTimer > maxTime + collideDelay + pauseDuration) {
+	if (!isCanCollid && eventTimer > errorTime + collideDelay + pauseDuration) {
 		//std::cout << "충돌 시작" << collideDelay << std::endl;
 		isCanCollid = true;
 	}
-	else if (!isCanCollid && eventTimer <= maxTime + collideDelay + pauseDuration) {
-		eventTimer = (double)(clock() - start) / CLOCKS_PER_SEC;
+	else if (!isCanCollid && eventTimer <= errorTime + collideDelay + pauseDuration) {
+		eventTimer = (float)(clock() - start) / CLOCKS_PER_SEC;
 	}
 }
 
 void WorldEvent::ResetTimer() {
-	if (duration == -1) {
+	if (duration <= 0) {
 		return;
 	}
 
 	if (durationTimer <= duration + pauseDuration) {
-		durationTimer = (double)(clock() - eventStart) / CLOCKS_PER_SEC;
+		durationTimer = (float)(clock() - eventStart) / CLOCKS_PER_SEC;
 	}
 	else {
 		//std::cout << "이벤트 끝" << std::endl;
@@ -66,6 +74,12 @@ void WorldEvent::ResetTimer() {
 		pauseDuration = 0.0f;
 		doEvent = false;
 		isCanCollid = false;
+
+		errorTime = ((rand() % int(maxTime)) + 1) + errorValue;
+
+		if (errorTime < errorValue) {
+			errorTime = errorValue;
+		}
 	}
 }
 
@@ -174,10 +188,10 @@ bool WorldEvent::GetIsCanCollid() const {
 	return isCanCollid;
 }
 
-void WorldEvent::SetPauseDuration(double duration) {
+void WorldEvent::SetPauseDuration(float duration) {
 	pauseDuration = duration;
 }
-double WorldEvent::GetPauseDuration() const {
+float WorldEvent::GetPauseDuration() const {
 	return pauseDuration;
 }
 
