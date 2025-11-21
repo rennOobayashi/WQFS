@@ -549,7 +549,6 @@ std::vector<std::string> WQFS::GetQuestListByString(int maxQuestList) {
 			if (target.first->getQuestNumber() != -1 && quest.first == target.first->getQuestNumber()) {
 				strData = std::to_string(quest.first + 1) + ". "; 
 
-				std::cout << std::get<1>(quest.second) << std::endl;
 				switch (std::get<1>(quest.second)) {
 				case 0: strData += "Save NPC.";	break;
 				case 1: strData += "Retrieve  NPC's Item.";	break;

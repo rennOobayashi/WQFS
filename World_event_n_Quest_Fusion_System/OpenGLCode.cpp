@@ -12,15 +12,15 @@ const float playerVelocity(300.0f);
 const float CameraVelocity(1000.0f);
 
 glm::vec2 obstaclePosition[5] = {
-    glm::vec2(-50.0f, 50.0f),
-    glm::vec2(25.0f, -20.0f),
-    glm::vec2(-70.0f, -40.0f),
-    glm::vec2(90.0f, 15.0f),
-    glm::vec2(10.0f, 35.0f),
+    glm::vec2(-70.0f, 60.0f),
+    glm::vec2(50.0f, -40.0f),
+    glm::vec2(-100.0f, -60.0f),
+    glm::vec2(90.0f, 50.0f),
+    glm::vec2(30.0f, 65.0f),
 };
 
 glm::vec3 obstacleColors[5] = {
-    glm::vec3(255 / 255.0f, 255 / 255.0, 255 / 255.0),
+    glm::vec3(220 / 255.0f, 220 / 255.0, 220 / 255.0),
     glm::vec3(199 / 255.0f, 199 / 255.0, 199 / 255.0),
     glm::vec3(107 / 255.0f, 107 / 255.0, 107 / 255.0),
     glm::vec3(125 / 255.0f, 125 / 255.0, 125 / 255.0),
@@ -467,6 +467,11 @@ void OpenGLCode::Reset() {
 }
 
 void OpenGLCode::MakeQusetObject(int questNumber, glm::vec2 offset) {
+    if (std::get<1>(WQFS::GetInstance().questList[questNumber]) == 3) {
+        std::get<2>(QuestObjects[questNumber]) = true;
+		questGameObject->objSize = glm::vec2(40.0f);
+    }
+
     for (int i = 0; i < WQFS::GetInstance().questRemaining[questNumber]; i++) {
         questGameObject->objPosition = obstaclePosition[i] + offset;
         questGameObject->objColor = obstacleColors[i];
@@ -475,9 +480,7 @@ void OpenGLCode::MakeQusetObject(int questNumber, glm::vec2 offset) {
     }
     std::get<1>(QuestObjects[questNumber]) = true;
 
-    if (std::get<1>(WQFS::GetInstance().questList[questNumber]) == 3) {
-        std::get<2>(QuestObjects[questNumber]) = true;
-    }
+    questGameObject->objSize = glm::vec2(25.0f);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -625,6 +628,7 @@ void OpenGLCode::CameraMove(float dt) {
         }
     }
     else {
+        WQFS::GetInstance().Pause();
         if (cameraPos.x != cameraNextPos.x) {
             if (cameraPos.x < cameraNextPos.x) {
                 cameraPos.x += CameraVelocity * dt;
@@ -667,6 +671,7 @@ void OpenGLCode::CameraMove(float dt) {
             if (mapLoadingDelay > 0.25f) {
 				mapLoadingDelay = 0.0f;
                 mapLoading = false;
+                WQFS::GetInstance().Resume();
             }
 		}
 
