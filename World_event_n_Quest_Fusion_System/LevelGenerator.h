@@ -23,6 +23,7 @@ public:
 	LevelGenerator() {}
 	void Load(const char* file, unsigned int level_width, unsigned int level_height);
 	void Draw(SpriteRenderer& renderer, glm::vec2 cameraPos, glm::vec2 windowSize);
+	void Clear();
 };
 
 #endif

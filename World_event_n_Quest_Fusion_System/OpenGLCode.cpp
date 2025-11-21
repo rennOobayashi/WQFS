@@ -27,6 +27,10 @@ glm::vec3 obstacleColors[5] = {
     glm::vec3( 77 / 255.0f,  77 / 255.0,  77 / 255.0),
 };
 
+glm::vec2 eventPosition[] = {
+    glm::vec2(220 / 255.0f, 220 / 255.0),
+};
+
 OpenGLCode::OpenGLCode(unsigned int _width, unsigned int _height)
 	: states(GAME_MENU), width(_width), height(_height), hp(3), changedir(false), showDangerousTime(1.0f), dangerousDelay(5.0f), mapLoading(false), mapLoadingDelay(0.0f), getItemFirstTime(false), attackDelay(1.0f), isAttacked(false), isMoving(false), moveAnimationTimer(0.0f) {
     init();
@@ -37,11 +41,15 @@ OpenGLCode::OpenGLCode(unsigned int _width, unsigned int _height)
 OpenGLCode::~OpenGLCode() {
     delete player;
 	delete sRenderer;
+    delete attackBox;
+    delete questGameObject;
+    delete InventoryObject;
 	npcObjects.clear();
     monsterObjects.clear();
     eventObjects.clear();
     ResourceManager::Clear();
     WQFS::Clear();
+	level.Clear();
 }
 
 void OpenGLCode::init() {
@@ -89,6 +97,7 @@ void OpenGLCode::init() {
     ResourceManager::LoadTexture("Texture/Tree.png", true, "Tree");
     ResourceManager::LoadTexture("Texture/Tide_by_Gemini.png", true, "Tsunami");
     ResourceManager::LoadTexture("Texture/GroundTile.png", true, "GroundTile");
+    ResourceManager::LoadTexture("Texture/Inventory.png", true, "Inventory");
 
 	Shader spriteShader = ResourceManager::GetShader("sprite");
 	sRenderer = new SpriteRenderer(spriteShader);
@@ -99,19 +108,20 @@ void OpenGLCode::init() {
     npcObjects["Normal"] = GameObject(ResourceManager::GetTexture("NPC"), glm::vec2(0.0f, 0.0f), glm::vec2(60.0f), 0.0f, glm::vec3(0.1f, 0.5f, 1.0f));
     std::get<0>(monsterObjects["Monster"]) = GameObject(ResourceManager::GetTexture("Monster"), glm::vec2(width - 200.0f, 0.0f), glm::vec2(200.0f), 0.0f, glm::vec3(1.0f, 0.2f, 0.1f));
     std::get<1>(monsterObjects["Monster"]) = 0.5f;
-    eventObjects["Landslide"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(0.0f), glm::vec2(500.0f), 0.0f, glm::vec3(0.4f, 0.1f, 1.0f));
-    eventObjects["Earthquake"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(0.0f), glm::vec2(400.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f));
-    eventObjects["Tsunami"] = GameObject(ResourceManager::GetTexture("Tsunami"), glm::vec2(0.0f), glm::vec2(120.0f), 0.0f, glm::vec3(1.0f));
-    player = new GameObject(ResourceManager::GetTexture("Player"), playerPos, playerSize, 0.0f, glm::vec3(1.0f), glm::vec2(playerVelocity));
+    eventObjects["Landslide"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2((width / 2) - 250.0f, (height / 2) - 250.0f), glm::vec2(500.0f), 0.0f, glm::vec3(0.4f, 0.1f, 1.0f));
+    eventObjects["Earthquake"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(0.0f, height - 400.0f), glm::vec2(400.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f));
+    eventObjects["Tsunami"] = GameObject(ResourceManager::GetTexture("Tsunami"), glm::vec2(width * 2 - 250.0f, height / 2), glm::vec2(120.0f), 0.0f, glm::vec3(1.0f));
+    player = new GameObject(ResourceManager::GetTexture("Player"), playerPos, playerSize, 0.0f, glm::vec3(1.0f), 1.0f, glm::vec2(playerVelocity));
 	attackBox = new GameObject(ResourceManager::GetTexture("NPC"), attackCollidePos, glm::vec2(50.0f, 100.0f), 0.0f, glm::vec3(1.0f, 0.3f, 0.3f));
     questGameObject = new GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(0.0f), glm::vec2(25.0f), 0.0f, glm::vec3(1.0f));
+	InventoryObject = new GameObject(ResourceManager::GetTexture("Inventory"), glm::vec2(100.0f, 20.0f), glm::vec2(800.0f, 160.0f), 0.0f, glm::vec3(1.0f), 0.5f);
 
     WQFS::GetInstance().AddNPC("Normal", 0, npcObjects["Normal"].objPosition.x, npcObjects["Normal"].objPosition.y, npcObjects["Normal"].objSize.x, npcObjects["Normal"].objSize.y, 5.0f);
 
-    WQFS::GetInstance().AddEvent("Monster", 0, 2, 0.0f, 0.0f, std::get<0>(monsterObjects["Monster"]).objSize.x, std::get<0>(monsterObjects["Monster"]).objSize.y, -1.0f, -1.0f, 0.0f, 0.0f);
-    WQFS::GetInstance().AddEvent("Landslide", 1, 2, 0.0f, 0.0f, eventObjects["Landslide"].objSize.x, eventObjects["Landslide"].objSize.y, 10.0f, 5.0f, 0.5f, 3.0f);
-    WQFS::GetInstance().AddEvent("Earthquake", 1, 2, 0.0f, 0.0f, eventObjects["Earthquake"].objSize.x, eventObjects["Earthquake"].objSize.y, 5.0f, 3.0f, 0.0f, 1.0f);
-    WQFS::GetInstance().AddEvent("Tsunami", 2, 2, 0.0f, 0.0f, eventObjects["Tsunami"].objSize.x, eventObjects["Tsunami"].objSize.y, 10.0f, 3.0f, 0.0f, 2.0f);
+    WQFS::GetInstance().AddEvent("Monster", 0, 2, std::get<0>(monsterObjects["Monster"]).objPosition.x, std::get<0>(monsterObjects["Monster"]).objPosition.y, std::get<0>(monsterObjects["Monster"]).objSize.x, std::get<0>(monsterObjects["Monster"]).objSize.y, -1.0f, -1.0f, 0.0f, 0.0f);
+    WQFS::GetInstance().AddEvent("Landslide", 1, 2, eventObjects["Landslide"].objPosition.x, eventObjects["Landslide"].objPosition.y, eventObjects["Landslide"].objSize.x, eventObjects["Landslide"].objSize.y, 10.0f, 5.0f, 0.5f, 3.0f);
+    WQFS::GetInstance().AddEvent("Earthquake", 1, 2, eventObjects["Earthquake"].objPosition.x, eventObjects["Earthquake"].objPosition.y, eventObjects["Earthquake"].objSize.x, eventObjects["Earthquake"].objSize.y, 5.0f, 3.0f, 0.0f, 1.0f);
+    WQFS::GetInstance().AddEvent("Tsunami", 2, 2, eventObjects["Tsunami"].objPosition.x, eventObjects["Tsunami"].objPosition.y, eventObjects["Tsunami"].objSize.x, eventObjects["Tsunami"].objSize.y, 10.0f, 3.0f, 0.0f, 2.0f);
 
 	WQFS::GetInstance().GetEvent("Earthquake").SetIsMove(true);
 
@@ -357,13 +367,14 @@ void OpenGLCode::render() {
 
     player->Draw(*sRenderer, true);
 
-    particleGenerator->Draw(*sRenderer);
+    particleGenerator->Draw(*sRenderer, true);
 
     std::stringstream sHp;
     sHp << hp;
 
     textRenderer->renderText("HP - " + sHp.str(), 1.0f, 5.0f, 2.0f);
 
+	InventoryObject->Draw(*sRenderer);
 
     if (states == GAME_MENU) {
         textRenderer->renderText("Pause", (width / 2) - 100.0f, 10.0f, 3.0f, glm::vec3(0.0f));

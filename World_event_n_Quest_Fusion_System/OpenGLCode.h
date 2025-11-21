@@ -44,7 +44,7 @@ typedef std::pair<glm::vec2, int> Moving; //default position, moveDirection(0 = 
 class OpenGLCode
 {
 private:
-	std::map<std::string, GameObject > npcObjects;
+	std::map<std::string, GameObject> npcObjects;
 	std::map<std::string, Monster> monsterObjects;
 	std::map<std::string, GameObject> eventObjects;
 	std::map<int, GameObject> questObjects; //quest number, object
@@ -76,6 +76,7 @@ private:
 	GameObject* player;
 	GameObject* attackBox;
 	GameObject* questGameObject;
+	GameObject* InventoryObject;
 
 	TextRenderer* textRenderer;
 

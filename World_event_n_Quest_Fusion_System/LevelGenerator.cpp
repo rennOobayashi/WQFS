@@ -14,14 +14,18 @@ void LevelGenerator::init(std::vector<std::vector<unsigned int>> tileData, unsig
 			glm::vec2 size(unitWidth, unitHeight);
 			switch (tileData[y][x]) {
 				case 1: //Route tile
-					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(200 / 255.0f));
+					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(190 / 255.0f));
 					walls.push_back(obj);
 					break;
 				case 2: //Ocean tile
-					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(185 / 255.0f));
+					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(200 / 255.0f));
 					walls.push_back(obj);
 					break;
-				case 3: //Tree tile
+				case 3: //Mountain tile
+					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(150 / 255.0f));
+					walls.push_back(obj);
+					break;
+				case 4: //Tree tile
 					obj = GameObject(ResourceManager::GetTexture("Tree"), pos, size, 0.0f, glm::vec3(1.0f));
 					walls.push_back(obj);
 					break;
@@ -79,4 +83,8 @@ void LevelGenerator::Draw(SpriteRenderer& renderer, glm::vec2 cameraPos, glm::ve
 			wall.Draw(renderer, true);
 		}
 	}
+}
+
+void LevelGenerator::Clear() {
+	walls.clear();
 }
