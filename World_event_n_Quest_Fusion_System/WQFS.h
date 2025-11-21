@@ -31,6 +31,7 @@ private:
 
 	void SetCompensation(NPC &npc, WorldEvent &event, int questType);
 	bool CheckCollision(float object1X, float object1Y, float object1SizeX, float object1SizeY, float object2X, float object2Y, float object2SizeX, float object2SizeY);
+	bool CheckCollision3D(float object1X, float object1Y, float object1Z, float object1SizeX, float object1SizeY, float object1SizeZ, float object2X, float object2Y, float object2Z, float object2SizeX, float object2SizeY, float object2SizeZ);
 public:
 	static WQFS& GetInstance() {
 		static WQFS instance;
@@ -48,7 +49,7 @@ public:
 	static void MakeQuest(NPC &npc, WorldEvent &event);
 	static  std::vector<Item> CompleteQuest(NPC &npc);
 
-	static WorldEvent AddEvent(std::string name, int type, int hp, float posX, float posY, float sizeX, float sizeY, double maxTime, double duration, double collidDelay);
+	static WorldEvent AddEvent(std::string name, int type, int hp, float posX, float posY, float sizeX, float sizeY, float maxTime, float duration, float collidDelay, float errorValue);
 	static NPC AddNPC(std::string name, int type, float posX, float posY, float sizeX, float sizeY, double maxTime);
 	static Item AddItem(std::string name, int type, float effect, int rarity);
 

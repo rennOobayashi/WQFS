@@ -15,7 +15,7 @@ void NPC::SetUp(int _number, int _type, float posX, float posY, float _sizeX, fl
 
 void NPC::Timer() {
 	if (!canDangerous && timer <= maxTime + pauseDuration) {
-		timer = (double)(clock() - start) / CLOCKS_PER_SEC;
+		timer = (float)(clock() - start) / CLOCKS_PER_SEC;
 	}
 	else {
 		canDangerous = true;
@@ -97,9 +97,9 @@ int NPC::getQuestNumber() const {
 	return questNumber;
 }
 
-void NPC::SetPauseDuration(double duration) {
+void NPC::SetPauseDuration(float duration) {
 	pauseDuration = duration;
 }
-double NPC::GetPauseDuration() const {
+float NPC::GetPauseDuration() const {
 	return pauseDuration;
 }

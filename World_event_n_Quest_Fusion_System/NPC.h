@@ -16,15 +16,15 @@ class NPC
 private:
 	int number;
 	int questNumber;
-	float positionX, positionY;
-	float sizeX, sizeY;
+	float positionX, positionY, positionZ;
+	float sizeX, sizeY, sizeZ;
 	bool inDangerous;
 	bool canDangerous;
 	int type;
 	clock_t start;
-	double timer;
-	double maxTime;
-	double pauseDuration;
+	float timer;
+	float maxTime;
+	float pauseDuration;
 public:
 	NPC();
 	~NPC() { }
@@ -38,20 +38,26 @@ public:
 	float GetPositionX() const;
 	void SetPositionY(float y);
 	float GetPositionY() const;
+	void SetPositionZ(float z);
+	float GetPositionZ() const;
 	void SetPosition(float x, float y);
+	void SetPosition(float x, float y, float z);
 	void SetSizeX(float x);
 	float GetSizeX() const;
 	void SetSizeY(float y);
 	float GetSizeY() const;
+	void SetSizeZ(float z);
+	float GetSizeZ() const;
 	void SetSize(float x, float y);
+	void SetSize(float x, float y, float z);
 	void SetInDangerous(bool _inDangerous);
 	bool GetInDangerous() const;
 	void SetCanDangerous(bool _canDangerous);
 	bool GetCanDangerous() const;
 	void setQuestNumber(int n);
 	int getQuestNumber() const;
-	void SetPauseDuration(double duration);
-	double GetPauseDuration() const;
+	void SetPauseDuration(float duration);
+	float GetPauseDuration() const;
 
 	bool operator<(const NPC& other) const {
 		return this->number < other.number;
@@ -70,8 +76,10 @@ public:
 		this->questNumber = other.questNumber;
 		this->positionX = other.positionX;
 		this->positionY = other.positionY;
+		this->positionZ = other.positionZ;
 		this->sizeX = other.sizeX;
 		this->sizeY = other.sizeY;
+		this->sizeZ = other.sizeZ;
 		this->inDangerous = other.inDangerous;
 		this->canDangerous = other.canDangerous;
 		this->type = other.type;

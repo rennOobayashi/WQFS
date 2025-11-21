@@ -20,10 +20,10 @@ std::map<int, Quest> WQFS::questList;
 std::vector<QuestTarget> WQFS::QuestTargetObjects;
 std::map<int, int> WQFS::questRemaining;
 
-WorldEvent WQFS::AddEvent(std::string name, int type, int hp, float posX, float posY, float sizeX, float sizeY, double maxTime, double duration, double collidDelay) {
+WorldEvent WQFS::AddEvent(std::string name, int type, int hp, float posX, float posY, float sizeX, float sizeY, float maxTime, float duration, float collidDelay, float errorValue) {
 	//std::cout << type << " ";
 	WorldEvent newEvent;
-	newEvent.SetUp(WQFS::GetInstance().eventNumber++, type, hp, posX, posY, sizeX, sizeY, maxTime, duration, collidDelay);
+	newEvent.SetUp(WQFS::GetInstance().eventNumber++, type, hp, posX, posY, sizeX, sizeY, maxTime, duration, collidDelay, errorValue);
 	std:: cout << newEvent.getHp() << std::endl;
 	WQFS::GetInstance().worldEvents[name] = newEvent;
 
@@ -107,11 +107,18 @@ bool WQFS::CheckCollision(float object1X, float object1Y, float object1SizeX, fl
 	bool collisionY = object1Y + object1SizeY >= object2Y &&
 		object2Y + object2SizeY >= object1Y;
 
-	/*std::cout << "X: " << object1X << ", Y: " << object1Y << ", sX: " << object1SizeX << ", sY: " << object1SizeY << std::endl;
-	std::cout << "X: " << object2X << ", Y: " << object2Y << ", sX: " << object2SizeX << ", sY: " << object2SizeY << std::endl;
-	std::cout << "Collision X: " << collisionX << ", Collision Y: " << collisionY << ", All: " << (collisionX && collisionY) << std::endl;*/
-
 	return collisionX && collisionY;
+}
+
+bool WQFS::CheckCollision3D(float object1X, float object1Y, float object1Z, float object1SizeX, float object1SizeY, float object1SizeZ, float object2X, float object2Y, float object2Z, float object2SizeX, float object2SizeY, float object2SizeZ) {
+	bool collisionX = object1X + object1SizeX >= object2X &&
+		object2X + object2SizeX >= object1X;
+	bool collisionY = object1Y + object1SizeY >= object2Y &&
+		object2Y + object2SizeY >= object1Y;
+	bool collisionZ = object1Z + object1SizeZ >= object2Z &&
+		object2Z + object2SizeZ >= object1Z;
+
+	return collisionX && collisionY && collisionZ;
 }
 
 void WQFS::CheckQuest(std::map<Item, int>& inventory, float playerSizeX, float playerSizeY, float playerX, float playerY) {
