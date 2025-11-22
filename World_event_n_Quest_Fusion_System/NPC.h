@@ -20,7 +20,7 @@ private:
 	float sizeX, sizeY, sizeZ;
 	bool inDangerous;
 	bool canDangerous;
-	int type;
+	int type, subType;
 	clock_t start;
 	float timer;
 	float maxTime;
@@ -30,9 +30,11 @@ public:
 	~NPC() { }
 
 	void SetUp(int _number, int _type, float posX, float posY, float _sizeX, float _sizeY, double _maxTime);
+	void SetUp(int _number, int _type, int _subType, float posX, float posY, float _sizeX, float _sizeY, double _maxTime);
 	void Timer();
 	void ResetTimer();
 	int GetType() const;
+	int GetSubType() const;
 
 	void SetPositionX(float x);
 	float GetPositionX() const;
@@ -87,6 +89,7 @@ public:
 		this->timer = other.timer;
 		this->maxTime = other.maxTime;
 		this->pauseDuration = other.pauseDuration;
+		this->subType = other.subType;
 
 		return *this;
 	}

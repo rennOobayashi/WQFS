@@ -97,6 +97,7 @@ void OpenGLCode::init() {
     ResourceManager::LoadTexture("Texture/Tree.png", true, "Tree");
     ResourceManager::LoadTexture("Texture/Tide_by_Gemini.png", true, "Tsunami");
     ResourceManager::LoadTexture("Texture/GroundTile.png", true, "GroundTile");
+    ResourceManager::LoadTexture("Texture/Rockfall_by_Gemini.png", true, "Rockfall");
     ResourceManager::LoadTexture("Texture/Inventory.png", true, "Inventory");
 
 	Shader spriteShader = ResourceManager::GetShader("sprite");
@@ -160,7 +161,7 @@ void OpenGLCode::init() {
     textRenderer = new TextRenderer(width, height);
     textRenderer->load("fonts/arial.ttf", 32);
 
-    particleGenerator = new ParticleGenerator(ResourceManager::GetShader("sprite"), ResourceManager::GetTexture("Event"), 40);
+    particleGenerator = new ParticleGenerator(ResourceManager::GetShader("sprite"), ResourceManager::GetTexture("Rockfall"), 40);
 
     pauseDelay = 0.15f;
     pauseDelayTimer = 1.0f;

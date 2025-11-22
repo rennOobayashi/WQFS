@@ -43,6 +43,29 @@ NPC WQFS::AddNPC(std::string name, int type, float posX, float posY, float sizeX
 	return newNPC;
 }
 
+WorldEvent WQFS::AddEvent(std::string name, int type, int subType, int hp, float posX, float posY, float sizeX, float sizeY, float maxTime, float duration, float collidDelay, float errorValue) {
+	//std::cout << type << " ";
+	WorldEvent newEvent;
+	newEvent.SetUp(WQFS::GetInstance().eventNumber++, type, subType, hp, posX, posY, sizeX, sizeY, maxTime, duration, collidDelay, errorValue);
+	std::cout << newEvent.getHp() << std::endl;
+	WQFS::GetInstance().worldEvents[name] = newEvent;
+
+	std::cout << collidDelay << "s" << std::endl;
+
+	return newEvent;
+}
+
+NPC WQFS::AddNPC(std::string name, int type, int subType, float posX, float posY, float sizeX, float sizeY, double maxTime) {
+	NPC newNPC;
+	newNPC.SetUp(WQFS::GetInstance().npcNumber++, type, subType, posX, posY, sizeX, sizeY, maxTime);
+	WQFS::GetInstance().npcs[name] = newNPC;
+
+	std::cout << newNPC.GetPositionX() << " " << newNPC.GetPositionY() << " " << newNPC.GetSizeX() << " " << newNPC.GetSizeY() << std::endl;
+	std::cout << npcs[name].GetPositionX() << " " << npcs[name].GetPositionY() << " " << npcs[name].GetSizeX() << " " << npcs[name].GetSizeY() << std::endl;
+
+	return newNPC;
+}
+
 Item WQFS::AddItem(std::string name, int type, float effect, int rarity) {
 	Item newItem;
 	newItem.SetUp(WQFS::GetInstance().itemNumber++, name, type, effect, rarity);

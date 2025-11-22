@@ -17,7 +17,7 @@ private:
 	int questNumber;
 	float positionX, positionY, positionZ;
 	float sizeX, sizeY, sizeZ;
-	int type;
+	int type, subType;
 	int hp;
 	bool isVisible;
 	bool doEvent;
@@ -37,7 +37,9 @@ public:
 	WorldEvent();
 	~WorldEvent() { }
 
-	void SetUp(int _number, int _type, int _hp, float posX, float posY, float sizeX, float sizeY, float _maxTime, float _duration, float _collideDelay, int _errorValue);
+	void SetUp(int _number, int _type, int _hp, float posX, float posY, float sizeX, float sizeY, float _maxTime, float _duration, float _collideDelay, int _errorValue); 
+	void SetUp(int _number, int _type, int _subType, int _hp, float posX, float posY, float sizeX, float sizeY, float _maxTime, float _duration, float _collideDelay, int _errorValue);
+
 	void Timer();
 	void ResetTimer();
 
@@ -58,6 +60,7 @@ public:
 	void SetSize(float x, float y);
 	void SetSize(float x, float y, float z);
 	int GetType() const;
+	int GetSubType() const;
 	void setQuestNumber(int n);
 	int getQuestNumber() const;
 	void setHp(int _hp);
@@ -110,6 +113,7 @@ public:
 		this->isMove = other.isMove;
 		this->errorTime = other.errorTime;
 		this->errorValue = other.errorValue;
+		this->subType = other.subType;
 
 		return *this;
 	}

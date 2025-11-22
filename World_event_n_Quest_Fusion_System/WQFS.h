@@ -51,6 +51,8 @@ public:
 
 	static WorldEvent AddEvent(std::string name, int type, int hp, float posX, float posY, float sizeX, float sizeY, float maxTime, float duration, float collidDelay, float errorValue);
 	static NPC AddNPC(std::string name, int type, float posX, float posY, float sizeX, float sizeY, double maxTime);
+	static WorldEvent AddEvent(std::string name, int type, int subType, int hp, float posX, float posY, float sizeX, float sizeY, float maxTime, float duration, float collidDelay, float errorValue);
+	static NPC AddNPC(std::string name, int type, int subType, float posX, float posY, float sizeX, float sizeY, double maxTime);
 	static Item AddItem(std::string name, int type, float effect, int rarity);
 
 	static WorldEvent& GetEvent(std::string name);
