@@ -7,6 +7,12 @@ void LevelGenerator::init(std::vector<std::vector<unsigned int>> tileData, unsig
 	float unitWidth = levelWidth / static_cast<float>(width);
 	float unitHeight = levelHeight / height;
 
+	for (auto& event : WQFS::GetInstance().worldEvents) {
+		if (event.second.GetSubType() != -1) {
+			events[event.second.GetSubType()] = event.first;
+		}
+	}
+
 	for (unsigned int y = 0; y < height; ++y) {
 		for (unsigned int x = 0; x < width; ++x) {
 			GameObject obj;
@@ -22,11 +28,24 @@ void LevelGenerator::init(std::vector<std::vector<unsigned int>> tileData, unsig
 					walls.push_back(obj);
 					break;
 				case 3: //Mountain tile
-					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(150 / 255.0f));
+					obj = GameObject(ResourceManager::GetTexture("MountainTile"), pos, size, 0.0f, glm::vec3(150 / 255.0f));
 					walls.push_back(obj);
 					break;
 				case 4: //Tree tile
 					obj = GameObject(ResourceManager::GetTexture("Tree"), pos, size, 0.0f, glm::vec3(1.0f));
+					walls.push_back(obj);
+					break;
+				case 5: //Landslide event Object
+					WQFS::GetInstance().GetEvent(events[1]).SetPosition(pos.x, pos.y);
+					obj = GameObject(ResourceManager::GetTexture("MountainTile"), pos, size, 0.0f, glm::vec3(150 / 255.0f));
+					walls.push_back(obj);
+					break;
+				case 6: //Earthquake event Object
+					WQFS::GetInstance().GetEvent(events[2]).SetPosition(pos.x, pos.y);
+					break;
+				case 7: //Tsunami Object
+					WQFS::GetInstance().GetEvent(events[3]).SetPosition(pos.x, pos.y);
+					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(200 / 255.0f));
 					walls.push_back(obj);
 					break;
 			}

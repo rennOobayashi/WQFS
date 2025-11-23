@@ -40,7 +40,7 @@ public:
 	ParticleGenerator(Shader shader, Texture texture, unsigned int _amount);
 	void Update(float dt, GameObject& object, unsigned int newParticle, glm::vec2 offset = glm::vec2(0.0f), glm::vec2 direction = glm::vec2(0.0f, 1.0f));
 	void Idle(float dt);
-	void Draw(SpriteRenderer& spriteRenderer, bool isSprite = false);
+	void Draw(SpriteRenderer& spriteRenderer, bool isSprite = true);
 };
 
 #endif

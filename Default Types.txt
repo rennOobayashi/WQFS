@@ -15,7 +15,7 @@ Item
 
 0. HP, MP Heal
 1. Weapons
-3. Collectible Item
+2. Collectible Item
 
 Quest
 0 Save
