@@ -37,15 +37,16 @@ enum Direction {
 	RIGHT
 };
 
-typedef std::tuple<GameObject, float> Monster;
+typedef std::tuple<GameObject, int> Monster;
 typedef std::tuple<std::vector<GameObject>, bool, bool> QuestObject; //obstacle list, isGenerated
 typedef std::pair<glm::vec2, int> Moving; //default position, moveDirection(0 = left, 1 = right, 2 = up, 3 = down)
 typedef std::pair<GameObject, int> ItemObject;
+typedef std::pair<GameObject, float> NPCObject;
 
 class OpenGLCode
 {
 private:
-	std::map<std::string, GameObject> npcObjects;
+	std::map<std::string, NPCObject> npcObjects;
 	std::map<std::string, Monster> monsterObjects;
 	std::map<std::string, GameObject> eventObjects;
 	std::map<int, GameObject> questObjects; //quest number, object

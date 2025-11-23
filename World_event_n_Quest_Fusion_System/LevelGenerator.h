@@ -22,6 +22,8 @@ private:
 public:
 	std::vector<GameObject> walls;
 	std::map<int, std::string> events; // eventSubType(id), name
+	std::map<int, std::string> monsters; // eventSubType(id), name
+	std::map<int, std::string> npcs;
 
 	LevelGenerator() {}
 	void Load(const char* file, unsigned int level_width, unsigned int level_height);

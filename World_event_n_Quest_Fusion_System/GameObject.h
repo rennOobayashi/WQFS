@@ -17,6 +17,7 @@ public:
 	float alpha;
 	bool flipX;
 	bool flipY;
+	bool visible;
 
 	GameObject();
 	GameObject(Texture sprite, glm::vec2 pos, glm::vec2 size, float rotation = 0, glm::vec3 color = glm::vec3(0.0f), float _alpha = 1.0f, glm::vec2 velocity = glm::vec2(0.0f));

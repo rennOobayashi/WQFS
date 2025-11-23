@@ -91,7 +91,8 @@ void OpenGLCode::init() {
 
     ResourceManager::LoadTexture("Texture/Player.png", true, "Player");
     ResourceManager::LoadTexture("Texture/PlayerMove.png", true, "PlayerMove");
-    ResourceManager::LoadTexture("Texture/NPC.png", true, "NPC");
+    ResourceManager::LoadTexture("Texture/NPC_1.png", true, "NPC1");
+    ResourceManager::LoadTexture("Texture/NPC_1_Move.png", true, "NPC1Move");
     ResourceManager::LoadTexture("Texture/Monster.png", true, "Monster");
     ResourceManager::LoadTexture("Texture/Event.png", true, "Event");
     ResourceManager::LoadTexture("Texture/Tree.png", true, "Tree");
@@ -113,14 +114,15 @@ void OpenGLCode::init() {
     glm::vec2 playerPos(width / 2, height / 2);
     attackCollidePos = glm::vec2(playerPos.x + 20.0f, playerPos.y);
 
-    npcObjects["Normal"] = GameObject(ResourceManager::GetTexture("NPC"), glm::vec2(0.0f, 0.0f), glm::vec2(60.0f), 0.0f, glm::vec3(0.1f, 0.5f, 1.0f));
-    std::get<0>(monsterObjects["Monster"]) = GameObject(ResourceManager::GetTexture("Monster"), glm::vec2(width - 200.0f, 0.0f), glm::vec2(200.0f), 0.0f, glm::vec3(1.0f, 0.2f, 0.1f));
+    npcObjects["Normal"] = std::make_pair(GameObject(ResourceManager::GetTexture("NPC1"), glm::vec2(0.0f, 0.0f), glm::vec2(60.0f), 0.0f, glm::vec3(1.0f), 1.0f), 1.0f);
+    std::get<0>(monsterObjects["Monster"]) = GameObject(ResourceManager::GetTexture("Monster"), glm::vec2(0.0f), glm::vec2(200.0f), 0.0f, glm::vec3(1.0f, 0.2f, 0.1f));
     std::get<1>(monsterObjects["Monster"]) = 0.5f;
-    eventObjects["Landslide"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2((width / 2) - 250.0f, (height / 2) - 250.0f), glm::vec2(500.0f), 0.0f, glm::vec3(0.4f, 0.1f, 1.0f));
-    eventObjects["Earthquake"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(0.0f, height - 400.0f), glm::vec2(400.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f));
-    eventObjects["Tsunami"] = GameObject(ResourceManager::GetTexture("Tsunami"), glm::vec2(width * 2 - 250.0f, height / 2), glm::vec2(120.0f), 0.0f, glm::vec3(1.0f));
+    eventObjects["Landslide"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(100.0f), glm::vec2(500.0f), 0.0f, glm::vec3(0.4f, 0.1f, 1.0f));
+	eventObjects["Landslide"].visible = false;
+    eventObjects["Earthquake"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(100.0f, height - 400.0f), glm::vec2(400.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f));
+    eventObjects["Tsunami"] = GameObject(ResourceManager::GetTexture("Tsunami"), glm::vec2(100.0f), glm::vec2(120.0f), 0.0f, glm::vec3(1.0f));
     player = new GameObject(ResourceManager::GetTexture("Player"), playerPos, playerSize, 0.0f, glm::vec3(1.0f), 1.0f, glm::vec2(playerVelocity));
-	attackBox = new GameObject(ResourceManager::GetTexture("NPC"), attackCollidePos, glm::vec2(50.0f, 100.0f), 0.0f, glm::vec3(1.0f, 0.3f, 0.3f));
+	attackBox = new GameObject(ResourceManager::GetTexture("GroundTile"), attackCollidePos, glm::vec2(50.0f, 100.0f), 0.0f, glm::vec3(1.0f, 0.3f, 0.3f));
     questGameObject = new GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(0.0f), glm::vec2(25.0f), 0.0f, glm::vec3(1.0f));
 	InventoryObject = new GameObject(ResourceManager::GetTexture("Inventory"), glm::vec2(100.0f, 80.0f), glm::vec2(800.0f, 160.0f), 0.0f, glm::vec3(1.0f), 0.5f);
 	hpObjects = new GameObject(ResourceManager::GetTexture("Heart"), glm::vec2(10.0f), glm::vec2(50.0f), 0.0f, glm::vec3(1.0f), 0.7f);
@@ -131,14 +133,29 @@ void OpenGLCode::init() {
     itemObjects["Iron"] = std::make_pair(GameObject(ResourceManager::GetTexture("Iron"), glm::vec2(610.0f, 110.0f), glm::vec2(100.0f), 0.0f, glm::vec3(1.0f), 0.8f), 0);
     itemObjects["Gold"] = std::make_pair(GameObject(ResourceManager::GetTexture("Gold"), glm::vec2(770.0f, 110.0f), glm::vec2(100.0f), 0.0f, glm::vec3(1.0f), 0.8f), 0);
 
-    WQFS::GetInstance().AddNPC("Normal", 0, npcObjects["Normal"].objPosition.x, npcObjects["Normal"].objPosition.y, npcObjects["Normal"].objSize.x, npcObjects["Normal"].objSize.y, 5.0f);
+    WQFS::GetInstance().AddNPC("Normal", 0, 0, 0.0f, 0.0f, npcObjects["Normal"].first.objSize.x, npcObjects["Normal"].first.objSize.y, 5.0f);
 
-    WQFS::GetInstance().AddEvent("Monster", 0, 2, std::get<0>(monsterObjects["Monster"]).objPosition.x, std::get<0>(monsterObjects["Monster"]).objPosition.y, std::get<0>(monsterObjects["Monster"]).objSize.x, std::get<0>(monsterObjects["Monster"]).objSize.y, -1.0f, -1.0f, 0.0f, 0.0f);
-    WQFS::GetInstance().AddEvent("Landslide", 1, 1, 2, eventObjects["Landslide"].objPosition.x, eventObjects["Landslide"].objPosition.y, eventObjects["Landslide"].objSize.x, eventObjects["Landslide"].objSize.y, 10.0f, 5.0f, 0.5f, 3.0f);
-    WQFS::GetInstance().AddEvent("Earthquake", 1, 2, 2, eventObjects["Earthquake"].objPosition.x, eventObjects["Earthquake"].objPosition.y, eventObjects["Earthquake"].objSize.x, eventObjects["Earthquake"].objSize.y, 5.0f, 3.0f, 0.0f, 1.0f);
-    WQFS::GetInstance().AddEvent("Tsunami", 2, 3, 2, eventObjects["Tsunami"].objPosition.x, eventObjects["Tsunami"].objPosition.y, eventObjects["Tsunami"].objSize.x, eventObjects["Tsunami"].objSize.y, 10.0f, 3.0f, 0.0f, 2.0f);
-
+    WQFS::GetInstance().AddEvent("Monster", 0, 0, 2, 0.0f, 0.0f, std::get<0>(monsterObjects["Monster"]).objSize.x, std::get<0>(monsterObjects["Monster"]).objSize.y, -1.0f, -1.0f, 0.0f, 0.0f);
+    WQFS::GetInstance().AddEvent("Landslide", 1, 0, 2, 0.0f, 0.0f, eventObjects["Landslide"].objSize.x, eventObjects["Landslide"].objSize.y, 10.0f, 5.0f, 0.5f, 3.0f);
+    WQFS::GetInstance().AddEvent("Earthquake", 1, 1, 2, 0.0f, 0.0f, eventObjects["Earthquake"].objSize.x, eventObjects["Earthquake"].objSize.y, 5.0f, 3.0f, 0.0f, 1.0f);
+    WQFS::GetInstance().AddEvent("Tsunami", 2, 2, 2, 0.0f, 0.0f, eventObjects["Tsunami"].objSize.x, eventObjects["Tsunami"].objSize.y, 10.0f, 3.0f, 0.0f, 2.0f);
+    
 	WQFS::GetInstance().GetEvent("Earthquake").SetIsMove(true);
+
+    mapWidth = width * 5;
+    mapHeight = height * 5;
+
+    level.Load("level/1.lvl", mapWidth, mapHeight);
+
+    for (auto npc : WQFS::GetInstance().npcs) {
+	    npcObjects[npc.first].first.objPosition.x = npc.second.GetPositionX();
+        npcObjects[npc.first].first.objPosition.y = npc.second.GetPositionY();
+    }
+
+    for (auto event : WQFS::GetInstance().worldEvents) {
+        eventObjects[event.first].objPosition.x = event.second.GetPositionX();
+        eventObjects[event.first].objPosition.y = event.second.GetPositionY();
+	}
 
     landslide.push_back("Landslide");
 
@@ -149,7 +166,7 @@ void OpenGLCode::init() {
     }
 
     for (const auto& npc : WQFS::GetInstance().npcs) {
-        defaultColors[npc.first] = npcObjects[npc.first].objColor;
+        defaultColors[npc.first] = npcObjects[npc.first].first.objColor;
 	}
 
     for (const auto& event : WQFS::GetInstance().worldEvents) {
@@ -167,9 +184,6 @@ void OpenGLCode::init() {
 
     view = glm::mat4(0.0f);
 
-    mapWidth = width * 5;
-    mapHeight = height * 5;
-
     std::cout << "All width / height" <<std::endl << mapWidth << " / " << mapHeight << std::endl;
 
     textRenderer = new TextRenderer(width, height);
@@ -179,8 +193,6 @@ void OpenGLCode::init() {
 
     pauseDelay = 0.15f;
     pauseDelayTimer = 1.0f;
-
-	level.Load("level/1.lvl", mapWidth, mapHeight);
 }
 
 void OpenGLCode::update() {
@@ -317,31 +329,37 @@ void OpenGLCode::render() {
             }
 		}
 
-        npcObjects[npc.first].Draw(*sRenderer);
+        npcObjects[npc.first].first.Draw(*sRenderer);
 
         if (npc.second.GetInDangerous()) {
             if (CheckCollision(glm::vec2(cameraPos.x + (width / 2), cameraPos.y + (height / 2)), glm::vec2(width, height), glm::vec2(npc.second.GetPositionX(), npc.second.GetPositionY()), glm::vec2(11 * 32 * 2, 32 * 2))) {
-                textRenderer->renderText("Quest Here!", npc.second.GetPositionX() - cameraPos.x, npc.second.GetPositionY() - cameraPos.y, 2.0f, glm::vec3(0.0f));
+                textRenderer->renderText("HELP!", npc.second.GetPositionX() - cameraPos.x, npc.second.GetPositionY() - 64.0f - cameraPos.y, 2.0f, glm::vec3(0.0f));
             }
 
             showDangerousTime += deltaTime;
 
             if (showDangerousTime >= 1.0f) {
-                npcObjects[npc.first].objColor = glm::vec3(1.0f, 0.0f, 0.0f);
+                npcObjects[npc.first].first.objColor = glm::vec3(1.0f, 0.0f, 0.0f);
                 showDangerousTime = 0.0f;
             }
             else if (showDangerousTime >= 0.5f) {
-                npcObjects[npc.first].objColor = glm::vec3(0.0f, 0.0f, 1.0f);
+                npcObjects[npc.first].first.objColor = glm::vec3(0.0f, 0.0f, 1.0f);
             }
         }
         else {
-            if (!npc.second.GetCanDangerous()) {
-                if (CheckCollision(glm::vec2(cameraPos.x + (width / 2), cameraPos.y + (height / 2)), glm::vec2(width, height), glm::vec2(npc.second.GetPositionX(), npc.second.GetPositionY()), glm::vec2(6 * 32 * 2, 32 * 2))) {
-                    textRenderer->renderText("Delay!", npc.second.GetPositionX() - cameraPos.x, npc.second.GetPositionY() - cameraPos.y, 2.0f, glm::vec3(0.0f));
-                }
-            }
-            npcObjects[npc.first].objColor = glm::vec3(0.1f, 0.5f, 1.0f);
+            npcObjects[npc.first].first.objColor = glm::vec3(1.0f);
             showDangerousTime = 1.0f;
+			npcObjects[npc.first].second += deltaTime;
+
+            if (npcObjects[npc.first].second > 0.5f) {
+                npcObjects[npc.first].second = 0.0f;
+            }
+            else if (npcObjects[npc.first].second > 0.25f) {
+				npcObjects[npc.first].first.objSprite = ResourceManager::GetTexture("NPC1");
+            }
+            else if (npcObjects[npc.first].second > 0.0f) {
+                npcObjects[npc.first].first.objSprite = ResourceManager::GetTexture("NPC1Move");
+            }
         }
 
     }
@@ -486,8 +504,8 @@ void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
 }
 
 void OpenGLCode::Reset() {
-	npcObjects["Normal"].objPosition.x = 0.0f;
-    npcObjects["Normal"].objPosition.y = 0.0f;
+	npcObjects["Normal"].first.objPosition.x = 0.0f;
+    npcObjects["Normal"].first.objPosition.y = 0.0f;
 	WQFS::GetNPC("Normal").SetInDangerous(false);
 
 	std::get<0>(monsterObjects["Monster"]).objPosition.x = width - 200.0f;
@@ -497,7 +515,7 @@ void OpenGLCode::Reset() {
 	eventObjects["Landslide"].objPosition.x = 0.0f;
 	eventObjects["Landslide"].objPosition.y = height - 350.0f;
 
-	npcObjects["Normal"].objVelocity = glm::vec2(0.0f);
+	npcObjects["Normal"].first.objVelocity = glm::vec2(0.0f);
     std::get<0>(monsterObjects["Monster"]).objVelocity = glm::vec2(0.0f);
     eventObjects["Earthquake"].objVelocity = glm::vec2(0.0f);
     eventObjects["Landslide"].objVelocity = glm::vec2(0.0f);
@@ -554,22 +572,22 @@ void OpenGLCode::MoveSelf(float dt) {
             
             //Up
             if (glfwGetKey(window, GLFW_KEY_I)) {
-                npcObjects[npc.first].objPosition.y -= 100 * dt * timeScale;
+                npcObjects[npc.first].first.objPosition.y -= 100 * dt * timeScale;
             }
             //Down
             if (glfwGetKey(window, GLFW_KEY_K)) {
-                npcObjects[npc.first].objPosition.y += 100 * dt * timeScale;
+                npcObjects[npc.first].first.objPosition.y += 100 * dt * timeScale;
             }
             //Left
             if (glfwGetKey(window, GLFW_KEY_J)) {
-                npcObjects[npc.first].objPosition.x -= 100 * dt * timeScale;
+                npcObjects[npc.first].first.objPosition.x -= 100 * dt * timeScale;
             }
             //Right
             if (glfwGetKey(window, GLFW_KEY_L)) {
-                npcObjects[npc.first].objPosition.x += 100 * dt * timeScale;
+                npcObjects[npc.first].first.objPosition.x += 100 * dt * timeScale;
             }
 
-            npc.second.SetPosition(npcObjects[npc.first].objPosition.x, npcObjects[npc.first].objPosition.y);
+            npc.second.SetPosition(npcObjects[npc.first].first.objPosition.x, npcObjects[npc.first].first.objPosition.y);
         }
 	}
 

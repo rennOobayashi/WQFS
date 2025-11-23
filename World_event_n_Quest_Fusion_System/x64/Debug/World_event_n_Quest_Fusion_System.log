@@ -4,4 +4,8 @@ C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(1
       C:\glfw-3.4\include\glad\glad.h(32,9):
       'APIENTRY'의 이전 정의를 참조하십시오.
   
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(119,46): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(271,52): warning C4244: '+=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(761,47): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(767,43): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   World_event_n_Quest_Fusion_System.vcxproj -> C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\x64\Debug\World_event_n_Quest_Fusion_System.exe
