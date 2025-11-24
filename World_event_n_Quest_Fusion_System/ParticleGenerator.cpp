@@ -50,7 +50,7 @@ void ParticleGenerator::Update(float dt, GameObject& object, unsigned int newPar
 		p.life -= dt;
 
 		if (p.life < 0.5f) {
-			p.Color.a -= dt * 5.0f;
+			p.Color.a -= dt * 7.5f;
 			p.Position += p.Velocity * dt;
 		}
 		else if (p.life > 0.0f) {
@@ -79,7 +79,7 @@ unsigned int ParticleGenerator::FirstUnusedParticle() {
 }
 
 void ParticleGenerator::RespawnParticle(Particle& particle, GameObject& object, glm::vec2 offset, glm::vec2 direction) {
-	float randomX = (rand() % (unsigned int)object.objPosition.x);
+	float randomX = ((rand() % (unsigned int)object.objSize.x) / 2.0f) - 100.0f;
 	float randomY = (rand() % 10) - 10.0f;
 	float randomVelX = (rand() & 10) / 10.0f - 0.3f;
 	float ramdomSize = (rand() % 20) + 70.0f;

@@ -7,6 +7,13 @@ glm::vec2 cameraNextPos(0.0f, 0.0f);
 glm::vec3 cameraFront(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp(0.0f, 1.0f, 0.0f);
 glm::vec2 attackCollidePos(0.0f, 0.0f);
+const glm::vec2 inventoryItemPos[] = {
+    glm::vec2(125.0f, 110.0f),
+    glm::vec2(290.0f, 110.0f),
+    glm::vec2(445.0f, 110.0f),
+    glm::vec2(610.0f, 110.0f),
+    glm::vec2(770.0f, 110.0f),
+};
 const glm::vec2 playerSize(70.0f);
 const float playerVelocity(300.0f);
 const float CameraVelocity(2000.0f);
@@ -114,12 +121,12 @@ void OpenGLCode::init() {
     glm::vec2 playerPos(width / 2, height / 2);
     attackCollidePos = glm::vec2(playerPos.x + 20.0f, playerPos.y);
 
-    npcObjects["Normal"] = std::make_pair(GameObject(ResourceManager::GetTexture("NPC1"), glm::vec2(0.0f, 0.0f), glm::vec2(60.0f), 0.0f, glm::vec3(1.0f), 1.0f), 1.0f);
+    npcObjects["Normal"] = std::make_pair(GameObject(ResourceManager::GetTexture("NPC1"), glm::vec2(0.0f, 0.0f), glm::vec2(70.0f), 0.0f, glm::vec3(1.0f), 1.0f), 1.0f);
     std::get<0>(monsterObjects["Monster"]) = GameObject(ResourceManager::GetTexture("Monster"), glm::vec2(0.0f), glm::vec2(200.0f), 0.0f, glm::vec3(1.0f, 0.2f, 0.1f));
     std::get<1>(monsterObjects["Monster"]) = 0.5f;
-    eventObjects["Landslide"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(100.0f), glm::vec2(500.0f), 0.0f, glm::vec3(0.4f, 0.1f, 1.0f));
-	eventObjects["Landslide"].visible = false;
-    eventObjects["Earthquake"] = GameObject(ResourceManager::GetTexture("Event"), glm::vec2(100.0f, height - 400.0f), glm::vec2(400.0f), 0.0f, glm::vec3(0.7f, 0.1f, 1.0f));
+    eventObjects["Landslide"] = GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(100.0f), glm::vec2(300.0f), 0.0f, glm::vec3(190 / 255.0f));
+	eventObjects["Landslide"].visible = true;
+    eventObjects["Earthquake"] = GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(100.0f, height - 400.0f), glm::vec2(400.0f), 0.0f, glm::vec3(190 / 255.0f));
     eventObjects["Tsunami"] = GameObject(ResourceManager::GetTexture("Tsunami"), glm::vec2(100.0f), glm::vec2(120.0f), 0.0f, glm::vec3(1.0f));
     player = new GameObject(ResourceManager::GetTexture("Player"), playerPos, playerSize, 0.0f, glm::vec3(1.0f), 1.0f, glm::vec2(playerVelocity));
 	attackBox = new GameObject(ResourceManager::GetTexture("GroundTile"), attackCollidePos, glm::vec2(50.0f, 100.0f), 0.0f, glm::vec3(1.0f, 0.3f, 0.3f));
@@ -127,11 +134,11 @@ void OpenGLCode::init() {
 	InventoryObject = new GameObject(ResourceManager::GetTexture("Inventory"), glm::vec2(100.0f, 80.0f), glm::vec2(800.0f, 160.0f), 0.0f, glm::vec3(1.0f), 0.5f);
 	hpObjects = new GameObject(ResourceManager::GetTexture("Heart"), glm::vec2(10.0f), glm::vec2(50.0f), 0.0f, glm::vec3(1.0f), 0.7f);
 
-	itemObjects["HP_Posion"] = std::make_pair(GameObject(ResourceManager::GetTexture("HP_Posion"), glm::vec2(125.0f, 110.0f), glm::vec2(100.0f), 0.0f, glm::vec3(1.0f), 0.8f), 0);
-    itemObjects["Good_HP_Posion"] = std::make_pair(GameObject(ResourceManager::GetTexture("Good_HP_Posion"), glm::vec2(290.0f, 110.0f), glm::vec2(100.0f), 0.0f, glm::vec3(1.0f), 0.8f), 0);
-    itemObjects["Mana_Up_Posion"] = std::make_pair(GameObject(ResourceManager::GetTexture("Mana_Up_Posion"), glm::vec2(445.0f, 110.0f), glm::vec2(100.0f), 0.0f, glm::vec3(1.0f), 0.8f), 0);
-    itemObjects["Iron"] = std::make_pair(GameObject(ResourceManager::GetTexture("Iron"), glm::vec2(610.0f, 110.0f), glm::vec2(100.0f), 0.0f, glm::vec3(1.0f), 0.8f), 0);
-    itemObjects["Gold"] = std::make_pair(GameObject(ResourceManager::GetTexture("Gold"), glm::vec2(770.0f, 110.0f), glm::vec2(100.0f), 0.0f, glm::vec3(1.0f), 0.8f), 0);
+    itemObjects["HP Posion"] = GameObject(ResourceManager::GetTexture("HP_Posion"), glm::vec2(125.0f, 110.0f), glm::vec2(100.0f), 0.0f, glm::vec3(1.0f), 0.8f);
+    itemObjects["Good HP Posion"] = GameObject(ResourceManager::GetTexture("Good_HP_Posion"), glm::vec2(290.0f, 110.0f), glm::vec2(100.0f), 0.0f, glm::vec3(1.0f), 0.8f);
+    itemObjects["Mana Up Posion"] = GameObject(ResourceManager::GetTexture("Mana_Up_Posion"), glm::vec2(445.0f, 110.0f), glm::vec2(100.0f), 0.0f, glm::vec3(1.0f), 0.8f);
+    itemObjects["Iron"] = GameObject(ResourceManager::GetTexture("Iron"), glm::vec2(610.0f, 110.0f), glm::vec2(100.0f), 0.0f, glm::vec3(1.0f), 0.8f);
+    itemObjects["Gold"] = GameObject(ResourceManager::GetTexture("Gold"), glm::vec2(770.0f, 110.0f), glm::vec2(100.0f), 0.0f, glm::vec3(1.0f), 0.8f);
 
     WQFS::GetInstance().AddNPC("Normal", 0, 0, 0.0f, 0.0f, npcObjects["Normal"].first.objSize.x, npcObjects["Normal"].first.objSize.y, 5.0f);
 
@@ -152,10 +159,19 @@ void OpenGLCode::init() {
         npcObjects[npc.first].first.objPosition.y = npc.second.GetPositionY();
     }
 
-    for (auto event : WQFS::GetInstance().worldEvents) {
-        eventObjects[event.first].objPosition.x = event.second.GetPositionX();
-        eventObjects[event.first].objPosition.y = event.second.GetPositionY();
-	}
+    for (auto e : WQFS::GetInstance().worldEvents) {
+        if (e.second.GetType() != 0) {
+            eventObjects[e.first].objPosition.x = e.second.GetPositionX();
+            eventObjects[e.first].objPosition.y = e.second.GetPositionY();
+        }
+    }
+
+    for (auto e : WQFS::GetInstance().worldEvents) {
+        if (e.second.GetType() == 0) {
+            std::get<0>(monsterObjects[e.first]).objPosition.x = e.second.GetPositionX();
+            std::get<0>(monsterObjects[e.first]).objPosition.y = e.second.GetPositionY();
+        }
+    }
 
     landslide.push_back("Landslide");
 
@@ -175,10 +191,14 @@ void OpenGLCode::init() {
 
 
     WQFS::GetInstance().AddItem("HP Posion", 0, 1, 1);
-    WQFS::GetInstance().AddItem("GOOD HP Posion", 0, 2, 1);
+    WQFS::GetInstance().AddItem("Good HP Posion", 0, 2, 1);
     WQFS::GetInstance().AddItem("Mana Up Posion", 1, 2, 0);
     WQFS::GetInstance().AddItem("Iron", 2, 20, 0);
     WQFS::GetInstance().AddItem("Gold", 2, 50, 1);
+
+    for (auto item : WQFS::GetInstance().comps) {
+        inventory[item.second] = 0;
+    }
 
     states = GAME_ACTIVE;
 
@@ -337,6 +357,19 @@ void OpenGLCode::render() {
             }
 
             showDangerousTime += deltaTime;
+            npcObjects[npc.first].second += deltaTime;
+
+            if (npcObjects[npc.first].second > 0.4f) {
+                npcObjects[npc.first].second = 0.0f;
+            }
+            else if (npcObjects[npc.first].second > 0.2f) {
+                npcObjects[npc.first].first.objSprite = ResourceManager::GetTexture("NPC1");
+                npcObjects[npc.first].first.flipX *= -1;
+            }
+            else if (npcObjects[npc.first].second > 0.0f) {
+                npcObjects[npc.first].first.objSprite = ResourceManager::GetTexture("NPC1Move");
+                npcObjects[npc.first].first.flipX *= -1;
+            }
 
             if (showDangerousTime >= 1.0f) {
                 npcObjects[npc.first].first.objColor = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -351,14 +384,23 @@ void OpenGLCode::render() {
             showDangerousTime = 1.0f;
 			npcObjects[npc.first].second += deltaTime;
 
-            if (npcObjects[npc.first].second > 0.5f) {
-                npcObjects[npc.first].second = 0.0f;
+            if (npcObjects[npc.first].first.objVelocity != glm::vec2(0.0f)) {
+                if (npcObjects[npc.first].second > 0.5f) {
+                    npcObjects[npc.first].second = 0.0f;
+                }
+                else if (npcObjects[npc.first].second > 0.25f) {
+                    npcObjects[npc.first].first.objSprite = ResourceManager::GetTexture("NPC1");
+                }
+                else if (npcObjects[npc.first].second > 0.0f) {
+                    npcObjects[npc.first].first.objSprite = ResourceManager::GetTexture("NPC1Move");
+                }
             }
-            else if (npcObjects[npc.first].second > 0.25f) {
-				npcObjects[npc.first].first.objSprite = ResourceManager::GetTexture("NPC1");
+
+            if (npcObjects[npc.first].first.objVelocity.x > 0) {
+                npcObjects[npc.first].first.flipX = true;
             }
-            else if (npcObjects[npc.first].second > 0.0f) {
-                npcObjects[npc.first].first.objSprite = ResourceManager::GetTexture("NPC1Move");
+            else if (npcObjects[npc.first].first.objVelocity.x < 0) {
+                npcObjects[npc.first].first.flipX = false;
             }
         }
 
@@ -412,13 +454,16 @@ void OpenGLCode::render() {
     InventoryObject->objPosition.y = 80.0f + cameraPos.y;
 	InventoryObject->Draw(*sRenderer);
 
-    for (auto itemObject : itemObjects) {
+    int cnt = 0;
+
+    for (auto item : inventory) {
         std::stringstream itemCnt;
-        itemCnt << itemObject.second.second;
-		itemObject.second.first.objPosition.x = itemObject.second.first.objPosition.x + cameraPos.x;
-        itemObject.second.first.objPosition.y = itemObject.second.first.objPosition.y + cameraPos.y;
-		itemObject.second.first.Draw(*sRenderer);
-        textRenderer->renderText(itemCnt.str(), itemObject.second.first.objPosition.x + 100.0f - cameraPos.x, itemObject.second.first.objPosition.y + 90.0f - cameraPos.y, 1.0f, glm::vec3(0.95f));
+        itemCnt << item.second;
+        itemObjects[item.first.GetName()].objPosition.x = inventoryItemPos[cnt].x + cameraPos.x;
+        itemObjects[item.first.GetName()].objPosition.y = inventoryItemPos[cnt].y + cameraPos.y;
+		itemObjects[item.first.GetName()].Draw(*sRenderer);
+        textRenderer->renderText(itemCnt.str(), inventoryItemPos[cnt].x + 100.0f, inventoryItemPos[cnt].y + 90.0f, 1.0f, glm::vec3(0.95f));
+        ++cnt;
     }
 
     if (states == GAME_MENU) {
@@ -547,7 +592,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 void OpenGLCode::MoveSelf(float dt) {
     float timeScale = 1.0f;
 
-    if (changeMoveTime >= 30.0f) {
+    if (changeMoveTime >= 5.0f) {
         changedir = true;
 
         changeMoveTime = 0;
@@ -558,18 +603,19 @@ void OpenGLCode::MoveSelf(float dt) {
 
     for (auto& npc : WQFS::GetInstance().npcs) {
         if (!npc.second.GetInDangerous()) {
-            /*if (changedir) {
-                npcObjects[npc.first].objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
+            if (changedir) {
+                npcObjects[npc.first].first.objVelocity = glm::vec2((rand() % 3) - 1, (rand() % 3) - 1);
                 //std::cout << npcObjects[npc.first].objVelocity.x << " " << npcObjects[npc.first].objVelocity.y << std::endl;
             }
 
-            if ((npcObjects[npc.first].objPosition.x < 0 && npcObjects[npc.first].objVelocity.x == -1)) npcObjects[npc.first].objVelocity.x = 0;
-            if ((npcObjects[npc.first].objPosition.y < 0 && npcObjects[npc.first].objVelocity.y == -1)) npcObjects[npc.first].objVelocity.y = 0;
+            if ((npcObjects[npc.first].first.objPosition.x < 0 && npcObjects[npc.first].first.objVelocity.x == -1)) npcObjects[npc.first].first.objVelocity.x = 0;
+            if ((npcObjects[npc.first].first.objPosition.y < 0 && npcObjects[npc.first].first.objVelocity.y == -1)) npcObjects[npc.first].first.objVelocity.y = 0;
 
-            npcObjects[npc.first].objPosition.x += npcObjects[npc.first].objVelocity.x * 50 * dt * timeScale;
-            npcObjects[npc.first].objPosition.y += npcObjects[npc.first].objVelocity.y * 50 * dt * timeScale;
-            */
+            npcObjects[npc.first].first.objPosition.x += npcObjects[npc.first].first.objVelocity.x * 50 * dt * timeScale;
+            npcObjects[npc.first].first.objPosition.y += npcObjects[npc.first].first.objVelocity.y * 50 * dt * timeScale;
             
+            
+            /*
             //Up
             if (glfwGetKey(window, GLFW_KEY_I)) {
                 npcObjects[npc.first].first.objPosition.y -= 100 * dt * timeScale;
@@ -585,7 +631,7 @@ void OpenGLCode::MoveSelf(float dt) {
             //Right
             if (glfwGetKey(window, GLFW_KEY_L)) {
                 npcObjects[npc.first].first.objPosition.x += 100 * dt * timeScale;
-            }
+            }*/
 
             npc.second.SetPosition(npcObjects[npc.first].first.objPosition.x, npcObjects[npc.first].first.objPosition.y);
         }
