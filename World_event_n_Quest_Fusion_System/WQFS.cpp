@@ -93,6 +93,10 @@ void WQFS::Clear() {
 }
 
 void WQFS::MakeQuest(NPC &npc, WorldEvent &event) {
+	if (npc.getQuestNumber() != -1) {
+		return;
+	}
+
 	int questType = 0;
 
 	int random = rand() % 2;
@@ -120,8 +124,8 @@ void WQFS::MakeQuest(NPC &npc, WorldEvent &event) {
 	for (int i = 0; i < std::get<0>(WQFS::GetInstance().questList[WQFS::GetInstance().questNumber - 1]).size(); i++) {
 		std::cout << std::get<0>(WQFS::GetInstance().questList[WQFS::GetInstance().questNumber - 1])[i].GetName() << " ";
 	}
-	std::cout << npc.GetType()  << " " << event.GetType() << std::endl;
-
+	std::cout << std::endl;
+	//std::cout << npc.GetType()  << " " << event.GetType() << std::endl;
 }
 
 bool WQFS::CheckCollision(float object1X, float object1Y, float object1SizeX, float object1SizeY, float object2X, float object2Y, float object2SizeX, float object2SizeY) {
@@ -150,8 +154,6 @@ void WQFS::CheckQuest(std::map<Item, int>& inventory, float playerSizeX, float p
 			for (auto& monster : WQFS::GetInstance().worldEvents) {
 				if (monster.second.GetType() == 0) {
 					if (WQFS::GetInstance().GetEvent(monster.first).getVisible() && WQFS::GetInstance().CheckCollision(npc.second.GetPositionX(), npc.second.GetPositionY(), npc.second.GetSizeX(), npc.second.GetSizeY(), monster.second.GetPositionX(), monster.second.GetPositionY(), monster.second.GetSizeX(), monster.second.GetSizeY())) {
-						std::cout << "몬스터 퀘스트 발생!" << std::endl;
-						std::cout << "몬스터 퀘스트 발생!" << std::endl;
 						npc.second.SetInDangerous(true);
 						WQFS::GetInstance().MakeQuest(npc.second, WQFS::GetInstance().GetEvent(monster.first));
 						std::cout << npc.second.getQuestNumber() << "monster" << std::endl;
@@ -172,25 +174,27 @@ void WQFS::CheckQuest(std::map<Item, int>& inventory, float playerSizeX, float p
 			}
 		}
 		else {
-			if (npc.second.getQuestNumber() != -1 && WQFS::GetInstance().CheckCollision(npc.second.GetPositionX(), npc.second.GetPositionY(), npc.second.GetSizeX(), npc.second.GetSizeY(), playerX, playerY, playerSizeX, playerSizeY)) {
-				for (auto& target : WQFS::GetInstance().QuestTargetObjects) {
-					if (std::get<1>(questList[target.first->getQuestNumber()]) == 0 && target.second->getQuestNumber() == npc.second.getQuestNumber() && target.second->GetType() != 0) {
-						std::vector<Item> items = WQFS::GetInstance().CompleteQuest(npc.second);
+			//if (npc.second.getQuestNumber() != -1 && WQFS::GetInstance().CheckCollision(npc.second.GetPositionX(), npc.second.GetPositionY(), npc.second.GetSizeX(), npc.second.GetSizeY(), playerX, playerY, playerSizeX, playerSizeY)) {
+			//	for (auto& target : WQFS::GetInstance().QuestTargetObjects) {
+			//		if (std::get<1>(questList[target.first->getQuestNumber()]) == 0 && target.second->getQuestNumber() == npc.second.getQuestNumber() && target.second->GetType() != 0) {
+			//			std::vector<Item> items = WQFS::GetInstance().CompleteQuest(npc.second);
 
-						for (auto& item : items) {
-							inventory[item] += 1;
-						}
+			//			for (auto& item : items) {
+			//				inventory[item] += 1;
+			//			}
 
-						for (auto& item : inventory) {
-							std::cout << item.first.GetName() << " : " << item.second << std::endl;
-						}
-						
-						npc.second.ResetTimer();
-					}
-				}
-			}
+			//			for (auto& item : inventory) {
+			//				std::cout << item.first.GetName() << " : " << item.second << std::endl;
+			//			}
+			//			
+			//			npc.second.ResetTimer();
+			//		}
+			//	}
+			//}
 
 			if ((std::get<1>(questList[npc.second.getQuestNumber()]) == 2 || std::get<1>(questList[npc.second.getQuestNumber()]) == 3) && questRemaining[npc.second.getQuestNumber()] <= 0) {
+				std::cout << "장애물 제거 완료!" << std::endl;
+
 				std::vector<Item> items = WQFS::GetInstance().CompleteQuest(npc.second);
 
 				for (auto& item : items) {
@@ -544,6 +548,8 @@ void WQFS::SetCompensation(NPC &npc, WorldEvent& event, int questType) {
 
 std::vector<Item> WQFS::CompleteQuest(NPC &npc)  {
 	if (!std::get<2>(questList[npc.getQuestNumber()])) {
+		int questNumber = npc.getQuestNumber();
+
 		std::get<2>(questList[npc.getQuestNumber()]) = true;
 		npc.SetInDangerous(false);
 
@@ -558,7 +564,7 @@ std::vector<Item> WQFS::CompleteQuest(NPC &npc)  {
 
 		std::cout << "퀘스트 완료!" << std::endl; 
 
-		return std::get<0>(questList[npc.getQuestNumber()]);
+		return std::get<0>(questList[questNumber]);
 	}
 	else {
 		std::cout << "이미 완료한 퀘스트입니다!" << std::endl;
@@ -578,12 +584,15 @@ std::vector<std::string> WQFS::GetQuestListByString(int maxQuestList) {
 		for (const auto target : QuestTargetObjects) {
 			if (target.first->getQuestNumber() != -1 && quest.first == target.first->getQuestNumber()) {
 				strData = std::to_string(quest.first + 1) + ". "; 
-
 				switch (std::get<1>(quest.second)) {
-				case 0: strData += "Save NPC.";	break;
-				case 1: strData += "Retrieve  NPC's Item.";	break;
-				case 2: strData += "Return the item to the NPC. (Remaining: " + std::to_string((WQFS::GetInstance().questRemaining[quest.first])) + ")";	break;
-				case 3: strData += "Remove obstacles for NPC (Remaining: " + std::to_string(WQFS::GetInstance().questRemaining[quest.first]) + ")";	break;
+				case 0: strData += "Save NPC.";
+					break;
+				case 1: strData += "Retrieve  NPC's Item."; 
+					break;
+				case 2: strData += "Return the item to the NPC. (Remaining: " + std::to_string((WQFS::GetInstance().questRemaining[quest.first])) + ")";
+					break;
+				case 3: strData += "Remove obstacles for NPC (Remaining: " + std::to_string(WQFS::GetInstance().questRemaining[quest.first]) + ")";
+					break;
 				default: strData += "";  break;
 				}
 				break;
@@ -591,6 +600,14 @@ std::vector<std::string> WQFS::GetQuestListByString(int maxQuestList) {
 		}
 
 		if (strData != "") {
+			stringQuest.push_back(strData);
+
+			strData = "(Reward: " + std::get<0>(quest.second)[0].GetName();
+			for (int i = 1; i < std::get<0>(quest.second).size(); ++i) {
+				strData += ", " + std::get<0>(quest.second)[i].GetName();
+			}
+			strData += ")";
+
 			stringQuest.push_back(strData);
 		}
 	}
@@ -606,4 +623,5 @@ std::vector<std::string> WQFS::GetQuestListByString(int maxQuestList) {
 
 void WQFS::DiscountRemainingObstacles(int questNumber) {
 	--questRemaining[questNumber];
+	//std::cout << "remaining (left: " << questRemaining[questNumber] << ")" << std::endl;
 }

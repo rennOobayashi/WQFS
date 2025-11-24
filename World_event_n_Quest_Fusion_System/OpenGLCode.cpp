@@ -19,11 +19,11 @@ const float playerVelocity(300.0f);
 const float CameraVelocity(2000.0f);
 
 glm::vec2 obstaclePosition[5] = {
-    glm::vec2(-70.0f, 60.0f),
+    glm::vec2(-80.0f, 60.0f),
     glm::vec2(50.0f, -40.0f),
     glm::vec2(-100.0f, -60.0f),
     glm::vec2(90.0f, 50.0f),
-    glm::vec2(30.0f, 65.0f),
+    glm::vec2(40.0f, 65.0f),
 };
 
 glm::vec3 obstacleColors[5] = {
@@ -207,7 +207,7 @@ void OpenGLCode::init() {
     std::cout << "All width / height" <<std::endl << mapWidth << " / " << mapHeight << std::endl;
 
     textRenderer = new TextRenderer(width, height);
-    textRenderer->load("fonts/arial.ttf", 32);
+    textRenderer->load("fonts/arial.ttf", 64);
 
     particleGenerator = new ParticleGenerator(ResourceManager::GetShader("sprite"), ResourceManager::GetTexture("Rockfall"), 40);
 
@@ -406,27 +406,11 @@ void OpenGLCode::render() {
 
     }
 
-    for (auto& questObject : QuestObjects) {
-
-        for (int i = 0; i < std::get<0>(questObject.second).size(); i++) {
-            if (isAttacked && std::get<2>(questObject.second) && CheckCollision(std::get<0>(questObject.second)[i], *attackBox)) {
-                std::get<0>(questObject.second).erase(std::get<0>(questObject.second).begin() + i);
-                WQFS::GetInstance().DiscountRemainingObstacles(questObject.first);
-                i = 0;
-                continue;
-            }
-            else if (CheckCollision(std::get<0>(questObject.second)[i], *player)) {
-                std::get<0>(questObject.second).erase(std::get<0>(questObject.second).begin() + i);
-				WQFS::GetInstance().DiscountRemainingObstacles(questObject.first);
-                i = 0;
-				continue;
-            }
-            std::get<0>(questObject.second)[i].Draw(*sRenderer);
-		}
-	}
-
     if (attackDelay < 0.5f) {
         attackBox->Draw(*sRenderer);
+    }
+    else {
+        attackBox->objPosition = glm::vec2(0.0f, 0.0f);
     }
 
     if (moveAnimationTimer > 0.5f) {
@@ -467,13 +451,13 @@ void OpenGLCode::render() {
     }
 
     if (states == GAME_MENU) {
-        textRenderer->renderText("Pause", (width / 2) - 100.0f, 10.0f, 3.0f, glm::vec3(0.0f));
+        textRenderer->renderText("Pause", (width / 2) - 100.0f, 10.0f, 1.5f, glm::vec3(0.0f));
 
-        textRenderer->renderText("Quest List", (width / 2) - 110.0f, 100.0f, 2.0f, glm::vec3(0.0f, 0.7f, 1.0f));
+        textRenderer->renderText("Quest List", (width / 2) - 110.0f, 100.0f, 1.0f, glm::vec3(0.0f));
 
         int cnt = 1;
         for (std::string s : WQFS::GetInstance().GetQuestListByString(5)) {
-            textRenderer->renderText(s, 100.0f, 150.0f * cnt++, 1.25f, glm::vec3(0.3f, 0.9f, 1.0f));
+            textRenderer->renderText(s, 50.0f + cameraPos.x + (((cnt + 1) % 2 == 1) ? 100.0f : 0.0f), 150.0f + (40.0f * cnt++) - cameraPos.y, 0.6f, glm::vec3(0.0f));
         }
     }
 }
@@ -530,11 +514,17 @@ void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
             isMoving = true;
             player->flipX = true;
         }
-        //Attack, Interept
+        //Attack
         if (glfwGetKey(window, GLFW_KEY_SPACE) && attackDelay >= 0.7f) {
             attackDelay = 0.0f;
 			isAttacked = true;
         }
+
+        if (glfwGetKey(window, GLFW_KEY_E)) {
+            WQFS::GetInstance().MakeQuest(WQFS::GetInstance().GetNPC("Normal"), WQFS::GetInstance().GetEvent("Tsunami"));
+            WQFS::GetInstance().GetNPC("Normal").SetInDangerous(true);
+        }
+
         if (!(glfwGetKey(window, GLFW_KEY_W) || glfwGetKey(window, GLFW_KEY_UP)) && !(glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN))&& !(glfwGetKey(window, GLFW_KEY_A) || glfwGetKey(window, GLFW_KEY_LEFT))&& !(glfwGetKey(window, GLFW_KEY_D) || glfwGetKey(window, GLFW_KEY_RIGHT))) {
 			isMoving = false;
             moveAnimationTimer = 0.0f;
@@ -608,14 +598,14 @@ void OpenGLCode::MoveSelf(float dt) {
                 //std::cout << npcObjects[npc.first].objVelocity.x << " " << npcObjects[npc.first].objVelocity.y << std::endl;
             }
 
-            if ((npcObjects[npc.first].first.objPosition.x < 0 && npcObjects[npc.first].first.objVelocity.x == -1)) npcObjects[npc.first].first.objVelocity.x = 0;
-            if ((npcObjects[npc.first].first.objPosition.y < 0 && npcObjects[npc.first].first.objVelocity.y == -1)) npcObjects[npc.first].first.objVelocity.y = 0;
+            //if ((npcObjects[npc.first].first.objPosition.x < 0 && npcObjects[npc.first].first.objVelocity.x == -1)) npcObjects[npc.first].first.objVelocity.x = 0;
+            //if ((npcObjects[npc.first].first.objPosition.y < 0 && npcObjects[npc.first].first.objVelocity.y == -1)) npcObjects[npc.first].first.objVelocity.y = 0;
 
-            npcObjects[npc.first].first.objPosition.x += npcObjects[npc.first].first.objVelocity.x * 50 * dt * timeScale;
-            npcObjects[npc.first].first.objPosition.y += npcObjects[npc.first].first.objVelocity.y * 50 * dt * timeScale;
+            //npcObjects[npc.first].first.objPosition.x += npcObjects[npc.first].first.objVelocity.x * 50 * dt * timeScale;
+            //npcObjects[npc.first].first.objPosition.y += npcObjects[npc.first].first.objVelocity.y * 50 * dt * timeScale;
             
             
-            /*
+            
             //Up
             if (glfwGetKey(window, GLFW_KEY_I)) {
                 npcObjects[npc.first].first.objPosition.y -= 100 * dt * timeScale;
@@ -631,7 +621,7 @@ void OpenGLCode::MoveSelf(float dt) {
             //Right
             if (glfwGetKey(window, GLFW_KEY_L)) {
                 npcObjects[npc.first].first.objPosition.x += 100 * dt * timeScale;
-            }*/
+            }
 
             npc.second.SetPosition(npcObjects[npc.first].first.objPosition.x, npcObjects[npc.first].first.objPosition.y);
         }
@@ -811,6 +801,26 @@ void OpenGLCode::DoCollisions() {
         if (std::get<1>(monster.second) >= 0.5f && attackDelay < 0.5f && CheckCollision(std::get<0>(monster.second), *attackBox)) {
             WQFS::GetInstance().GetEvent(monster.first).takeDamage(1);
             std::get<1>(monster.second) = 0.0f;
+        }
+    }
+
+
+    for (auto& questObject : QuestObjects) {
+
+        for (int i = 0; i < std::get<0>(questObject.second).size(); i++) {
+            if (attackDelay < 0.5f && std::get<2>(questObject.second) && CheckCollision(std::get<0>(questObject.second)[i], *attackBox)) {
+                std::get<0>(questObject.second).erase(std::get<0>(questObject.second).begin() + i);
+                WQFS::GetInstance().DiscountRemainingObstacles(questObject.first);
+                i = 0;
+                continue;
+            }
+            /*else if (CheckCollision(std::get<0>(questObject.second)[i], *player)) {
+                std::get<0>(questObject.second).erase(std::get<0>(questObject.second).begin() + i);
+                WQFS::GetInstance().DiscountRemainingObstacles(questObject.first);
+                i = 0;
+                continue;
+            }*/
+            std::get<0>(questObject.second)[i].Draw(*sRenderer);
         }
     }
 }
