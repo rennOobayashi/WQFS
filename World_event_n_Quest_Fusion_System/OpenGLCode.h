@@ -38,7 +38,7 @@ enum Direction {
 };
 
 typedef std::tuple<GameObject, int> Monster;
-typedef std::tuple<std::vector<GameObject>, bool, bool> QuestObject; //obstacle list, isGenerated
+typedef std::tuple<std::vector<GameObject>, bool, bool, bool> QuestObject; //obstacle list, isGenerated type(false = 2, true = 3)
 typedef std::pair<glm::vec2, int> Moving; //default position, moveDirection(0 = left, 1 = right, 2 = up, 3 = down)
 typedef std::pair<GameObject, float> NPCObject;
 

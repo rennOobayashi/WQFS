@@ -51,7 +51,7 @@ void LevelGenerator::init(std::vector<std::vector<unsigned int>> tileData, unsig
 				case 6: //Earthquake event Object
 					WQFS::GetInstance().GetEvent(events[1]).SetPosition(pos.x, pos.y);
 					break;
-				case 7: //Tsunami Object
+				case 7: //Tsunami event Object
 					WQFS::GetInstance().GetEvent(events[2]).SetPosition(pos.x, pos.y);
 					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(200 / 255.0f));
 					walls.push_back(obj);
@@ -61,6 +61,9 @@ void LevelGenerator::init(std::vector<std::vector<unsigned int>> tileData, unsig
 					break;
 				case 9: //NPC Object
 					WQFS::GetInstance().GetNPC(npcs[0]).SetPosition(pos.x, pos.y);
+					break;
+				case 61: //Earthquake event Object
+					WQFS::GetInstance().GetEvent(events[3]).SetPosition(pos.x, pos.y);
 					break;
 			}
 		}

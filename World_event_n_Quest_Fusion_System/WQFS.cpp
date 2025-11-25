@@ -283,6 +283,8 @@ void WQFS::SetCompensation(NPC &npc, WorldEvent& event, int questType) {
 	int allComp = 1;
 	int random = (rand() % 100) / 10.0f;
 
+	std::cout << "랜덤 값: " << random << std::endl;
+
 	for (const auto& comp : comps) {
 		if (isHp && isMp && isWeapon && isExchange) {
 			break;
@@ -314,20 +316,25 @@ void WQFS::SetCompensation(NPC &npc, WorldEvent& event, int questType) {
 				for (const auto& comp : comps) {
 					if ((comp.second.GetType() == 0 || comp.second.GetType() == 3) && comp.second.GetRarity() <= 1) {
 						compList.push_back(comp.second);
+						std::cout << "보상1" << std::endl;
 					}
 				}
 			}
 			else if (isExchange && random < 7.0f) {
+				allComp = 1;
 				for (const auto& comp : comps) {
 					if (comp.second.GetType() == 3 && comp.second.GetRarity() <= 1) {
 						compList.push_back(comp.second);
+						std::cout << "보상2" << std::endl;
 					}
 				}
 			}
 			else if (isHp) {
+				allComp = 1;
 				for (const auto& comp : comps) {
 					if (comp.second.GetType() == 0 && comp.second.GetRarity() <= 1) {
 						compList.push_back(comp.second);
+						std::cout << "보상3" << std::endl;
 					}
 				}
 			}
@@ -368,6 +375,7 @@ void WQFS::SetCompensation(NPC &npc, WorldEvent& event, int questType) {
 				}
 			}
 			else if (isHp && random < 4.0f) {
+				allComp = 1;
 				for (const auto& comp : comps) {
 					if ((comp.second.GetType() == 0) && comp.second.GetRarity() <= 3) {
 						compList.push_back(comp.second);
@@ -375,6 +383,7 @@ void WQFS::SetCompensation(NPC &npc, WorldEvent& event, int questType) {
 				}
 			}
 			else if (isMp && random < 7.0f) {
+				allComp = 1;
 				for (const auto& comp : comps) {
 					if ((comp.second.GetType() == 1) && comp.second.GetRarity() <= 3) {
 						compList.push_back(comp.second);
@@ -382,6 +391,7 @@ void WQFS::SetCompensation(NPC &npc, WorldEvent& event, int questType) {
 				}
 			}
 			else  {
+				allComp = 1;
 				for (const auto& comp : comps) {
 					if ((comp.second.GetType() == 3) && comp.second.GetRarity() <= 3) {
 						compList.push_back(comp.second);
@@ -399,6 +409,7 @@ void WQFS::SetCompensation(NPC &npc, WorldEvent& event, int questType) {
 				}
 			}
 			else if (isWeapon && random < 7.0f) {
+				allComp = 1;
 				for (const auto& comp : comps) {
 					if ((comp.second.GetType() == 2) && comp.second.GetRarity() <= 3) {
 						compList.push_back(comp.second);
@@ -406,6 +417,7 @@ void WQFS::SetCompensation(NPC &npc, WorldEvent& event, int questType) {
 				}
 			}
 			else if (isHp) {
+				allComp = 1;
 				for (const auto& comp : comps) {
 					if ((comp.second.GetType() == 0) && comp.second.GetRarity() <= 3) {
 						compList.push_back(comp.second);
@@ -500,6 +512,7 @@ void WQFS::SetCompensation(NPC &npc, WorldEvent& event, int questType) {
 				}
 			}
 			else {
+				allComp = 1;
 				if ((isExchange) && RandomInRange(25)) {
 					for (const auto& comp : comps) {
 						if (comp.second.GetType() == 3) {
@@ -532,6 +545,10 @@ void WQFS::SetCompensation(NPC &npc, WorldEvent& event, int questType) {
 			break;
 		default: std::cout << "Wrong NPC type!" << std::endl;
 			break;
+	}
+
+	while (compList.size() > allComp) {
+		compList.erase(compList.begin() + (rand() % compList.size()));
 	}
 
 	std::get<0>(questList[WQFS::GetInstance().questNumber]) = compList;

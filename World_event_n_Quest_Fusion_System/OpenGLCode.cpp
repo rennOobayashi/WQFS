@@ -126,7 +126,8 @@ void OpenGLCode::init() {
     std::get<1>(monsterObjects["Monster"]) = 0.5f;
     eventObjects["Landslide"] = GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(100.0f), glm::vec2(300.0f), 0.0f, glm::vec3(190 / 255.0f));
 	eventObjects["Landslide"].visible = true;
-    eventObjects["Earthquake"] = GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(100.0f, height - 400.0f), glm::vec2(400.0f), 0.0f, glm::vec3(190 / 255.0f));
+    eventObjects["Earthquake"] = GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(100.0f, height - 400.0f), glm::vec2(400.0f), 0.0f, glm::vec3(180 / 255.0f));
+    //eventObjects["Earthquake2"] = GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(100.0f, height - 400.0f), glm::vec2(400.0f), 0.0f, glm::vec3(180 / 255.0f));
     eventObjects["Tsunami"] = GameObject(ResourceManager::GetTexture("Tsunami"), glm::vec2(100.0f), glm::vec2(120.0f), 0.0f, glm::vec3(1.0f));
     player = new GameObject(ResourceManager::GetTexture("Player"), playerPos, playerSize, 0.0f, glm::vec3(1.0f), 1.0f, glm::vec2(playerVelocity));
 	attackBox = new GameObject(ResourceManager::GetTexture("GroundTile"), attackCollidePos, glm::vec2(50.0f, 100.0f), 0.0f, glm::vec3(1.0f, 0.3f, 0.3f));
@@ -143,7 +144,8 @@ void OpenGLCode::init() {
     WQFS::GetInstance().AddNPC("Normal", 0, 0, 0.0f, 0.0f, npcObjects["Normal"].first.objSize.x, npcObjects["Normal"].first.objSize.y, 5.0f);
     WQFS::GetInstance().AddEvent("Monster", 0, 0, 2, 0.0f, 0.0f, std::get<0>(monsterObjects["Monster"]).objSize.x, std::get<0>(monsterObjects["Monster"]).objSize.y, -1.0f, -1.0f, 0.0f, 0.0f);
     WQFS::GetInstance().AddEvent("Landslide", 1, 0, 2, 0.0f, 0.0f, eventObjects["Landslide"].objSize.x, eventObjects["Landslide"].objSize.y, 10.0f, 5.0f, 0.5f, 3.0f);
-    WQFS::GetInstance().AddEvent("Earthquake", 1, 1, 2, 0.0f, 0.0f, eventObjects["Earthquake"].objSize.x, eventObjects["Earthquake"].objSize.y, 5.0f, 3.0f, 0.0f, 1.0f);
+    WQFS::GetInstance().AddEvent("Earthquake", 1, 1, 2, 0.0f, 0.0f, eventObjects["Earthquake"].objSize.x, eventObjects["Earthquake"].objSize.y, 5.0f, 3.0f, 0.0f, 2.0f);
+    //WQFS::GetInstance().AddEvent("Earthquake2", 1, 3, 2, 0.0f, 0.0f, eventObjects["Earthquake2"].objSize.x, eventObjects["Earthquake2"].objSize.y, 5.0f, 3.0f, 0.0f, 0.0f);
     WQFS::GetInstance().AddEvent("Tsunami", 2, 2, 2, 0.0f, 0.0f, eventObjects["Tsunami"].objSize.x, eventObjects["Tsunami"].objSize.y, 10.0f, 3.0f, 0.0f, 2.0f);
     
 	WQFS::GetInstance().GetEvent("Earthquake").SetIsMove(true);
@@ -212,6 +214,10 @@ void OpenGLCode::init() {
 
     pauseDelay = 0.15f;
     pauseDelayTimer = 1.0f;
+
+    attackBox->objPosition.x = player->objPosition.x - 50.0f;
+    attackBox->objPosition.y = player->objPosition.y;
+    attackBox->objRotation = 0.0f;
 }
 
 void OpenGLCode::update() {
@@ -301,8 +307,25 @@ void OpenGLCode::update() {
 }
 
 void OpenGLCode::render() {
-	level.Draw(*sRenderer, cameraPos, glm::vec2(width, height));
+    for (auto& event : WQFS::GetInstance().worldEvents) {
+        if (event.second.GetType() == 1) {
 
+            if (event.second.GetIsCanCollid()) {
+                if (CheckCollision(cameraPos, glm::vec2(width, height), glm::vec2(event.second.GetPositionX(), event.second.GetPositionY()), glm::vec2(10 * 32 * 2, 32 * 2))) {
+                    textRenderer->renderText("Dangerous!", event.second.GetPositionX() - cameraPos.x, event.second.GetPositionY() - cameraPos.y, 1.0f, glm::vec3(0.0f));
+                }
+                eventObjects[event.first].Draw(*sRenderer);
+            }
+            else {
+                event.second.setVisible(false);
+            }
+        }
+        else if (event.second.GetType() == 2) {
+            if (event.second.GetIsCanCollid()) {
+                eventObjects[event.first].Draw(*sRenderer);
+            }
+        }
+    }
     for (const auto& monster : WQFS::GetInstance().worldEvents) {
         //std::cout << monster.second.getVisible() << std::endl;
         if (monster.second.GetType() == 0 && monster.second.getVisible()) {
@@ -320,26 +343,8 @@ void OpenGLCode::render() {
         }
     }
 
-    for (const auto& event : WQFS::GetInstance().worldEvents) {
-        if (event.second.GetType() == 1) {
-            eventObjects[event.first].Draw(*sRenderer);
+    level.Draw(*sRenderer, cameraPos, glm::vec2(width, height));
 
-            if (event.second.GetIsCanCollid()) {
-                if (CheckCollision(cameraPos, glm::vec2(width, height), glm::vec2(event.second.GetPositionX(), event.second.GetPositionY()), glm::vec2(10 * 32 * 2, 32 * 2))) {
-                    textRenderer->renderText("Dangerous!", event.second.GetPositionX() - cameraPos.x, event.second.GetPositionY() - cameraPos.y, 2.0f, glm::vec3(0.0f));
-                }
-                eventObjects[event.first].objColor = glm::vec3(1.0f, 0.0f, 0.0f);
-            }
-            else {
-                eventObjects[event.first].objColor = defaultColors[event.first];
-            }
-        }
-        else if (event.second.GetType() == 2) {
-            if (event.second.GetIsCanCollid()) {
-                eventObjects[event.first].Draw(*sRenderer);
-            }
-        }
-    }
 
     for (const auto& npc : WQFS::GetInstance().npcs) {
         for (auto& remainingObject : WQFS::GetInstance().questRemaining) {
@@ -407,9 +412,6 @@ void OpenGLCode::render() {
 
     if (attackDelay < 0.5f) {
         attackBox->Draw(*sRenderer);
-    }
-    else {
-        attackBox->objPosition = glm::vec2(0.0f, 0.0f);
     }
 
     if (moveAnimationTimer > 0.5f) {
@@ -814,12 +816,12 @@ void OpenGLCode::DoCollisions() {
                 i = 0;
                 continue;
             }
-            /*else if (CheckCollision(std::get<0>(questObject.second)[i], *player)) {
+            else if (!std::get<2>(questObject.second) && CheckCollision(std::get<0>(questObject.second)[i], *player)) {
                 std::get<0>(questObject.second).erase(std::get<0>(questObject.second).begin() + i);
                 WQFS::GetInstance().DiscountRemainingObstacles(questObject.first);
                 i = 0;
                 continue;
-            }*/
+            }
             std::get<0>(questObject.second)[i].Draw(*sRenderer);
         }
     }
