@@ -141,7 +141,6 @@ void OpenGLCode::init() {
     itemObjects["Gold"] = GameObject(ResourceManager::GetTexture("Gold"), glm::vec2(770.0f, 110.0f), glm::vec2(100.0f), 0.0f, glm::vec3(1.0f), 0.8f);
 
     WQFS::GetInstance().AddNPC("Normal", 0, 0, 0.0f, 0.0f, npcObjects["Normal"].first.objSize.x, npcObjects["Normal"].first.objSize.y, 5.0f);
-
     WQFS::GetInstance().AddEvent("Monster", 0, 0, 2, 0.0f, 0.0f, std::get<0>(monsterObjects["Monster"]).objSize.x, std::get<0>(monsterObjects["Monster"]).objSize.y, -1.0f, -1.0f, 0.0f, 0.0f);
     WQFS::GetInstance().AddEvent("Landslide", 1, 0, 2, 0.0f, 0.0f, eventObjects["Landslide"].objSize.x, eventObjects["Landslide"].objSize.y, 10.0f, 5.0f, 0.5f, 3.0f);
     WQFS::GetInstance().AddEvent("Earthquake", 1, 1, 2, 0.0f, 0.0f, eventObjects["Earthquake"].objSize.x, eventObjects["Earthquake"].objSize.y, 5.0f, 3.0f, 0.0f, 1.0f);
@@ -434,30 +433,31 @@ void OpenGLCode::render() {
         hpObjects->Draw(*sRenderer);
 	}
 
-	InventoryObject->objPosition.x = 100.0f + cameraPos.x;
-    InventoryObject->objPosition.y = 80.0f + cameraPos.y;
-	InventoryObject->Draw(*sRenderer);
-
     int cnt = 0;
 
-    for (auto item : inventory) {
-        std::stringstream itemCnt;
-        itemCnt << item.second;
-        itemObjects[item.first.GetName()].objPosition.x = inventoryItemPos[cnt].x + cameraPos.x;
-        itemObjects[item.first.GetName()].objPosition.y = inventoryItemPos[cnt].y + cameraPos.y;
-		itemObjects[item.first.GetName()].Draw(*sRenderer);
-        textRenderer->renderText(itemCnt.str(), inventoryItemPos[cnt].x + 100.0f, inventoryItemPos[cnt].y + 90.0f, 1.0f, glm::vec3(0.95f));
-        ++cnt;
-    }
+    if (states == GAME_ACTIVE) {
+        InventoryObject->objPosition.x = 100.0f + cameraPos.x;
+        InventoryObject->objPosition.y = 80.0f + cameraPos.y;
+        InventoryObject->Draw(*sRenderer);
 
-    if (states == GAME_MENU) {
+        for (auto item : inventory) {
+            std::stringstream itemCnt;
+            itemCnt << item.second;
+            itemObjects[item.first.GetName()].objPosition.x = inventoryItemPos[cnt].x + cameraPos.x;
+            itemObjects[item.first.GetName()].objPosition.y = inventoryItemPos[cnt].y + cameraPos.y;
+            itemObjects[item.first.GetName()].Draw(*sRenderer);
+            textRenderer->renderText(itemCnt.str(), inventoryItemPos[cnt].x + 100.0f, inventoryItemPos[cnt].y + 90.0f, 0.5f, glm::vec3(0.95f));
+            ++cnt;
+        }
+    }
+    else if (states == GAME_MENU) {
         textRenderer->renderText("Pause", (width / 2) - 100.0f, 10.0f, 1.5f, glm::vec3(0.0f));
 
         textRenderer->renderText("Quest List", (width / 2) - 110.0f, 100.0f, 1.0f, glm::vec3(0.0f));
 
         int cnt = 1;
         for (std::string s : WQFS::GetInstance().GetQuestListByString(5)) {
-            textRenderer->renderText(s, 50.0f + cameraPos.x + (((cnt + 1) % 2 == 1) ? 100.0f : 0.0f), 150.0f + (40.0f * cnt++) - cameraPos.y, 0.6f, glm::vec3(0.0f));
+            textRenderer->renderText(s, 50.0f + (((cnt + 1) % 2 == 1) ? 100.0f : 0.0f), 150.0f + (40.0f * cnt++), 0.6f, glm::vec3(0.0f));
         }
     }
 }
