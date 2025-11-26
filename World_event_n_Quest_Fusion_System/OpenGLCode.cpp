@@ -307,17 +307,20 @@ void OpenGLCode::update() {
 }
 
 void OpenGLCode::render() {
+
+    level.Draw(*sRenderer, cameraPos, glm::vec2(width, height));
+
     for (auto& event : WQFS::GetInstance().worldEvents) {
         if (event.second.GetType() == 1) {
 
             if (event.second.GetIsCanCollid()) {
                 if (CheckCollision(cameraPos, glm::vec2(width, height), glm::vec2(event.second.GetPositionX(), event.second.GetPositionY()), glm::vec2(10 * 32 * 2, 32 * 2))) {
-                    textRenderer->renderText("Dangerous!", event.second.GetPositionX() - cameraPos.x, event.second.GetPositionY() - cameraPos.y, 1.0f, glm::vec3(0.0f));
+                    eventObjects[event.first].Draw(*sRenderer);
+                    //textRenderer->renderText("Dangerous!", event.second.GetPositionX() - cameraPos.x, event.second.GetPositionY() - cameraPos.y, 1.0f, glm::vec3(0.0f));
                 }
-                eventObjects[event.first].Draw(*sRenderer);
             }
             else {
-                event.second.setVisible(false);
+                //event.second.setVisible(false);
             }
         }
         else if (event.second.GetType() == 2) {
@@ -342,9 +345,6 @@ void OpenGLCode::render() {
             std::get<0>(monsterObjects[monster.first]).Draw(*sRenderer);
         }
     }
-
-    level.Draw(*sRenderer, cameraPos, glm::vec2(width, height));
-
 
     for (const auto& npc : WQFS::GetInstance().npcs) {
         for (auto& remainingObject : WQFS::GetInstance().questRemaining) {
