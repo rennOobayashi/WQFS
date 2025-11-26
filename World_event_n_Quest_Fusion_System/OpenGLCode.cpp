@@ -311,7 +311,6 @@ void OpenGLCode::update() {
 }
 
 void OpenGLCode::render() {
-
     level.Draw(*sRenderer, cameraPos, glm::vec2(width, height));
 
     for (auto& event : WQFS::GetInstance().worldEvents) {

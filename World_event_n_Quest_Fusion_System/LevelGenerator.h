@@ -20,7 +20,8 @@ private:
 	void init(std::vector<std::vector<unsigned int>> tileData, unsigned int levelWidth, unsigned int levelHeight);
 	bool CheckCollision(glm::vec2 object1Pos, glm::vec2 object1Size, glm::vec2 object2Pos, glm::vec2 object2Size);
 public:
-	std::vector<GameObject> walls;
+	std::vector<GameObject> tiles;
+	std::vector<GameObject> walls; //Collision objects
 	std::map<int, std::string> events; // eventSubType(id), name
 	std::map<int, std::string> monsters; // eventSubType(id), name
 	std::map<int, std::string> npcs;
