@@ -55,6 +55,7 @@ private:
 	std::map<int, QuestObject> QuestObjects;
 	std::map<std::string, GameObject> itemObjects;
 	std::vector<std::string> landslide;
+	std::vector<std::string> tornado;
 	LevelGenerator level;
 
 	glm::mat4 view;

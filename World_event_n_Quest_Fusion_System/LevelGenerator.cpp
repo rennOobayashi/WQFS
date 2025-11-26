@@ -62,7 +62,7 @@ void LevelGenerator::init(std::vector<std::vector<unsigned int>> tileData, unsig
 				case 9: //NPC Object
 					WQFS::GetInstance().GetNPC(npcs[0]).SetPosition(pos.x, pos.y);
 					break;
-				case 61: //Earthquake event Object
+				case 10: //Tornado event Object
 					WQFS::GetInstance().GetEvent(events[3]).SetPosition(pos.x, pos.y);
 					break;
 			}
