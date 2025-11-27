@@ -105,7 +105,7 @@ void OpenGLCode::init() {
     ResourceManager::LoadTexture("Texture/Tree.png", true, "Tree");
     ResourceManager::LoadTexture("Texture/Tide_by_Gemini.png", true, "Tsunami");
     ResourceManager::LoadTexture("Texture/GroundTile.png", true, "GroundTile");
-    ResourceManager::LoadTexture("Texture/GroundTile.png", true, "MountainTile");
+    ResourceManager::LoadTexture("Texture/Mountain.png", true, "MountainTile");
     ResourceManager::LoadTexture("Texture/Rockfall_by_Gemini.png", true, "Rockfall");
     ResourceManager::LoadTexture("Texture/Inventory.png", true, "Inventory");
     ResourceManager::LoadTexture("Texture/HP_Posion.png", true, "HP_Posion");
