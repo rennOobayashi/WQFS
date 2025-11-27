@@ -29,11 +29,11 @@ void LevelGenerator::init(std::vector<std::vector<unsigned int>> tileData, unsig
 			switch (tileData[y][x]) {
 				case 1: //Route tile
 					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(190 / 255.0f));
-					walls.push_back(obj);
+					tiles.push_back(obj);
 					break;
 				case 2: //Ocean tile
 					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(200 / 255.0f));
-					walls.push_back(obj);
+					tiles.push_back(obj);
 					break;
 				case 3: //Mountain tile
 					obj = GameObject(ResourceManager::GetTexture("MountainTile"), pos, size, 0.0f, glm::vec3(150 / 255.0f));
@@ -65,6 +65,9 @@ void LevelGenerator::init(std::vector<std::vector<unsigned int>> tileData, unsig
 				case 10: //Tornado event Object
 					WQFS::GetInstance().GetEvent(events[3]).SetPosition(pos.x, pos.y);
 					break;
+				case 21: //Ocean colid tile
+					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(200 / 255.0f));
+					walls.push_back(obj);
 			}
 		}
 	}
@@ -73,6 +76,7 @@ void LevelGenerator::init(std::vector<std::vector<unsigned int>> tileData, unsig
 void LevelGenerator::Load(const char* file, unsigned int level_width, unsigned int level_height) {
 	//Clear old datas
 	walls.clear();
+	tiles.clear();
 
 	//Load from file
 	unsigned int tile_code;
@@ -110,13 +114,18 @@ bool LevelGenerator::CheckCollision(glm::vec2 object1Pos, glm::vec2 object1Size,
 	return collisionX && collisionY;
 }
 
-
 void LevelGenerator::Draw(SpriteRenderer& renderer, glm::vec2 cameraPos, glm::vec2 windowSize) {
-	int cnt = 0;
 	for (GameObject& wall : walls) {
 		//std::cout << wall.objSize.x << " " << wall.objSize.y << std::endl;
 		if (CheckCollision(cameraPos, windowSize, wall.objPosition, wall.objSize)) {
 			wall.Draw(renderer, true);
+		}
+	}
+
+	for (GameObject& tile : tiles) {
+		//std::cout << wall.objSize.x << " " << wall.objSize.y << std::endl;
+		if (CheckCollision(cameraPos, windowSize, tile.objPosition, tile.objSize)) {
+			tile.Draw(renderer, true);
 		}
 	}
 }
