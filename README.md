@@ -1,3 +1,7 @@
+sound by ExpiredSoda (https://freesound.org/people/ExpiredSoda/ , 827943)
+and titobari (https://freesound.org/people/titobari/ , 577057)
+and AceOfSpadesProduc100 (https://freesound.org/people/AceOfSpadesProduc100/ , 333784)
+
 Default Types
 
 NPC

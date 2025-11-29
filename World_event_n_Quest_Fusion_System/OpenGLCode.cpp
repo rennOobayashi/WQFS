@@ -51,6 +51,9 @@ OpenGLCode::~OpenGLCode() {
     delete attackBox;
     delete questGameObject;
     delete InventoryObject;
+    delete hpObjects;
+    delete soundEngine;
+
 	npcObjects.clear();
     monsterObjects.clear();
     eventObjects.clear();
@@ -151,7 +154,7 @@ void OpenGLCode::init() {
     WQFS::GetInstance().AddEvent("Tornado", 1, 3, 2, 0.0f, 0.0f, eventObjects["Tornado"].objSize.x, eventObjects["Tornado"].objSize.y, 5.0f, 3.0f, 0.0f, 2.0f);
     
 	WQFS::GetInstance().GetEvent("Earthquake").SetIsMove(true);
-    //WQFS::GetInstance().GetEvent("Tornado").SetIsMove(true);
+    WQFS::GetInstance().GetEvent("Tornado").SetIsMove(true);
 
     mapWidth = width * 5;
     mapHeight = height * 5;
@@ -222,6 +225,11 @@ void OpenGLCode::init() {
     attackBox->objPosition.x = player->objPosition.x - 50.0f;
     attackBox->objPosition.y = player->objPosition.y;
     attackBox->objRotation = 0.0f;
+
+    soundEngine = irrklang::createIrrKlangDevice();
+    soundEngine->setSoundVolume(0.1f);
+	soundEngine->play2D("audio/background.wav", true);
+
 }
 
 void OpenGLCode::update() {
@@ -370,7 +378,7 @@ void OpenGLCode::render() {
 
         if (npc.second.GetInDangerous()) {
             if (CheckCollision(glm::vec2(cameraPos.x + (width / 2), cameraPos.y + (height / 2)), glm::vec2(width, height), glm::vec2(npc.second.GetPositionX(), npc.second.GetPositionY()), glm::vec2(11 * 32 * 2, 32 * 2))) {
-                textRenderer->renderText("HELP!", npc.second.GetPositionX() - cameraPos.x, npc.second.GetPositionY() - 64.0f - cameraPos.y, 2.0f, glm::vec3(0.0f));
+                textRenderer->renderText("HELP!", npc.second.GetPositionX() - cameraPos.x, npc.second.GetPositionY() - 64.0f - cameraPos.y, 0.5f, glm::vec3(0.0f));
             }
 
             showDangerousTime += deltaTime;
@@ -472,7 +480,12 @@ void OpenGLCode::render() {
 
         int cnt = 1;
         for (std::string s : WQFS::GetInstance().GetQuestListByString(5)) {
-            textRenderer->renderText(s, 50.0f + (((cnt + 1) % 2 == 1) ? 100.0f : 0.0f), 150.0f + (40.0f * cnt++), 0.6f, glm::vec3(0.0f));
+            if ((cnt + 1) % 2 == 1) {
+                textRenderer->renderText("Reward(" + s + ")", 150.0f, 150.0f + (40.0f * cnt++), 0.5f, glm::vec3(0.0f));
+            }
+            else {
+                textRenderer->renderText(s, 50.0f, 150.0f + (40.0f * cnt++), 0.6f, glm::vec3(0.0f));
+            }
         }
     }
 }
@@ -533,6 +546,7 @@ void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
         if (glfwGetKey(window, GLFW_KEY_SPACE) && attackDelay >= 0.7f) {
             attackDelay = 0.0f;
 			isAttacked = true;
+			soundEngine->play2D("audio/attack.wav", false);
         }
 
         if (glfwGetKey(window, GLFW_KEY_E)) {
@@ -808,7 +822,11 @@ void OpenGLCode::DoCollisions() {
     for (auto& monster : monsterObjects) {
         for (auto& event : eventObjects) {
             if (std::get<1>(monster.second) >= 5.0f && WQFS::GetInstance().GetEvent(event.first).getDoEvent() && CheckCollision(std::get<0>(monster.second), eventObjects[event.first])) {
-                WQFS::GetInstance().GetEvent(monster.first).takeDamage(1);
+                monsterHp = WQFS::GetInstance().GetEvent(monster.first).takeDamage(1);
+
+                if (monsterHp <= 0) {
+					soundEngine->play2D("audio/death.wav", false);
+                }
                 std::get<1>(monster.second) = 0.0f;
             }
         }

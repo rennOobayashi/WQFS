@@ -17,6 +17,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <irrKlang.h>
+
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -68,7 +70,7 @@ private:
 	float dangerousDelay, mapLoadingDelay, attackDelay;
 	float pauseDelayTimer, pauseDelay;
 	float moveAnimationTimer;
-	int hp;
+	int hp, monsterHp;
 	bool changedir;
 	bool mapLoading, getItemFirstTime, isAttacked;
 	bool isMoving;
@@ -85,6 +87,8 @@ private:
 	TextRenderer* textRenderer;
 
 	ParticleGenerator* particleGenerator;
+
+	irrklang::ISoundEngine *soundEngine;
 
 	void init();
 	void render();

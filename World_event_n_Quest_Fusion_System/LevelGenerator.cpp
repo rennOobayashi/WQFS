@@ -68,10 +68,10 @@ void LevelGenerator::init(std::vector<std::vector<unsigned int>> tileData, unsig
 				case 10: //Tornado event Object
 					WQFS::GetInstance().GetEvent(events[3]).SetPosition(pos.x, pos.y);
 					break;
-				//case 21: //Ocean colid tile
-					//obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(200 / 255.0f));
-					//tiles.push_back(obj);
-					//walls.push_back(obj);
+				case 21: //Ocean colid tile
+					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(200 / 255.0f));
+					tiles.push_back(obj);
+					walls.push_back(obj);
 			}
 		}
 	}

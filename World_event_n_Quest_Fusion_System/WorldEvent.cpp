@@ -221,7 +221,7 @@ int WorldEvent::getHp() const {
 	return hp;
 }
 
-void WorldEvent::takeDamage(int damage) {
+int WorldEvent::takeDamage(int damage) {
 	if (type == 0) {
 		hp -= damage;
 		if (hp < 0) {
@@ -230,6 +230,7 @@ void WorldEvent::takeDamage(int damage) {
 	}
 
 	std::cout << hp << std::endl;
+	return hp;
 }
 
 void WorldEvent::setVisible(bool b) {

@@ -619,11 +619,10 @@ std::vector<std::string> WQFS::GetQuestListByString(int maxQuestList) {
 		if (strData != "") {
 			stringQuest.push_back(strData);
 
-			strData = "(Reward: " + std::get<0>(quest.second)[0].GetName();
+			strData = std::get<0>(quest.second)[0].GetName();
 			for (int i = 1; i < std::get<0>(quest.second).size(); ++i) {
-				strData += ", " + std::get<0>(quest.second)[i].GetName();
+				strData += "," + std::get<0>(quest.second)[i].GetName();
 			}
-			strData += ")";
 
 			stringQuest.push_back(strData);
 		}

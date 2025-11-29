@@ -65,7 +65,7 @@ public:
 	int getQuestNumber() const;
 	void setHp(int _hp);
 	int getHp() const;
-	void takeDamage(int damage);
+	int takeDamage(int damage);
 	void setVisible(bool b);
 	bool getVisible() const;
 	void setDoEvent(bool b);
