@@ -36,41 +36,42 @@ void LevelGenerator::init(std::vector<std::vector<unsigned int>> tileData, unsig
 					tiles.push_back(obj);
 					break;
 				case 3: //Mountain tile
-					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(1.0f));
-					tiles.push_back(obj);
-					//walls.push_back(obj);
+					obj = GameObject(ResourceManager::GetTexture("MountainTile"), pos, size, 0.0f, glm::vec3(1.0f));
+					walls.push_back(obj);
 					break;
-				case 4: //Tree tile
+				case 4: //Mountain top tile
+					obj = GameObject(ResourceManager::GetTexture("MountainTopTile"), pos, size, 0.0f, glm::vec3(1.0f));
+					walls.push_back(obj);
+					break;
+				case 5: //Tree tile
 					obj = GameObject(ResourceManager::GetTexture("Tree"), pos, size, 0.0f, glm::vec3(1.0f));
-					tiles.push_back(obj);
-					//walls.push_back(obj);
+					walls.push_back(obj);
 					break;
-				case 5: //Landslide event Object
+				case 6: //Landslide event Object
 					WQFS::GetInstance().GetEvent(events[0]).SetPosition(pos.x, pos.y);
-					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(1.0f));
+					obj = GameObject(ResourceManager::GetTexture("MountainTile"), pos, size, 0.0f, glm::vec3(1.0f));
 					tiles.push_back(obj);
 					//walls.push_back(obj);
 					break;
-				case 6: //Earthquake event Object
+				case 7: //Earthquake event Object
 					WQFS::GetInstance().GetEvent(events[1]).SetPosition(pos.x, pos.y);
 					break;
-				case 7: //Tsunami event Object
+				case 8: //Tsunami event Object
 					WQFS::GetInstance().GetEvent(events[2]).SetPosition(pos.x, pos.y);
 					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(200 / 255.0f));
 					walls.push_back(obj);
 					break;
-				case 8: //Monster Object
+				case 9: //Monster Object
 					WQFS::GetInstance().GetEvent(monsters[0]).SetPosition(pos.x, pos.y);
-					break;
-				case 9: //NPC Object
-					WQFS::GetInstance().GetNPC(npcs[0]).SetPosition(pos.x, pos.y);
 					break;
 				case 10: //Tornado event Object
 					WQFS::GetInstance().GetEvent(events[3]).SetPosition(pos.x, pos.y);
 					break;
+				case 11: //NPC Object
+					WQFS::GetInstance().GetNPC(npcs[0]).SetPosition(pos.x, pos.y);
+					break;
 				case 21: //Ocean colid tile
 					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(200 / 255.0f));
-					tiles.push_back(obj);
 					walls.push_back(obj);
 			}
 		}
@@ -119,12 +120,12 @@ bool LevelGenerator::CheckCollision(glm::vec2 object1Pos, glm::vec2 object1Size,
 }
 
 void LevelGenerator::Draw(SpriteRenderer& renderer, glm::vec2 cameraPos, glm::vec2 windowSize) {
-	/*for (GameObject& wall : walls) {
+	for (GameObject& wall : walls) {
 		//std::cout << wall.objSize.x << " " << wall.objSize.y << std::endl;
 		if (CheckCollision(cameraPos, windowSize, wall.objPosition, wall.objSize)) {
 			wall.Draw(renderer, true);
 		}
-	}*/
+	}
 
 	for (GameObject& tile : tiles) {
 		//std::cout << wall.objSize.x << " " << wall.objSize.y << std::endl;

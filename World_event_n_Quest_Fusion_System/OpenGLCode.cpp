@@ -14,6 +14,12 @@ const glm::vec2 inventoryItemPos[] = {
     glm::vec2(610.0f, 110.0f),
     glm::vec2(770.0f, 110.0f),
 };
+const glm::vec2 compass[]{
+    glm::vec2( 0.0f,  1.0f), //Up
+    glm::vec2( 0.0f, -1.0f), //Down
+    glm::vec2(-1.0f,  0.0f), //Left
+    glm::vec2( 1.0f,  0.0f), //Right
+};
 const glm::vec2 playerSize(70.0f);
 const float playerVelocity(300.0f);
 const float CameraVelocity(2000.0f);
@@ -109,6 +115,7 @@ void OpenGLCode::init() {
     ResourceManager::LoadTexture("Texture/Tide_by_Gemini.png", true, "Tsunami");
     ResourceManager::LoadTexture("Texture/GroundTile.png", true, "GroundTile");
     ResourceManager::LoadTexture("Texture/Mountain.png", true, "MountainTile");
+    ResourceManager::LoadTexture("Texture/Mountain_top.png", true, "MountainTopTile");
     ResourceManager::LoadTexture("Texture/Rockfall_by_Gemini.png", true, "Rockfall");
     ResourceManager::LoadTexture("Texture/Inventory.png", true, "Inventory");
     ResourceManager::LoadTexture("Texture/HP_Posion.png", true, "HP_Posion");
@@ -128,7 +135,7 @@ void OpenGLCode::init() {
     std::get<0>(monsterObjects["Monster"]) = GameObject(ResourceManager::GetTexture("Monster"), glm::vec2(0.0f), glm::vec2(200.0f), 0.0f, glm::vec3(1.0f, 0.2f, 0.1f));
     std::get<1>(monsterObjects["Monster"]) = 0.5f;
     eventObjects["Landslide"] = GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(100.0f), glm::vec2(300.0f), 0.0f, glm::vec3(190 / 255.0f));
-	eventObjects["Landslide"].visible = true;
+	eventObjects["Landslide"].visible = false;
     eventObjects["Earthquake"] = GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(0.0f), glm::vec2(400.0f), 0.0f, glm::vec3(180 / 255.0f));
     //eventObjects["Earthquake2"] = GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(100.0f, height - 400.0f), glm::vec2(400.0f), 0.0f, glm::vec3(180 / 255.0f));
     eventObjects["Tsunami"] = GameObject(ResourceManager::GetTexture("Tsunami"), glm::vec2(0.0f), glm::vec2(120.0f), 0.0f, glm::vec3(1.0f));
@@ -230,6 +237,7 @@ void OpenGLCode::init() {
     soundEngine->setSoundVolume(0.1f);
 	soundEngine->play2D("audio/background.wav", true);
 
+    stopDir = NONE;
 }
 
 void OpenGLCode::update() {
@@ -472,6 +480,7 @@ void OpenGLCode::render() {
             textRenderer->renderText(itemCnt.str(), inventoryItemPos[cnt].x + 100.0f, inventoryItemPos[cnt].y + 90.0f, 0.5f, glm::vec3(0.95f));
             ++cnt;
         }
+        stopInput[3] = false;
     }
     else if (states == GAME_MENU) {
         textRenderer->renderText("Pause", (width / 2) - 100.0f, 10.0f, 1.5f, glm::vec3(0.0f));
@@ -509,7 +518,7 @@ void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
         float velocityY = player->objVelocity.y * dt;
 
         //Up
-        if ((glfwGetKey(window, GLFW_KEY_W) || glfwGetKey(window, GLFW_KEY_UP)) && player->objPosition.y > 0) {
+        if (!stopInput[0] && (glfwGetKey(window, GLFW_KEY_W) || glfwGetKey(window, GLFW_KEY_UP)) && player->objPosition.y > 0) {
             player->objPosition.y -= velocityY;
 			attackBox->objPosition.y = player->objPosition.y - 70.0f;
             attackBox->objPosition.x = player->objPosition.x + 25.0f;
@@ -517,7 +526,7 @@ void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
 			isMoving = true;
         }
         //Down
-        if ((glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN)) && player->objPosition.y < mapHeight - player->objSize.x) {
+        if (!stopInput[1] && (glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN)) && player->objPosition.y < mapHeight - player->objSize.x) {
             player->objPosition.y += velocityY;
             attackBox->objPosition.y = player->objPosition.y + player->objSize.y - 30.0f;
             attackBox->objPosition.x = player->objPosition.x + 25.0f;
@@ -525,7 +534,7 @@ void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
             isMoving = true;
         }
         //Left
-        if ((glfwGetKey(window, GLFW_KEY_A) || glfwGetKey(window, GLFW_KEY_LEFT)) && player->objPosition.x > 0) {
+        if (!stopInput[2] && (glfwGetKey(window, GLFW_KEY_A) || glfwGetKey(window, GLFW_KEY_LEFT)) && player->objPosition.x > 0) {
             player->objPosition.x -= velocityX;
             attackBox->objPosition.x = player->objPosition.x - 50.0f;
             attackBox->objPosition.y = player->objPosition.y;
@@ -534,7 +543,7 @@ void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
 			player->flipX = false;
         }
         //Right
-        if ((glfwGetKey(window, GLFW_KEY_D) || glfwGetKey(window, GLFW_KEY_RIGHT)) && player->objPosition.x < mapWidth - player->objSize.y) {
+        if (!stopInput[3] && (glfwGetKey(window, GLFW_KEY_D) || glfwGetKey(window, GLFW_KEY_RIGHT)) && player->objPosition.x < mapWidth - player->objSize.y) {
             player->objPosition.x += velocityX;
             attackBox->objPosition.x = player->objPosition.x + player->objSize.x;
             attackBox->objPosition.y = player->objPosition.y;
@@ -627,16 +636,16 @@ void OpenGLCode::MoveSelf(float dt) {
                 //std::cout << npcObjects[npc.first].objVelocity.x << " " << npcObjects[npc.first].objVelocity.y << std::endl;
             }
 
-            //if ((npcObjects[npc.first].first.objPosition.x < 0 && npcObjects[npc.first].first.objVelocity.x == -1)) npcObjects[npc.first].first.objVelocity.x = 0;
-            //if ((npcObjects[npc.first].first.objPosition.y < 0 && npcObjects[npc.first].first.objVelocity.y == -1)) npcObjects[npc.first].first.objVelocity.y = 0;
+            if ((npcObjects[npc.first].first.objPosition.x < 0 && npcObjects[npc.first].first.objVelocity.x == -1)) npcObjects[npc.first].first.objVelocity.x = 0;
+            if ((npcObjects[npc.first].first.objPosition.y < 0 && npcObjects[npc.first].first.objVelocity.y == -1)) npcObjects[npc.first].first.objVelocity.y = 0;
 
-            //npcObjects[npc.first].first.objPosition.x += npcObjects[npc.first].first.objVelocity.x * 50 * dt * timeScale;
-            //npcObjects[npc.first].first.objPosition.y += npcObjects[npc.first].first.objVelocity.y * 50 * dt * timeScale;
+            npcObjects[npc.first].first.objPosition.x += npcObjects[npc.first].first.objVelocity.x * 50 * dt * timeScale;
+            npcObjects[npc.first].first.objPosition.y += npcObjects[npc.first].first.objVelocity.y * 50 * dt * timeScale;
             
             
             
             //Up
-            if (glfwGetKey(window, GLFW_KEY_I)) {
+            /*if (glfwGetKey(window, GLFW_KEY_I)) {
                 npcObjects[npc.first].first.objPosition.y -= 100 * dt * timeScale;
             }
             //Down
@@ -650,7 +659,7 @@ void OpenGLCode::MoveSelf(float dt) {
             //Right
             if (glfwGetKey(window, GLFW_KEY_L)) {
                 npcObjects[npc.first].first.objPosition.x += 100 * dt * timeScale;
-            }
+            }*/
 
             npc.second.SetPosition(npcObjects[npc.first].first.objPosition.x, npcObjects[npc.first].first.objPosition.y);
         }
@@ -818,7 +827,67 @@ bool OpenGLCode::CheckCollision(glm::vec2 object1Pos, glm::vec2 object1Size, glm
     return collisionX && collisionY;
 }
 
+Direction OpenGLCode::CheckCollisionDirection(GameObject& object1, GameObject& object2) {
+    bool collisionX = object1.objPosition.x + object1.objSize.x >= object2.objPosition.x &&
+        object2.objPosition.x + object2.objSize.x >= object1.objPosition.x;
+    bool collisionY = object1.objPosition.y + object1.objSize.y >= object2.objPosition.y &&
+        object2.objPosition.y + object2.objSize.y >= object1.objPosition.y;
+
+    if (collisionX && collisionY) {
+        glm::vec2 centerA = object1.objPosition + object1.objSize / 2.0f;
+        glm::vec2 centerB = object2.objPosition + object2.objSize / 2.0f;
+        glm::vec2 distance = centerB - centerA;
+
+        glm::vec2 halfExtentsA = object1.objSize / 2.0f;
+        glm::vec2 halfExtentsB = object2.objSize / 2.0f;
+
+        glm::vec2 minSeparation = halfExtentsA + halfExtentsB;
+        
+        glm::vec2 penetrations = minSeparation - glm::abs(distance);
+
+        if (penetrations.x < penetrations.y) {
+            if (distance.x < 0) {
+                stopInput[2] = true;
+                return LEFT;
+            }
+            else {
+                stopInput[3] = true;
+                return RIGHT;
+            }
+        }
+        else {
+            if (distance.y < 0) {
+                stopInput[0] = true;
+                return UP;
+            }
+            else {
+                stopInput[1] = true;
+                return DOWN;
+            }
+        }
+    }
+    else {
+        return NONE;
+    }
+}
+
 void OpenGLCode::DoCollisions() {
+    stopDir = NONE;
+    for (auto& tile : level.walls) {
+        Direction lastDir = CheckCollisionDirection(*player, tile);
+
+        if (stopDir == NONE) {
+            stopDir = lastDir;
+        }
+    }
+
+    if (stopDir == NONE) {
+        stopInput[0] = false;
+        stopInput[1] = false;
+        stopInput[2] = false;
+        stopInput[3] = false;
+    }
+
     for (auto& monster : monsterObjects) {
         for (auto& event : eventObjects) {
             if (std::get<1>(monster.second) >= 5.0f && WQFS::GetInstance().GetEvent(event.first).getDoEvent() && CheckCollision(std::get<0>(monster.second), eventObjects[event.first])) {

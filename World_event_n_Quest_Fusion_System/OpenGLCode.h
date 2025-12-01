@@ -36,7 +36,8 @@ enum Direction {
 	UP,
 	DOWN,
 	LEFT,
-	RIGHT
+	RIGHT,
+	NONE
 };
 
 typedef std::tuple<GameObject, int> Monster;
@@ -90,6 +91,9 @@ private:
 
 	irrklang::ISoundEngine *soundEngine;
 
+	bool stopInput[4];
+	Direction stopDir;
+
 	void init();
 	void render();
 	void ProcessInput(GLFWwindow* window, float dt);
@@ -100,6 +104,7 @@ private:
 	void MakeQusetObject(int questNumber, glm::vec2 offset);
 	bool CheckCollision(GameObject& object1, GameObject& object2);
 	bool CheckCollision(glm::vec2 object1Pos, glm::vec2 object1Size, glm::vec2 object2Pos, glm::vec2 object2Size);
+	Direction CheckCollisionDirection(GameObject& object1, GameObject& object2);
 public:
 	OpenGLCode(unsigned int _width, unsigned int _height);
 	~OpenGLCode(); //Destructor

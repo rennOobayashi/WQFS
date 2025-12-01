@@ -48,14 +48,8 @@ void ParticleGenerator::Update(float dt, GameObject& object, unsigned int newPar
 	for (unsigned int i = 0; i < amount; ++i) {
 		Particle& p = particles[i];
 		p.life -= dt;
-
-		if (p.life < 0.5f) {
-			p.Color.a -= dt * 7.5f;
-			p.Position += p.Velocity * dt;
-		}
-		else if (p.life > 0.0f) {
-			p.Position += p.Velocity * dt;
-		}
+		p.Color.a -= dt * 1.0f;
+		p.Position += p.Velocity * dt;
 	}
 }
 
@@ -81,7 +75,7 @@ unsigned int ParticleGenerator::FirstUnusedParticle() {
 void ParticleGenerator::RespawnParticle(Particle& particle, GameObject& object, glm::vec2 offset, glm::vec2 direction) {
 	float randomX = ((rand() % (unsigned int)object.objSize.x) / 2.0f) - 100.0f;
 	float randomY = (rand() % 10) - 10.0f;
-	float randomVelX = (rand() & 10) / 10.0f - 0.3f;
+	float randomVelX = (rand() & 10) / 10.0f - 0.1f;
 	float ramdomSize = (rand() % 20) + 70.0f;
 	float color = ((rand() % 30) / 100.0f) + 0.7f;
 	float randomVel = (rand() % 200) + 300.0f;
@@ -90,7 +84,7 @@ void ParticleGenerator::RespawnParticle(Particle& particle, GameObject& object, 
 	particle.Color = glm::vec4(color, color, color, 1.0f);
 	particle.Velocity = glm::vec2(randomVelX, direction.y) * randomVel;
 	particle.Size = glm::vec2(ramdomSize);
-	particle.life = 1.5f;
+	particle.life = 0.5f;
 }
 
 void ParticleGenerator::Draw(SpriteRenderer& spriteRenderer, bool isSprite) {
