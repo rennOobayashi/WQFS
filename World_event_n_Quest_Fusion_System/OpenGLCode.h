@@ -12,6 +12,7 @@
 #include "TextRenderer.h"
 #include "ParticleGenerator.h"
 #include "LevelGenerator.h"
+#include "PostProcessing.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -41,7 +42,7 @@ enum Direction {
 	NONE
 };
 
-typedef std::tuple<GameObject, int> Monster;
+typedef std::tuple<GameObject, float> Monster;
 typedef std::tuple<std::vector<GameObject>, bool, bool, bool> QuestObject; //obstacle list, isGenerated type(false = 2, true = 3)
 typedef std::pair<glm::vec2, int> Moving; //default position, moveDirection(0 = left, 1 = right, 2 = up, 3 = down)
 typedef std::pair<GameObject, float> NPCObject;
@@ -58,12 +59,12 @@ private:
 	std::map<std::string, Moving> defaultPosition;
 	std::map<int, QuestObject> QuestObjects;
 	std::map<std::string, GameObject> itemObjects;
-	std::vector<std::string> landslide;
-	std::vector<std::string> tornado;
+	std::map<std::string, ParticleGenerator> particleGenerators;
 	LevelGenerator level;
 
 	glm::mat4 view;
 	GameState states;
+	Direction playerLastDir;
 	unsigned int width, height;
 	unsigned int mapWidth, mapHeight;
 	float deltaTime;
@@ -74,12 +75,12 @@ private:
 	float moveAnimationTimer;
 	float playerHitDelay;
 	int hp, monsterHp;
+	int damage;
 	bool changedir;
 	bool mapLoading, getItemFirstTime, isAttacked;
 	bool isMoving;
 
 	GLFWwindow* window;
-	SpriteRenderer* sRenderer;
 
 	GameObject* player;
 	GameObject* attackBox;
@@ -87,10 +88,9 @@ private:
 	GameObject* InventoryObject;
 	GameObject* hpObjects;
 
+	SpriteRenderer* sRenderer;
 	TextRenderer* textRenderer;
-
-	ParticleGenerator* particleGenerator;
-
+	PostProcessing* effects;
 	irrklang::ISoundEngine *soundEngine;
 
 	bool stopInput[4];
@@ -107,7 +107,7 @@ private:
 	void MakeQusetObject(int questNumber, glm::vec2 offset);
 	bool CheckCollision(GameObject& object1, GameObject& object2);
 	bool CheckCollision(glm::vec2 object1Pos, glm::vec2 object1Size, glm::vec2 object2Pos, glm::vec2 object2Size);
-	Direction CheckCollisionDirection(GameObject& object1, GameObject& object2);
+	Direction CheckCollisionDirection(GameObject& object1, GameObject& object2, bool isPlayer = true);
 public:
 	OpenGLCode(unsigned int _width, unsigned int _height);
 	~OpenGLCode(); //Destructor

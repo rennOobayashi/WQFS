@@ -14,6 +14,7 @@
 #include "resourcemanager.h"
 #include "WQFS.h"
 
+
 class LevelGenerator
 {
 private:
@@ -22,7 +23,10 @@ private:
 public:
 	std::vector<GameObject> tiles;
 	std::vector<GameObject> walls; //Collision objects
-	std::map<int, std::string> events; // eventSubType(id), name
+	std::map<int, std::string> landslideEvents; // eventSubType(id), name
+	std::map<int, std::string> earthquakeEvents; // eventSubType(id), name
+	std::map<int, std::string> tsunamiEvents; // eventSubType(id), name
+	std::map<int, std::string> tornadoEvents; // eventSubType(id), name
 	std::map<int, std::string> monsters; // eventSubType(id), name
 	std::map<int, std::string> npcs;
 

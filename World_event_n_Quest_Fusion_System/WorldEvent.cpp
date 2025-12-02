@@ -1,7 +1,7 @@
 #include "WorldEvent.h"
 
 WorldEvent::WorldEvent() 
-	: number(-1), type(-1), subType(-1), hp(0), positionX(0.0f), positionY(0.0f), positionZ(0.0f), sizeX(0.0f), sizeY(0.0f), sizeZ(0.0f), questNumber(-1), isVisible(true), doEvent(false), isCanCollid(false), start(clock()), eventStart(0), eventTimer(0.0f), maxTime(0.0f), duration(0.0f), durationTimer(0.0f), collideDelay(0.0f), isMove(false), errorValue(0) { }
+	: number(-1), type(-1), subType(-1), hp(0), positionX(0.0f), positionY(0.0f), positionZ(0.0f), sizeX(0.0f), sizeY(0.0f), sizeZ(0.0f), questNumber(-1), isVisible(true), doEvent(false), isCanCollid(false), start(clock()), eventStart(0), eventTimer(0.0f), maxTime(0.0f), duration(0.0f), durationTimer(0.0f), collideDelay(0.0f), pauseDuration(0.0f), isMove(false), errorValue(0) { }
 
 void WorldEvent::SetUp(int _number, int _type, int _hp, float posX, float posY, float _sizeX, float _sizeY, float _maxTime, float _duration, float _collideDelay, int _errorValue) {
 	number = _number;

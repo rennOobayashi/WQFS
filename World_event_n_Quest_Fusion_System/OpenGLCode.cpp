@@ -45,7 +45,7 @@ glm::vec2 eventPosition[] = {
 };
 
 OpenGLCode::OpenGLCode(unsigned int _width, unsigned int _height)
-	: states(GAME_MAIN_MENU), width(_width), height(_height), hp(3), changedir(false), showDangerousTime(1.0f), dangerousDelay(5.0f), mapLoading(false), mapLoadingDelay(0.0f), getItemFirstTime(false), attackDelay(0.0f), isAttacked(false), isMoving(false), moveAnimationTimer(0.0f), playerHitDelay(1.0f) {
+	: states(GAME_MAIN_MENU), playerLastDir(LEFT), width(_width), height(_height), hp(3), damage(1), changedir(false), showDangerousTime(1.0f), dangerousDelay(5.0f), mapLoading(false), mapLoadingDelay(0.0f), getItemFirstTime(false), attackDelay(0.0f), isAttacked(false), isMoving(false), moveAnimationTimer(0.0f), playerHitDelay(1.0f) {
     init();
     srand((unsigned int)time(NULL));
 
@@ -59,6 +59,7 @@ OpenGLCode::~OpenGLCode() {
     delete InventoryObject;
     delete hpObjects;
     delete soundEngine;
+    delete effects;
 
 	npcObjects.clear();
     monsterObjects.clear();
@@ -98,6 +99,7 @@ void OpenGLCode::init() {
     glm::mat4 projection = glm::ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f);
 
     ResourceManager::LoadShader("verfrag/vertex.vs", "verfrag/fragment.fs", nullptr, "sprite");
+    ResourceManager::LoadShader("verfrag/postprocessing_vertex.vs", "verfrag/postprocessing_fragment.fs", nullptr, "effects");
 
     ResourceManager::GetShader("sprite").use().SetInt("sprite", 0);
     ResourceManager::GetShader("sprite").use().SetMat4("projection", projection);
@@ -131,6 +133,7 @@ void OpenGLCode::init() {
 
 	Shader spriteShader = ResourceManager::GetShader("sprite");
 	sRenderer = new SpriteRenderer(spriteShader);
+	effects = new PostProcessing(ResourceManager::GetShader("effects"), width, height);
 
     glm::vec2 playerPos(width / 2, height / 2);
     attackCollidePos = glm::vec2(playerPos.x + 20.0f, playerPos.y);
@@ -138,14 +141,17 @@ void OpenGLCode::init() {
     npcObjects["Normal"] = std::make_pair(GameObject(ResourceManager::GetTexture("NPC1"), glm::vec2(0.0f, 0.0f), glm::vec2(70.0f), 0.0f, glm::vec3(1.0f), 1.0f), 1.0f);
     std::get<0>(monsterObjects["Monster"]) = GameObject(ResourceManager::GetTexture("Monster"), glm::vec2(0.0f), glm::vec2(200.0f), 0.0f, glm::vec3(1.0f, 0.2f, 0.1f));
     std::get<1>(monsterObjects["Monster"]) = 0.5f;
-    eventObjects["Landslide"] = GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(100.0f), glm::vec2(300.0f), 0.0f, glm::vec3(190 / 255.0f));
-	eventObjects["Landslide"].visible = false;
-    eventObjects["Earthquake"] = GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(0.0f), glm::vec2(400.0f), 0.0f, glm::vec3(180 / 255.0f));
-    //eventObjects["Earthquake2"] = GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(100.0f, height - 400.0f), glm::vec2(400.0f), 0.0f, glm::vec3(180 / 255.0f));
+    eventObjects["Landslide1"] = GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(100.0f), glm::vec2(300.0f), 0.0f, glm::vec3(190 / 255.0f));
+	eventObjects["Landslide1"].visible = false;
+    eventObjects["Landslide2"] = GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(100.0f), glm::vec2(300.0f), 0.0f, glm::vec3(190 / 255.0f));
+    eventObjects["Landslide2"].visible = false;
+    eventObjects["Earthquake1"] = GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(0.0f), glm::vec2(400.0f), 0.0f, glm::vec3(180 / 255.0f));
+    eventObjects["Earthquake2"] = GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(0.0f), glm::vec2(500.0f), 0.0f, glm::vec3(180 / 255.0f));
+    eventObjects["Earthquake3"] = GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(0.0f), glm::vec2(550.0f), 0.0f, glm::vec3(180 / 255.0f));
     eventObjects["Tsunami"] = GameObject(ResourceManager::GetTexture("Tsunami"), glm::vec2(0.0f), glm::vec2(120.0f), 0.0f, glm::vec3(1.0f));
-    eventObjects["Tornado"] = GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(0.0f), glm::vec2(400.0f), 0.0f, glm::vec3(190 / 255.0f));
+    eventObjects["Tornado1"] = GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(0.0f), glm::vec2(400.0f), 0.0f, glm::vec3(190 / 255.0f));
     player = new GameObject(ResourceManager::GetTexture("Player"), playerPos, playerSize, 0.0f, glm::vec3(1.0f), 1.0f, glm::vec2(playerVelocity));
-	attackBox = new GameObject(ResourceManager::GetTexture("GroundTile"), attackCollidePos, glm::vec2(50.0f, 100.0f), 0.0f, glm::vec3(1.0f, 0.3f, 0.3f));
+	attackBox = new GameObject(ResourceManager::GetTexture("GroundTile"), attackCollidePos, glm::vec2(75.0f, 75.0f), 0.0f, glm::vec3(1.0f, 0.3f, 0.3f));
     questGameObject = new GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(0.0f), glm::vec2(25.0f), 0.0f, glm::vec3(1.0f));
 	InventoryObject = new GameObject(ResourceManager::GetTexture("Inventory"), glm::vec2(100.0f, 80.0f), glm::vec2(800.0f, 160.0f), 0.0f, glm::vec3(1.0f), 0.5f);
 	hpObjects = new GameObject(ResourceManager::GetTexture("Heart"), glm::vec2(10.0f), glm::vec2(50.0f), 0.0f, glm::vec3(1.0f), 0.7f);
@@ -158,15 +164,19 @@ void OpenGLCode::init() {
 
     WQFS::GetInstance().AddNPC("Normal", 0, 0, 0.0f, 0.0f, npcObjects["Normal"].first.objSize.x, npcObjects["Normal"].first.objSize.y, 5.0f);
     WQFS::GetInstance().AddEvent("Monster", 0, 0, 2, 0.0f, 0.0f, std::get<0>(monsterObjects["Monster"]).objSize.x, std::get<0>(monsterObjects["Monster"]).objSize.y, -1.0f, -1.0f, 0.0f, 0.0f);
-    WQFS::GetInstance().AddEvent("Landslide", 1, 0, 2, 0.0f, 0.0f, eventObjects["Landslide"].objSize.x, eventObjects["Landslide"].objSize.y, 10.0f, 5.0f, 0.5f, 3.0f);
-    WQFS::GetInstance().AddEvent("Earthquake", 1, 1, 2, 0.0f, 0.0f, eventObjects["Earthquake"].objSize.x, eventObjects["Earthquake"].objSize.y, 5.0f, 3.0f, 0.0f, 2.0f);
-    //WQFS::GetInstance().AddEvent("Earthquake2", 1, 3, 2, 0.0f, 0.0f, eventObjects["Earthquake2"].objSize.x, eventObjects["Earthquake2"].objSize.y, 5.0f, 3.0f, 0.0f, 0.0f);
-    WQFS::GetInstance().AddEvent("Tsunami", 2, 2, 2, 0.0f, 0.0f, eventObjects["Tsunami"].objSize.x, eventObjects["Tsunami"].objSize.y, 10.0f, 3.0f, 0.0f, 2.0f);
-    WQFS::GetInstance().AddEvent("Tornado", 1, 3, 2, 0.0f, 0.0f, eventObjects["Tornado"].objSize.x, eventObjects["Tornado"].objSize.y, 5.0f, 3.0f, 0.0f, 2.0f);
+    WQFS::GetInstance().AddEvent("Landslide1", 1, 0, 0, 0.0f, 0.0f, eventObjects["Landslide1"].objSize.x, eventObjects["Landslide1"].objSize.y, 10.0f, 5.0f, 0.5f, 3.0f);
+    WQFS::GetInstance().AddEvent("Landslide2", 1, 1, 0, 0.0f, 0.0f, eventObjects["Landslide2"].objSize.x, eventObjects["Landslide2"].objSize.y, 10.0f, 5.0f, 0.5f, 0.0f);
+    WQFS::GetInstance().AddEvent("Earthquake1", 1, 0, 0, 0.0f, 0.0f, eventObjects["Earthquake1"].objSize.x, eventObjects["Earthquake1"].objSize.y, 5.0f, 3.0f, 0.0f, 2.0f);
+    WQFS::GetInstance().AddEvent("Earthquake2", 1, 1, 0, 0.0f, 0.0f, eventObjects["Earthquake2"].objSize.x, eventObjects["Earthquake2"].objSize.y, 5.0f, 3.0f, 0.0f, 0.0f);
+    WQFS::GetInstance().AddEvent("Earthquake3", 1, 2, 0, 0.0f, 0.0f, eventObjects["Earthquake3"].objSize.x, eventObjects["Earthquake3"].objSize.y, 5.0f, 3.0f, 0.0f, 1.0f);
+    WQFS::GetInstance().AddEvent("Tornado1",    1, 0, 0, 0.0f, 0.0f, eventObjects["Tornado1"].objSize.x,    eventObjects["Tornado1"].objSize.y,    5.0f, 3.0f, 0.0f, 0.0f);
+    WQFS::GetInstance().AddEvent("Tsunami1", 2, 0, 0, 0.0f, 0.0f, eventObjects["Tsunami1"].objSize.x, eventObjects["Tsunami1"].objSize.y, 10.0f, 3.0f, 0.0f, 2.0f);
     
-	WQFS::GetInstance().GetEvent("Earthquake").SetIsMove(true);
-    WQFS::GetInstance().GetEvent("Tornado").SetIsMove(true);
-
+	WQFS::GetInstance().GetEvent("Earthquake1").SetIsMove(true);
+    WQFS::GetInstance().GetEvent("Earthquake2").SetIsMove(true);
+    WQFS::GetInstance().GetEvent("Earthquake3").SetIsMove(true);
+    //WQFS::GetInstance().GetEvent("Tornado1").SetIsMove(true);
+     
     mapWidth = width * 5;
     mapHeight = height * 5;
 
@@ -190,9 +200,6 @@ void OpenGLCode::init() {
             std::get<0>(monsterObjects[e.first]).objPosition.y = e.second.GetPositionY();
         }
     }
-
-    landslide.push_back("Landslide");
-    tornado.push_back("Tornado");
 
     for (const auto& def : WQFS::GetInstance().worldEvents) {
         if (def.second.GetType() == 2) {
@@ -226,18 +233,21 @@ void OpenGLCode::init() {
     textRenderer = new TextRenderer(width, height);
     textRenderer->load("fonts/arial.ttf", 64);
 
-    particleGenerator = new ParticleGenerator(ResourceManager::GetShader("sprite"), ResourceManager::GetTexture("Rockfall"), 40);
+    for (auto event : WQFS::GetInstance().worldEvents) {
+        if (event.first.find("Landslide") != std::string::npos) {
+			std::cout << "Create particle generator for " << event.first << std::endl;
+            particleGenerators[event.first] = ParticleGenerator(ResourceManager::GetShader("sprite"), ResourceManager::GetTexture("Rockfall"), 40);
+        }        
+    }
 
     pauseDelay = 0.25f;
     pauseDelayTimer = 0.0f;
 
     attackBox->objPosition.x = player->objPosition.x - 50.0f;
     attackBox->objPosition.y = player->objPosition.y;
-    attackBox->objRotation = 0.0f;
 
     soundEngine = irrklang::createIrrKlangDevice();
     soundEngine->setSoundVolume(0.1f);
-	soundEngine->play2D("audio/background.wav", true);
 
     stopDir = NONE;
 }
@@ -278,16 +288,14 @@ void OpenGLCode::update() {
 
             for (const auto& event : WQFS::GetInstance().worldEvents) {
                 if (event.second.GetType() == 1) {
-                    for (const auto& ls : landslide) {
-                        if (ls == event.first) {
-                            if (event.second.getDoEvent()) {
-                                particleGenerator->Update(deltaTime, eventObjects[event.first], 1, glm::vec2(100.0f, 0.0f));
-                            }
-                            else {
-                                particleGenerator->Idle(deltaTime);
-                            }
+                    if (event.first.find("Landslide") != std::string::npos) {
+                        if (event.second.getDoEvent()) {
+                            particleGenerators[event.first].Update(deltaTime, eventObjects[event.first], 1, glm::vec2(100.0f, 0.0f));
                         }
-					}
+                        else {
+                            particleGenerators[event.first].Idle(deltaTime);
+                        }
+                    }
                 }
             }
 
@@ -299,7 +307,7 @@ void OpenGLCode::update() {
                 dangerousDelay += deltaTime;
             }
 
-            if (playerHitDelay < 0.5f) {
+            if (playerHitDelay < 0.75f) {
                 playerHitDelay += deltaTime;
             }
             
@@ -321,6 +329,19 @@ void OpenGLCode::update() {
                 if (std::get<1>(monster.second) < 0.5f) {
                     std::get<1>(monster.second) += deltaTime;
                 }
+
+                if (std::get<1>(monster.second) < 0.3f) {
+                    std::get<0>(monster.second).alpha = 1.0f;
+                }
+                else if (std::get<1>(monster.second) < 0.2f) {
+                    std::get<0>(monster.second).alpha = 0.0f;
+                }
+                else if (std::get<1>(monster.second) < 0.1f) {
+                    std::get<0>(monster.second).alpha = 1.0f;
+                }
+                else if (std::get<1>(monster.second) < 0.0f) {
+                    std::get<0>(monster.second).alpha = 0.0f;
+                }
             }
         }
 
@@ -333,6 +354,7 @@ void OpenGLCode::update() {
 }
 
 void OpenGLCode::render() {
+	effects->BeginRender();
     level.Draw(*sRenderer, cameraPos, glm::vec2(width, height));
 
     for (auto& event : WQFS::GetInstance().worldEvents) {
@@ -341,11 +363,22 @@ void OpenGLCode::render() {
             if (event.second.GetIsCanCollid()) {
                 if (CheckCollision(cameraPos, glm::vec2(width, height), glm::vec2(event.second.GetPositionX(), event.second.GetPositionY()), glm::vec2(10 * 32 * 2, 32 * 2))) {
                     eventObjects[event.first].Draw(*sRenderer);
-                    //textRenderer->renderText("Dangerous!", event.second.GetPositionX() - cameraPos.x, event.second.GetPositionY() - cameraPos.y, 1.0f, glm::vec3(0.0f));
+
+                    if (event.first.find("Earthquake") != std::string::npos) {
+                        effects->shake = true;
+                    }
+                    else if (event.first.find("Tornado") != std::string::npos) {
+                        if (event.second.GetIsCanCollid()) {
+                            eventObjects[event.first].objRotation += 10.0f * deltaTime;
+                        }
+                        else if (eventObjects[event.first].objRotation != 0) {
+                            eventObjects[event.first].objRotation = 0.0f;
+                        }
+                    }
                 }
             }
-            else {
-                //event.second.setVisible(false);
+            else if (event.first.find("Earthquake") != std::string::npos && CheckCollision(cameraPos, glm::vec2(width, height), glm::vec2(event.second.GetPositionX(), event.second.GetPositionY()), glm::vec2(10 * 32 * 2, 32 * 2)) && !event.second.GetIsCanCollid()) {
+                effects->shake = false;
             }
         }
         else if (event.second.GetType() == 2) {
@@ -354,16 +387,6 @@ void OpenGLCode::render() {
             }
         }
     }
-
-    for (auto t : tornado) {
-        if (WQFS::GetInstance().GetEvent(t).getDoEvent()) {
-            eventObjects[t].objRotation += 10.0f * deltaTime;
-        }
-        else if (eventObjects[t].objRotation != 0) {
-            eventObjects[t].objRotation = 0.0f;
-        }
-    }
-
     for (const auto& monster : WQFS::GetInstance().worldEvents) {
         //std::cout << monster.second.getVisible() << std::endl;
         if (monster.second.GetType() == 0 && monster.second.getVisible()) {
@@ -462,7 +485,13 @@ void OpenGLCode::render() {
 
     player->Draw(*sRenderer);
 
-    particleGenerator->Draw(*sRenderer);
+    for (auto particle : particleGenerators) {
+        particle.second.Draw(*sRenderer);
+    }
+
+	effects->EndRender();
+
+    effects->Render((float)glfwGetTime());
 
     for (int i = 0; i < hp; i++) {
         hpObjects->objPosition.x = 10.0f + (i * 60.0f) + cameraPos.x;
@@ -484,7 +513,12 @@ void OpenGLCode::render() {
             itemObjects[item.first.GetName()].objPosition.y = inventoryItemPos[cnt].y + cameraPos.y;
             itemObjects[item.first.GetName()].Draw(*sRenderer);
             textRenderer->renderText(itemCnt.str(), inventoryItemPos[cnt].x + 100.0f, inventoryItemPos[cnt].y + 90.0f, 0.5f, glm::vec3(0.95f));
-            textRenderer->renderText(itemCnt.str(), inventoryItemPos[cnt].x, inventoryItemPos[cnt].y + 150.0f, 0.5f, glm::vec3(0.95f));
+
+            if (cnt < 2){
+                std::stringstream itemInput;
+                itemInput << (cnt + 1);
+                textRenderer->renderText(itemInput.str(), inventoryItemPos[cnt].x + 50.0f, inventoryItemPos[cnt].y + 150.0f, 0.5f, glm::vec3(0.95f));
+            }
             ++cnt;
         }
     }
@@ -518,6 +552,7 @@ void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
 
     if (states == GAME_MAIN_MENU) {
         if (glfwGetKey(window, GLFW_KEY_SPACE)) {
+            soundEngine->play2D("audio/background.wav", true);
             states = GAME_ACTIVE;
         }
         if (glfwGetKey(window, GLFW_KEY_ESCAPE)) {
@@ -543,47 +578,56 @@ void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
 
         //Up
         if (!stopInput[0] && (glfwGetKey(window, GLFW_KEY_W) || glfwGetKey(window, GLFW_KEY_UP)) && player->objPosition.y > 0) {
+            playerLastDir = UP;
             player->objPosition.y -= velocityY;
-			attackBox->objPosition.y = player->objPosition.y - 70.0f;
-            attackBox->objPosition.x = player->objPosition.x + 25.0f;
-            attackBox->objRotation = 90.0f;
 			isMoving = true;
         }
         //Down
         if (!stopInput[1] && (glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN)) && player->objPosition.y < mapHeight - player->objSize.x) {
+            playerLastDir = DOWN;
             player->objPosition.y += velocityY;
-            attackBox->objPosition.y = player->objPosition.y + player->objSize.y - 30.0f;
-            attackBox->objPosition.x = player->objPosition.x + 25.0f;
-            attackBox->objRotation = 90.0f;
             isMoving = true;
         }
         //Left
         if (!stopInput[2] && (glfwGetKey(window, GLFW_KEY_A) || glfwGetKey(window, GLFW_KEY_LEFT)) && player->objPosition.x > 0) {
+            playerLastDir = LEFT;
             player->objPosition.x -= velocityX;
-            attackBox->objPosition.x = player->objPosition.x - 50.0f;
-            attackBox->objPosition.y = player->objPosition.y;
-            attackBox->objRotation = 0.0f;
             isMoving = true;
 			player->flipX = false;
         }
         //Right
         if (!stopInput[3] && (glfwGetKey(window, GLFW_KEY_D) || glfwGetKey(window, GLFW_KEY_RIGHT)) && player->objPosition.x < mapWidth - player->objSize.y) {
+            playerLastDir = RIGHT;
             player->objPosition.x += velocityX;
-            attackBox->objPosition.x = player->objPosition.x + player->objSize.x;
-            attackBox->objPosition.y = player->objPosition.y;
-            attackBox->objRotation = 0.0f;
             isMoving = true;
             player->flipX = true;
         }
         //Attack
         if (glfwGetKey(window, GLFW_KEY_SPACE) && attackDelay >= 0.7f) {
+            if (playerLastDir == UP) {
+                attackBox->objPosition.x = player->objPosition.x + 10.0f;
+                attackBox->objPosition.y = player->objPosition.y - 80.0f;
+            }
+            else if (playerLastDir == DOWN) {
+                attackBox->objPosition.x = player->objPosition.x + 10.0f;
+                attackBox->objPosition.y = player->objPosition.y + 100.0f;
+            }
+            else if (playerLastDir == LEFT) {
+                attackBox->objPosition.x = player->objPosition.x - 80.0f;
+                attackBox->objPosition.y = player->objPosition.y + 10.0f;
+            }
+            else if (playerLastDir == RIGHT) {
+                attackBox->objPosition.x = player->objPosition.x + 100.0f;
+                attackBox->objPosition.y = player->objPosition.y + 10.0f;
+            }
+
             attackDelay = 0.0f;
 			isAttacked = true;
 			soundEngine->play2D("audio/attack.wav", false);
         }
 
         if (!(glfwGetKey(window, GLFW_KEY_W) || glfwGetKey(window, GLFW_KEY_UP)) && !(glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN))&& !(glfwGetKey(window, GLFW_KEY_A) || glfwGetKey(window, GLFW_KEY_LEFT))&& !(glfwGetKey(window, GLFW_KEY_D) || glfwGetKey(window, GLFW_KEY_RIGHT))) {
-			isMoving = false;
+            isMoving = false;
             moveAnimationTimer = 0.0f;
         }
     }
@@ -829,7 +873,7 @@ bool OpenGLCode::CheckCollision(glm::vec2 object1Pos, glm::vec2 object1Size, glm
     return collisionX && collisionY;
 }
 
-Direction OpenGLCode::CheckCollisionDirection(GameObject& object1, GameObject& object2) {
+Direction OpenGLCode::CheckCollisionDirection(GameObject& object1, GameObject& object2, bool isPlayer) {
     bool collisionX = object1.objPosition.x + object1.objSize.x >= object2.objPosition.x &&
         object2.objPosition.x + object2.objSize.x >= object1.objPosition.x;
     bool collisionY = object1.objPosition.y + object1.objSize.y >= object2.objPosition.y &&
@@ -849,21 +893,29 @@ Direction OpenGLCode::CheckCollisionDirection(GameObject& object1, GameObject& o
 
         if (penetrations.x < penetrations.y) {
             if (distance.x < 0) {
-                stopInput[2] = true;
+                if (isPlayer) {
+                    stopInput[2] = true;
+                }
                 return LEFT;
             }
             else {
-                stopInput[3] = true;
+                if (isPlayer) {
+                    stopInput[3] = true;
+                }
                 return RIGHT;
             }
         }
         else {
             if (distance.y < 0) {
-                stopInput[0] = true;
+                if (isPlayer) {
+                    stopInput[0] = true;
+                }
                 return UP;
             }
             else {
-                stopInput[1] = true;
+                if (isPlayer) {
+                    stopInput[1] = true;
+                }
                 return DOWN;
             }
         }
@@ -886,7 +938,7 @@ void OpenGLCode::DoCollisions() {
         }
 
         for (auto& npc : npcObjects) {
-            npcDir = CheckCollisionDirection(npc.second.first, tile);
+            npcDir = CheckCollisionDirection(npc.second.first, tile, false);
             if ((npcDir == LEFT || npcDir == RIGHT) && npc.second.first.objVelocity.x != 0) {
                 npc.second.first.objVelocity.x = 0.0f;
             }
@@ -896,7 +948,7 @@ void OpenGLCode::DoCollisions() {
         }
 
         for (auto& monster : monsterObjects) {
-            monsterDir = CheckCollisionDirection(std::get<0>(monster.second), tile);
+            monsterDir = CheckCollisionDirection(std::get<0>(monster.second), tile, false);
             if ((monsterDir == LEFT || monsterDir == RIGHT) && std::get<0>(monster.second).objVelocity.x != 0) {
                 std::get<0>(monster.second).objVelocity.x = 0.0f;
             }
@@ -914,30 +966,37 @@ void OpenGLCode::DoCollisions() {
     }
 
     for (auto& monster : monsterObjects) {
-        for (auto& event : eventObjects) {
-            if (std::get<1>(monster.second) >= 5.0f && WQFS::GetInstance().GetEvent(event.first).getDoEvent() && CheckCollision(std::get<0>(monster.second), event.second)) {
-                monsterHp = WQFS::GetInstance().GetEvent(monster.first).takeDamage(1);
+        if (WQFS::GetInstance().GetEvent(monster.first).getVisible()) {
+            for (auto& event : eventObjects) {
+                if (std::get<1>(monster.second) >= 5.0f && WQFS::GetInstance().GetEvent(event.first).GetIsCanCollid() && CheckCollision(std::get<0>(monster.second), event.second)) {
+                    monsterHp = WQFS::GetInstance().GetEvent(monster.first).takeDamage(1);
+
+                    if (monsterHp <= 0) {
+                        soundEngine->play2D("audio/death.wav", false);
+                    }
+                    std::get<1>(monster.second) = -1.0f;
+                }
+
+                if (WQFS::GetInstance().GetEvent(event.first).GetIsCanCollid() && playerHitDelay >= 0.75f && CheckCollision(*player, event.second)) {
+                    --hp;
+                    playerHitDelay = 0.0f;
+                }
+            }
+            
+            if (std::get<1>(monster.second) >= 0.5f && attackDelay < 0.5f && CheckCollision(*attackBox, std::get<0>(monster.second))) {
+                monsterHp = WQFS::GetInstance().GetEvent(monster.first).takeDamage(damage + inventory[WQFS::GetInstance().GetItem("Mana Up Posion")]);
 
                 if (monsterHp <= 0) {
-					soundEngine->play2D("audio/death.wav", false);
+                    soundEngine->play2D("audio/death.wav", false);
                 }
-                std::get<1>(monster.second) = -1.0f;
+
+                std::get<1>(monster.second) = 0.0f;
             }
 
-            if (playerHitDelay >= 0.75f && CheckCollision(*player, event.second)) {
+            if (playerHitDelay >= 0.75f && CheckCollision(*player, std::get<0>(monster.second))) {
                 --hp;
                 playerHitDelay = 0.0f;
             }
-        }
-            
-        if (std::get<1>(monster.second) >= 0.5f && attackDelay < 0.5f && CheckCollision(*attackBox, std::get<0>(monster.second))) {
-            WQFS::GetInstance().GetEvent(monster.first).takeDamage(1);
-            std::get<1>(monster.second) = 0.0f;
-        }
-
-        if (playerHitDelay >= 0.75f && CheckCollision(*player, std::get<0>(monster.second))) {
-            --hp;
-            playerHitDelay = 0.0f;
         }
     }
 
@@ -961,16 +1020,16 @@ void OpenGLCode::DoCollisions() {
     }
 
     for (auto npc : WQFS::GetInstance().npcs) {
-        for (auto t : tornado) {
-            if (WQFS::GetInstance().GetEvent(t).GetIsCanCollid() && CheckCollision(npcObjects[npc.first].first, eventObjects[t])) {
-                if (npcObjects[npc.first].first.objPosition.x >= eventObjects[t].objPosition.x + (eventObjects[t].objSize.x / 2) - (npcObjects[npc.first].first.objSize.x / 2)) {
+        for (auto event : WQFS::GetInstance().worldEvents) {
+            if (event.first.find("Tornado") != std::string::npos && event.second.GetIsCanCollid() && CheckCollision(npcObjects[npc.first].first, eventObjects[event.first])) {
+                if (npcObjects[npc.first].first.objPosition.x >= eventObjects[event.first].objPosition.x + (eventObjects[event.first].objSize.x / 2) - (npcObjects[npc.first].first.objSize.x / 2)) {
                     npcObjects[npc.first].first.objPosition.x -= 50 * deltaTime;
                 }
                 else {
-                npcObjects[npc.first].first.objPosition.x += 50 * deltaTime;
+                    npcObjects[npc.first].first.objPosition.x += 50 * deltaTime;
                 }
-                if (WQFS::GetInstance().GetEvent(t).GetIsCanCollid() && CheckCollision(npcObjects[npc.first].first, eventObjects[t])) {
-                    if (npcObjects[npc.first].first.objPosition.y >= eventObjects[t].objPosition.y + (eventObjects[t].objSize.y / 2) - (npcObjects[npc.first].first.objSize.y / 2)) {
+                if (event.second.GetIsCanCollid() && CheckCollision(npcObjects[npc.first].first, eventObjects[event.first])) {
+                    if (npcObjects[npc.first].first.objPosition.y >= eventObjects[event.first].objPosition.y + (eventObjects[event.first].objSize.y / 2) - (npcObjects[npc.first].first.objSize.y / 2)) {
                         npcObjects[npc.first].first.objPosition.y -= 50 * deltaTime;
                     }
                     else {
@@ -978,6 +1037,6 @@ void OpenGLCode::DoCollisions() {
                     }
                 }
             }
-        }
+		}
     }
 }

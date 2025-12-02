@@ -8,7 +8,7 @@ PostProcessing::PostProcessing(Shader _shader, unsigned int _width, unsigned int
 
 	glBindFramebuffer(GL_FRAMEBUFFER, msfbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_RED, width, height);
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_RGB, width, height);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, rbo);
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
@@ -41,11 +41,6 @@ PostProcessing::PostProcessing(Shader _shader, unsigned int _width, unsigned int
 		{   0.0f, -offset}, //bottom center
 		{ offset, -offset}  //bottom right
 	};
-	int edgeKernel[9]{
-		-1, -1, -1,
-		-1,  8, -1,
-		-1, -1, -1
-	};
 	float blurKernel[9]{
 		1.0f / 16.0f, 2.0f / 16.0f, 1.0f / 16.0f,
 		2.0f / 16.0f, 4.0f / 16.0f, 2.0f / 16.0f,
@@ -53,11 +48,8 @@ PostProcessing::PostProcessing(Shader _shader, unsigned int _width, unsigned int
 	};
 
 	glUniform2fv(glGetUniformLocation(postShader.ID, "offsets"), 9, (float*)offsets);
-	glUniform1iv(glGetUniformLocation(postShader.ID, "edgeKernel"), 9, edgeKernel);
 	glUniform1fv(glGetUniformLocation(postShader.ID, "blurKernel"), 9, blurKernel);
-
-	//안되면 제거
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	
 }
 
 void PostProcessing::initRenderData() {
@@ -87,7 +79,7 @@ void PostProcessing::initRenderData() {
 
 void PostProcessing::BeginRender() {
 	glBindFramebuffer(GL_FRAMEBUFFER, msfbo);
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearColor(170 / 255.0f, 170 / 255.0f, 170 / 255.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 

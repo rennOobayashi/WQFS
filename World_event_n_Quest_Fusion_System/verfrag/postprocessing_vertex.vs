@@ -11,8 +11,8 @@ void main() {
     texCoords = vertex.zw;
 
     if (shake) {
-        float strength = 0.0f;
-        gl_Position.x += cos(time * 10) * strength;
-        gl_Position.y += cos(time * 15) * strength;
+        float strength = 0.01f;
+        gl_Position.x += cos(time * 5) * strength;
+        gl_Position.y += cos(time * 7.5) * strength;
     }
 }
