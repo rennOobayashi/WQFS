@@ -26,10 +26,11 @@
 #include <map>
 
 enum GameState {
-	GAME_ACTIVE, 
+	GAME_ACTIVE,
 	GAME_MAIN_MENU,
-	GAME_MENU, 
-	GAME_WIN  
+	GAME_MENU,
+	GAME_WIN,
+	GAME_OVER
 };
 
 enum Direction {
@@ -71,6 +72,7 @@ private:
 	float dangerousDelay, mapLoadingDelay, attackDelay;
 	float pauseDelayTimer, pauseDelay;
 	float moveAnimationTimer;
+	float playerHitDelay;
 	int hp, monsterHp;
 	bool changedir;
 	bool mapLoading, getItemFirstTime, isAttacked;
@@ -101,6 +103,7 @@ private:
 	void CameraMove(float dt);
 	void DoCollisions();
 	void Reset();
+	void CheckGameState();
 	void MakeQusetObject(int questNumber, glm::vec2 offset);
 	bool CheckCollision(GameObject& object1, GameObject& object2);
 	bool CheckCollision(glm::vec2 object1Pos, glm::vec2 object1Size, glm::vec2 object2Pos, glm::vec2 object2Size);

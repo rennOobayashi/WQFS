@@ -45,7 +45,7 @@ glm::vec2 eventPosition[] = {
 };
 
 OpenGLCode::OpenGLCode(unsigned int _width, unsigned int _height)
-	: states(GAME_MENU), width(_width), height(_height), hp(3), changedir(false), showDangerousTime(1.0f), dangerousDelay(5.0f), mapLoading(false), mapLoadingDelay(0.0f), getItemFirstTime(false), attackDelay(1.0f), isAttacked(false), isMoving(false), moveAnimationTimer(0.0f) {
+	: states(GAME_MAIN_MENU), width(_width), height(_height), hp(3), changedir(false), showDangerousTime(1.0f), dangerousDelay(5.0f), mapLoading(false), mapLoadingDelay(0.0f), getItemFirstTime(false), attackDelay(0.0f), isAttacked(false), isMoving(false), moveAnimationTimer(0.0f), playerHitDelay(1.0f) {
     init();
     srand((unsigned int)time(NULL));
 
@@ -81,7 +81,7 @@ void OpenGLCode::init() {
 #endif
     glfwWindowHint(GLFW_RESIZABLE, false);
 
-    window = glfwCreateWindow(width, height, "test", nullptr, nullptr);
+    window = glfwCreateWindow(width, height, "WQFS Tech Demo", nullptr, nullptr);
     glfwMakeContextCurrent(window);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -115,7 +115,11 @@ void OpenGLCode::init() {
     ResourceManager::LoadTexture("Texture/Tide_by_Gemini.png", true, "Tsunami");
     ResourceManager::LoadTexture("Texture/GroundTile.png", true, "GroundTile");
     ResourceManager::LoadTexture("Texture/Mountain.png", true, "MountainTile");
-    ResourceManager::LoadTexture("Texture/Mountain_top.png", true, "MountainTopTile");
+    ResourceManager::LoadTexture("Texture/Mountain_Left.png", true, "MountainLeftTile");
+    ResourceManager::LoadTexture("Texture/Mountain_Right.png", true, "MountainRightTile");
+    ResourceManager::LoadTexture("Texture/Mountain_Left_Top.png", true, "MountainLeftTopTile");
+    ResourceManager::LoadTexture("Texture/Mountain_Right_Top.png", true, "MountainRightTopTile");
+    ResourceManager::LoadTexture("Texture/Mountain_Top.png", true, "MountainTopTile");
     ResourceManager::LoadTexture("Texture/Rockfall_by_Gemini.png", true, "Rockfall");
     ResourceManager::LoadTexture("Texture/Inventory.png", true, "Inventory");
     ResourceManager::LoadTexture("Texture/HP_Posion.png", true, "HP_Posion");
@@ -215,8 +219,6 @@ void OpenGLCode::init() {
         inventory[item.second] = 0;
     }
 
-    states = GAME_ACTIVE;
-
     view = glm::mat4(0.0f);
 
     std::cout << "All width / height" <<std::endl << mapWidth << " / " << mapHeight << std::endl;
@@ -226,8 +228,8 @@ void OpenGLCode::init() {
 
     particleGenerator = new ParticleGenerator(ResourceManager::GetShader("sprite"), ResourceManager::GetTexture("Rockfall"), 40);
 
-    pauseDelay = 0.15f;
-    pauseDelayTimer = 1.0f;
+    pauseDelay = 0.25f;
+    pauseDelayTimer = 0.0f;
 
     attackBox->objPosition.x = player->objPosition.x - 50.0f;
     attackBox->objPosition.y = player->objPosition.y;
@@ -265,7 +267,7 @@ void OpenGLCode::update() {
             ProcessInput(window, deltaTime);
         }
 
-        if (states != GAME_MENU) {
+        if (states == GAME_ACTIVE) {
             DoCollisions();
 
             CameraMove(deltaTime);
@@ -297,6 +299,10 @@ void OpenGLCode::update() {
                 dangerousDelay += deltaTime;
             }
 
+            if (playerHitDelay < 0.5f) {
+                playerHitDelay += deltaTime;
+            }
+            
             if (attackDelay < 0.7f) {
                 attackDelay += deltaTime;
             }
@@ -478,9 +484,9 @@ void OpenGLCode::render() {
             itemObjects[item.first.GetName()].objPosition.y = inventoryItemPos[cnt].y + cameraPos.y;
             itemObjects[item.first.GetName()].Draw(*sRenderer);
             textRenderer->renderText(itemCnt.str(), inventoryItemPos[cnt].x + 100.0f, inventoryItemPos[cnt].y + 90.0f, 0.5f, glm::vec3(0.95f));
+            textRenderer->renderText(itemCnt.str(), inventoryItemPos[cnt].x, inventoryItemPos[cnt].y + 150.0f, 0.5f, glm::vec3(0.95f));
             ++cnt;
         }
-        stopInput[3] = false;
     }
     else if (states == GAME_MENU) {
         textRenderer->renderText("Pause", (width / 2) - 100.0f, 10.0f, 1.5f, glm::vec3(0.0f));
@@ -497,10 +503,29 @@ void OpenGLCode::render() {
             }
         }
     }
+    else if (states == GAME_MAIN_MENU) {
+        textRenderer->renderText("WQFS", (width / 2) - 150.0f, 100.0f, 1.5f, glm::vec3(0.0f));
+        textRenderer->renderText("Tech Demo Game", (width / 2) - 250.0f, 200.0f, 1.0f, glm::vec3(0.0f));
+
+    }
 }
 
 void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) && pauseDelayTimer > pauseDelay) {
+    if (states == GAME_MENU && glfwGetKey(window, GLFW_KEY_SPACE)) {
+        std::cout << "<<<EXIT>>>" << std::endl;
+        glfwSetWindowShouldClose(window, true);
+    }
+
+    if (states == GAME_MAIN_MENU) {
+        if (glfwGetKey(window, GLFW_KEY_SPACE)) {
+            states = GAME_ACTIVE;
+        }
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE)) {
+            std::cout << "<<<EXIT>>>" << std::endl;
+            glfwSetWindowShouldClose(window, true);
+        }
+    }
+    else if (states != GAME_MAIN_MENU && glfwGetKey(window, GLFW_KEY_ESCAPE) && pauseDelayTimer > pauseDelay) {
         if (states == GAME_ACTIVE) {
             states = GAME_MENU;
 			WQFS::GetInstance().Pause();
@@ -512,8 +537,7 @@ void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
 
         pauseDelayTimer = 0.0f;
     }
-
-    if (states == GAME_ACTIVE) {
+    else if (states == GAME_ACTIVE) {
         float velocityX = player->objVelocity.x * dt;
         float velocityY = player->objVelocity.y * dt;
 
@@ -558,41 +582,19 @@ void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
 			soundEngine->play2D("audio/attack.wav", false);
         }
 
-        if (glfwGetKey(window, GLFW_KEY_E)) {
-            WQFS::GetInstance().MakeQuest(WQFS::GetInstance().GetNPC("Normal"), WQFS::GetInstance().GetEvent("Tsunami"));
-            WQFS::GetInstance().GetNPC("Normal").SetInDangerous(true);
-        }
-
         if (!(glfwGetKey(window, GLFW_KEY_W) || glfwGetKey(window, GLFW_KEY_UP)) && !(glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN))&& !(glfwGetKey(window, GLFW_KEY_A) || glfwGetKey(window, GLFW_KEY_LEFT))&& !(glfwGetKey(window, GLFW_KEY_D) || glfwGetKey(window, GLFW_KEY_RIGHT))) {
 			isMoving = false;
             moveAnimationTimer = 0.0f;
         }
     }
-    else {
-        if (glfwGetKey(window, GLFW_KEY_SPACE)) {
-            std::cout << "<<<EXIT>>>" << std::endl;
-            glfwSetWindowShouldClose(window, true);
-        }
-    }
 }
 
 void OpenGLCode::Reset() {
-	npcObjects["Normal"].first.objPosition.x = 0.0f;
-    npcObjects["Normal"].first.objPosition.y = 0.0f;
-	WQFS::GetNPC("Normal").SetInDangerous(false);
+    player->objPosition = glm::vec2(width / 2, height / 2);
+    cameraPos = glm::vec2(0.0f);
 
-	std::get<0>(monsterObjects["Monster"]).objPosition.x = width - 200.0f;
-    std::get<0>(monsterObjects["Monster"]).objPosition.y = 0.0f;
-	eventObjects["Earthquake"].objPosition.x = width - 400.0f;
-	eventObjects["Earthquake"].objPosition.y = height - 400.0f;
-	eventObjects["Landslide"].objPosition.x = 0.0f;
-	eventObjects["Landslide"].objPosition.y = height - 350.0f;
+    states = GAME_MAIN_MENU;
 
-	npcObjects["Normal"].first.objVelocity = glm::vec2(0.0f);
-    std::get<0>(monsterObjects["Monster"]).objVelocity = glm::vec2(0.0f);
-    eventObjects["Earthquake"].objVelocity = glm::vec2(0.0f);
-    eventObjects["Landslide"].objVelocity = glm::vec2(0.0f);
-	changeMoveTime = 5.0f;
 }
 
 void OpenGLCode::MakeQusetObject(int questNumber, glm::vec2 offset) {
@@ -872,12 +874,35 @@ Direction OpenGLCode::CheckCollisionDirection(GameObject& object1, GameObject& o
 }
 
 void OpenGLCode::DoCollisions() {
+    Direction lastDir;
+    Direction npcDir;
+    Direction monsterDir;
     stopDir = NONE;
     for (auto& tile : level.walls) {
         Direction lastDir = CheckCollisionDirection(*player, tile);
 
         if (stopDir == NONE) {
             stopDir = lastDir;
+        }
+
+        for (auto& npc : npcObjects) {
+            npcDir = CheckCollisionDirection(npc.second.first, tile);
+            if ((npcDir == LEFT || npcDir == RIGHT) && npc.second.first.objVelocity.x != 0) {
+                npc.second.first.objVelocity.x = 0.0f;
+            }
+            if ((npcDir == UP || npcDir == DOWN) && npc.second.first.objVelocity.y != 0) {
+                npc.second.first.objVelocity.y = 0.0f;
+            }
+        }
+
+        for (auto& monster : monsterObjects) {
+            monsterDir = CheckCollisionDirection(std::get<0>(monster.second), tile);
+            if ((monsterDir == LEFT || monsterDir == RIGHT) && std::get<0>(monster.second).objVelocity.x != 0) {
+                std::get<0>(monster.second).objVelocity.x = 0.0f;
+            }
+            if ((monsterDir == UP || monsterDir == DOWN) && std::get<0>(monster.second).objVelocity.y != 0) {
+                std::get<0>(monster.second).objVelocity.y = 0.0f;
+            }
         }
     }
 
@@ -890,25 +915,34 @@ void OpenGLCode::DoCollisions() {
 
     for (auto& monster : monsterObjects) {
         for (auto& event : eventObjects) {
-            if (std::get<1>(monster.second) >= 5.0f && WQFS::GetInstance().GetEvent(event.first).getDoEvent() && CheckCollision(std::get<0>(monster.second), eventObjects[event.first])) {
+            if (std::get<1>(monster.second) >= 5.0f && WQFS::GetInstance().GetEvent(event.first).getDoEvent() && CheckCollision(std::get<0>(monster.second), event.second)) {
                 monsterHp = WQFS::GetInstance().GetEvent(monster.first).takeDamage(1);
 
                 if (monsterHp <= 0) {
 					soundEngine->play2D("audio/death.wav", false);
                 }
-                std::get<1>(monster.second) = 0.0f;
+                std::get<1>(monster.second) = -1.0f;
+            }
+
+            if (playerHitDelay >= 0.75f && CheckCollision(*player, event.second)) {
+                --hp;
+                playerHitDelay = 0.0f;
             }
         }
             
-        if (std::get<1>(monster.second) >= 0.5f && attackDelay < 0.5f && CheckCollision(std::get<0>(monster.second), *attackBox)) {
+        if (std::get<1>(monster.second) >= 0.5f && attackDelay < 0.5f && CheckCollision(*attackBox, std::get<0>(monster.second))) {
             WQFS::GetInstance().GetEvent(monster.first).takeDamage(1);
             std::get<1>(monster.second) = 0.0f;
+        }
+
+        if (playerHitDelay >= 0.75f && CheckCollision(*player, std::get<0>(monster.second))) {
+            --hp;
+            playerHitDelay = 0.0f;
         }
     }
 
 
     for (auto& questObject : QuestObjects) {
-
         for (int i = 0; i < std::get<0>(questObject.second).size(); i++) {
             if (attackDelay < 0.5f && std::get<2>(questObject.second) && CheckCollision(std::get<0>(questObject.second)[i], *attackBox)) {
                 std::get<0>(questObject.second).erase(std::get<0>(questObject.second).begin() + i);
