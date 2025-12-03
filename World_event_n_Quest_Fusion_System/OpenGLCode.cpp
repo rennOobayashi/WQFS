@@ -45,7 +45,7 @@ glm::vec2 eventPosition[] = {
 };
 
 OpenGLCode::OpenGLCode(unsigned int _width, unsigned int _height)
-	: states(GAME_MAIN_MENU), playerLastDir(LEFT), width(_width), height(_height), hp(3), damage(1), changedir(false), showDangerousTime(1.0f), dangerousDelay(5.0f), mapLoading(false), mapLoadingDelay(0.0f), getItemFirstTime(false), attackDelay(0.0f), isAttacked(false), isMoving(false), moveAnimationTimer(0.0f), playerHitDelay(1.0f) {
+	: states(GAME_MAIN_MENU), playerLastDir(LEFT), width(_width), height(_height), hp(3), damage(1), changedir(false), showDangerousTime(1.0f), dangerousDelay(5.0f), mapLoading(false), mapLoadingDelay(0.0f), getItemFirstTime(false), attackDelay(0.0f), isAttacked(false), isMoving(false), useWQFS(true), moveAnimationTimer(0.0f), playerHitDelay(1.0f) {
     init();
     srand((unsigned int)time(NULL));
 
@@ -124,9 +124,9 @@ void OpenGLCode::init() {
     ResourceManager::LoadTexture("Texture/Mountain_Top.png", true, "MountainTopTile");
     ResourceManager::LoadTexture("Texture/Rockfall_by_Gemini.png", true, "Rockfall");
     ResourceManager::LoadTexture("Texture/Inventory.png", true, "Inventory");
-    ResourceManager::LoadTexture("Texture/HP_Posion.png", true, "HP_Posion");
-    ResourceManager::LoadTexture("Texture/Good_HP_Posion.png", true, "Good_HP_Posion");
-    ResourceManager::LoadTexture("Texture/Mana_Up_Posion.png", true, "Mana_Up_Posion");
+    ResourceManager::LoadTexture("Texture/HP_Posion.png", true, "HP Posion");
+    ResourceManager::LoadTexture("Texture/Good_HP_Posion.png", true, "Good HP Posion");
+    ResourceManager::LoadTexture("Texture/Mana_Up_Posion.png", true, "Mana Up Posion");
     ResourceManager::LoadTexture("Texture/Iron.png", true, "Iron");
     ResourceManager::LoadTexture("Texture/Gold.png", true, "Gold");
     ResourceManager::LoadTexture("Texture/Heart.png", true, "Heart");
@@ -156,9 +156,9 @@ void OpenGLCode::init() {
 	InventoryObject = new GameObject(ResourceManager::GetTexture("Inventory"), glm::vec2(100.0f, 80.0f), glm::vec2(800.0f, 160.0f), 0.0f, glm::vec3(1.0f), 0.5f);
 	hpObjects = new GameObject(ResourceManager::GetTexture("Heart"), glm::vec2(10.0f), glm::vec2(50.0f), 0.0f, glm::vec3(1.0f), 0.7f);
 
-    itemObjects["HP Posion"] = GameObject(ResourceManager::GetTexture("HP_Posion"), glm::vec2(125.0f, 110.0f), glm::vec2(100.0f), 0.0f, glm::vec3(1.0f), 0.8f);
-    itemObjects["Good HP Posion"] = GameObject(ResourceManager::GetTexture("Good_HP_Posion"), glm::vec2(290.0f, 110.0f), glm::vec2(100.0f), 0.0f, glm::vec3(1.0f), 0.8f);
-    itemObjects["Mana Up Posion"] = GameObject(ResourceManager::GetTexture("Mana_Up_Posion"), glm::vec2(445.0f, 110.0f), glm::vec2(100.0f), 0.0f, glm::vec3(1.0f), 0.8f);
+    itemObjects["HP Posion"] = GameObject(ResourceManager::GetTexture("HP Posion"), glm::vec2(125.0f, 110.0f), glm::vec2(100.0f), 0.0f, glm::vec3(1.0f), 0.8f);
+    itemObjects["Good HP Posion"] = GameObject(ResourceManager::GetTexture("Good HP Posion"), glm::vec2(290.0f, 110.0f), glm::vec2(100.0f), 0.0f, glm::vec3(1.0f), 0.8f);
+    itemObjects["Mana Up Posion"] = GameObject(ResourceManager::GetTexture("Mana Up Posion"), glm::vec2(445.0f, 110.0f), glm::vec2(100.0f), 0.0f, glm::vec3(1.0f), 0.8f);
     itemObjects["Iron"] = GameObject(ResourceManager::GetTexture("Iron"), glm::vec2(610.0f, 110.0f), glm::vec2(100.0f), 0.0f, glm::vec3(1.0f), 0.8f);
     itemObjects["Gold"] = GameObject(ResourceManager::GetTexture("Gold"), glm::vec2(770.0f, 110.0f), glm::vec2(100.0f), 0.0f, glm::vec3(1.0f), 0.8f);
 
@@ -221,8 +221,12 @@ void OpenGLCode::init() {
     WQFS::GetInstance().AddItem("Mana Up Posion", 1, 2, 0);
     WQFS::GetInstance().AddItem("Iron", 2, 20, 0);
     WQFS::GetInstance().AddItem("Gold", 2, 50, 1);
-
+    
     for (auto item : WQFS::GetInstance().comps) {
+        if (item.first.find("HP") != std::string::npos) {
+            inventory[item.second] = 1;
+            continue;
+        }
         inventory[item.second] = 0;
     }
 
@@ -250,6 +254,14 @@ void OpenGLCode::init() {
     soundEngine->setSoundVolume(0.1f);
 
     stopDir = NONE;
+
+    if (!useWQFS) {
+        QuestList["Eliminate 1 Monster"] = std::make_tuple(0, glm::vec2(0.0f), false);
+        QuestList["Eliminate 2 Monster"] = std::make_tuple(1, glm::vec2(0.0f), false);
+        QuestList["Return 1 Item"] = std::make_tuple(2, glm::vec2(0.0f), false);
+        QuestList["Return 2 Item"] = std::make_tuple(3, glm::vec2(0.0f), false);
+        QuestList["Return 3 Item"] = std::make_tuple(4, glm::vec2(0.0f), false);
+    }
 }
 
 void OpenGLCode::update() {
@@ -282,9 +294,10 @@ void OpenGLCode::update() {
 
             CameraMove(deltaTime);
 
-            WQFS::GetInstance().CheckQuest(inventory, player->objSize.x, player->objSize.y, player->objPosition.x, player->objPosition.y);
-            WQFS::GetInstance().CheckEvent();
-
+            if (useWQFS) {
+                WQFS::GetInstance().CheckQuest(inventory, player->objSize.x, player->objSize.y, player->objPosition.x, player->objPosition.y);
+                WQFS::GetInstance().CheckEvent();
+            }
 
             for (const auto& event : WQFS::GetInstance().worldEvents) {
                 if (event.second.GetType() == 1) {
@@ -307,8 +320,24 @@ void OpenGLCode::update() {
                 dangerousDelay += deltaTime;
             }
 
-            if (playerHitDelay < 0.75f) {
+            if (playerHitDelay < 1.5f) {
                 playerHitDelay += deltaTime;
+
+                if (playerHitDelay < 0.3f) {
+                    player->alpha = 0.5f;
+                }
+                else if (playerHitDelay < 0.2f) {
+                    player->alpha = 0.25f;
+                }
+                else if (playerHitDelay < 0.1f) {
+                    player->alpha = 0.5f;
+                }
+                else {
+                    player->alpha = 0.25f;
+                }
+            }
+            else if (player->alpha != 1.0f) {
+                player->alpha = 1.0f;
             }
             
             if (attackDelay < 0.7f) {
@@ -368,16 +397,11 @@ void OpenGLCode::render() {
                         effects->shake = true;
                     }
                     else if (event.first.find("Tornado") != std::string::npos) {
-                        if (event.second.GetIsCanCollid()) {
-                            eventObjects[event.first].objRotation += 10.0f * deltaTime;
-                        }
-                        else if (eventObjects[event.first].objRotation != 0) {
-                            eventObjects[event.first].objRotation = 0.0f;
-                        }
+                        eventObjects[event.first].objRotation += 10.0f * deltaTime;
                     }
                 }
             }
-            else if (event.first.find("Earthquake") != std::string::npos && CheckCollision(cameraPos, glm::vec2(width, height), glm::vec2(event.second.GetPositionX(), event.second.GetPositionY()), glm::vec2(10 * 32 * 2, 32 * 2)) && !event.second.GetIsCanCollid()) {
+            else if (event.first.find("Earthquake") != std::string::npos && !CheckCollision(cameraPos, glm::vec2(width, height), glm::vec2(event.second.GetPositionX(), event.second.GetPositionY()), glm::vec2(10 * 32 * 2, 32 * 2)) && !event.second.GetIsCanCollid()) {
                 effects->shake = false;
             }
         }
@@ -626,6 +650,17 @@ void OpenGLCode::ProcessInput(GLFWwindow* window, float dt) {
 			soundEngine->play2D("audio/attack.wav", false);
         }
 
+        if (glfwGetKey(window, GLFW_KEY_1) && pauseDelayTimer > pauseDelay && inventory[WQFS::GetInstance().GetItem("HP Posion")] > 0) {
+            --inventory[WQFS::GetInstance().GetItem("HP Posion")];
+            ++hp;
+            pauseDelayTimer = 0;
+        }
+        if (glfwGetKey(window, GLFW_KEY_2) && pauseDelayTimer > pauseDelay && inventory[WQFS::GetInstance().GetItem("Good HP Posion")] > 0) {
+            --inventory[WQFS::GetInstance().GetItem("Good HP Posion")];
+            hp += 2;
+            pauseDelayTimer = 0;
+        }
+
         if (!(glfwGetKey(window, GLFW_KEY_W) || glfwGetKey(window, GLFW_KEY_UP)) && !(glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN))&& !(glfwGetKey(window, GLFW_KEY_A) || glfwGetKey(window, GLFW_KEY_LEFT))&& !(glfwGetKey(window, GLFW_KEY_D) || glfwGetKey(window, GLFW_KEY_RIGHT))) {
             isMoving = false;
             moveAnimationTimer = 0.0f;
@@ -642,12 +677,22 @@ void OpenGLCode::Reset() {
 }
 
 void OpenGLCode::MakeQusetObject(int questNumber, glm::vec2 offset) {
+    std::vector<std::string> itemSpriteName;
+
+    for (auto name : WQFS::GetInstance().comps) {
+        itemSpriteName.push_back(name.first);
+    }
+
     if (std::get<1>(WQFS::GetInstance().questList[questNumber]) == 3) {
         std::get<2>(QuestObjects[questNumber]) = true;
 		questGameObject->objSize = glm::vec2(40.0f);
     }
 
     for (int i = 0; i < WQFS::GetInstance().questRemaining[questNumber]; i++) {
+        int r = rand() % 5;
+
+        questGameObject->objSprite = ResourceManager::GetTexture(itemSpriteName[r]);
+
         questGameObject->objPosition = obstaclePosition[i] + offset;
         questGameObject->objColor = obstacleColors[i];
         std::get<0>(QuestObjects[questNumber]).push_back(*questGameObject);
@@ -977,7 +1022,7 @@ void OpenGLCode::DoCollisions() {
                     std::get<1>(monster.second) = -1.0f;
                 }
 
-                if (WQFS::GetInstance().GetEvent(event.first).GetIsCanCollid() && playerHitDelay >= 0.75f && CheckCollision(*player, event.second)) {
+                if (WQFS::GetInstance().GetEvent(event.first).GetIsCanCollid() && playerHitDelay >= 1.5f && CheckCollision(*player, event.second)) {
                     --hp;
                     playerHitDelay = 0.0f;
                 }
@@ -993,7 +1038,7 @@ void OpenGLCode::DoCollisions() {
                 std::get<1>(monster.second) = 0.0f;
             }
 
-            if (playerHitDelay >= 0.75f && CheckCollision(*player, std::get<0>(monster.second))) {
+            if (playerHitDelay >= 1.5f && CheckCollision(*player, std::get<0>(monster.second))) {
                 --hp;
                 playerHitDelay = 0.0f;
             }
