@@ -61,6 +61,7 @@ private:
 	std::map<std::string, ParticleGenerator> particleGenerators;
 	std::map<std::string, std::pair<int, bool>> QuestList;
 	std::map<int, int> monsterRemainning;
+	std::vector<std::string> questListString;
 	LevelGenerator level;
 
 	glm::mat4 view;
@@ -78,7 +79,7 @@ private:
 	float inputDelay;
 	int hp, monsterHp;
 	int damage;
-	int questCnt;
+	int questCnt, maxQuestCnt;
 	bool changedir;
 	bool mapLoading, getItemFirstTime, isAttacked;
 	bool isMoving;

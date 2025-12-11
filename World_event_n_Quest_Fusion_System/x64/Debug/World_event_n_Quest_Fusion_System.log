@@ -4,9 +4,5 @@ C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(1
       C:\glfw-3.4\include\glad\glad.h(32,9):
       'APIENTRY'의 이전 정의를 참조하십시오.
   
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(478,48): warning C4804: '*=': 연산에 'bool' 형식을 사용하는 것은 안전하지 않습니다.
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(482,48): warning C4804: '*=': 연산에 'bool' 형식을 사용하는 것은 안전하지 않습니다.
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(565,48): warning C4804: '*=': 연산에 'bool' 형식을 사용하는 것은 안전하지 않습니다.
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(569,48): warning C4804: '*=': 연산에 'bool' 형식을 사용하는 것은 안전하지 않습니다.
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1118,15): warning C4101: 'lastDir' :참조되지 않은 지역 변수입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1155,15): warning C4101: 'lastDir' :참조되지 않은 지역 변수입니다.
   World_event_n_Quest_Fusion_System.vcxproj -> C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\x64\Debug\World_event_n_Quest_Fusion_System.exe

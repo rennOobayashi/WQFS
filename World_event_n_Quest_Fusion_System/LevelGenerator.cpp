@@ -47,6 +47,7 @@ void LevelGenerator::init(std::vector<std::vector<unsigned int>> tileData, unsig
 				case 3: //Ocean colid tile
 					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(200 / 255.0f));
 					walls.push_back(obj);
+					break;
 				case 4: //Tree tile
 					obj = GameObject(ResourceManager::GetTexture("Tree"), pos, size, 0.0f, glm::vec3(1.0f));
 					walls.push_back(obj);

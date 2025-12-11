@@ -147,7 +147,7 @@ bool WQFS::CheckCollision3D(float object1X, float object1Y, float object1Z, floa
 	return collisionX && collisionY && collisionZ;
 }
 
-void WQFS::CheckQuest(std::map<Item, int>& inventory, float playerSizeX, float playerSizeY, float playerX, float playerY) {
+void WQFS::CheckQuest(std::map<Item, int>& inventory, int& questCnt, float playerSizeX, float playerSizeY, float playerX, float playerY) {
 	for (auto& npc : WQFS::GetInstance().npcs) {
 		if (!npc.second.GetInDangerous() && npc.second.GetCanDangerous()) {
 			for (auto& monster : WQFS::GetInstance().worldEvents) {
@@ -173,7 +173,7 @@ void WQFS::CheckQuest(std::map<Item, int>& inventory, float playerSizeX, float p
 			if ((std::get<1>(questList[npc.second.getQuestNumber()]) == 2 || std::get<1>(questList[npc.second.getQuestNumber()]) == 3) && questRemaining[npc.second.getQuestNumber()] <= 0) {
 				std::cout << "장애물 제거 완료!" << std::endl;
 
-				std::vector<Item> items = WQFS::GetInstance().CompleteQuest(npc.second);
+				std::vector<Item> items = WQFS::GetInstance().CompleteQuest(npc.second, questCnt);
 
 				for (auto& item : items) {
 					inventory[item] += 1;
@@ -193,21 +193,23 @@ void WQFS::CheckQuest(std::map<Item, int>& inventory, float playerSizeX, float p
 		if (event.second.getVisible() && event.second.GetType() == 0 && event.second.getHp() <= 0) {
 			std::cout << "몬스터 처치 완료!" << std::endl;
 			
-			for (auto& npc : WQFS::GetInstance().npcs) {
-				if (npc.second.getQuestNumber() == event.second.getQuestNumber()) {
-					std::vector<Item> c = WQFS::GetInstance().CompleteQuest(npc.second);
+			if (event.second.GetType() != -1) {
+				for (auto& npc : WQFS::GetInstance().npcs) {
+					if (npc.second.getQuestNumber() == event.second.getQuestNumber()) {
+						std::vector<Item> c = WQFS::GetInstance().CompleteQuest(npc.second, questCnt);
 
-					for (const auto& item : c) {
-						inventory[item] += 1;
+						for (const auto& item : c) {
+							inventory[item] += 1;
+						}
+
+						for (const auto& item : inventory) {
+							std::cout << item.first.GetName() << " : " << item.second << std::endl;
+						}
+
+						npc.second.ResetTimer();
+						std::cout << "끝" << npc.second.GetInDangerous() << std::endl;
+						break;
 					}
-
-					for (const auto& item : inventory) {
-						std::cout << item.first.GetName() << " : " << item.second << std::endl;
-					}
-
-					npc.second.ResetTimer();
-					std::cout << "끝" << npc.second.GetInDangerous() << std::endl;
-					break;
 				}
 			}
 			event.second.setVisible(false);
@@ -541,12 +543,13 @@ void WQFS::SetCompensation(NPC &npc, WorldEvent& event, int questType) {
 	QuestTargetObjects.push_back(QuestTarget(&npc, &event));
 }
 
-std::vector<Item> WQFS::CompleteQuest(NPC &npc)  {
+std::vector<Item> WQFS::CompleteQuest(NPC &npc, int& questCnt)  {
 	if (!std::get<2>(questList[npc.getQuestNumber()])) {
 		int questNumber = npc.getQuestNumber();
 
 		std::get<2>(questList[npc.getQuestNumber()]) = true;
 		npc.SetInDangerous(false);
+		++questCnt;
 
 		for (auto& target : WQFS::GetInstance().QuestTargetObjects) {
 			if (target.first->getQuestNumber() == npc.getQuestNumber()) {
