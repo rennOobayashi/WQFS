@@ -1,17 +1,159 @@
-﻿  OpenGLCode.cpp
+﻿  glad.c
+  stb_image.c
+  코드를 생성하고 있습니다...
+  GameObject.cpp
+  Item.cpp
+  LevelGenerator.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(130,1): warning C4005: 'APIENTRY': 매크로 재정의
+  (소스 파일 'LevelGenerator.cpp'을(를) 컴파일하는 중)
+  C:\glfw-3.4\include\glad\glad.h(32,1):
+  'APIENTRY'의 이전 정의를 참조하십시오.
+  
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\LevelGenerator.cpp(4,21): warning C4267: '초기화 중': 'size_t'에서 'unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\LevelGenerator.cpp(5,22): warning C4267: '초기화 중': 'size_t'에서 'unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  NPC.cpp
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\NPC.cpp(12,12): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\NPC.cpp(24,12): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  OpenGLCode.cpp
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(130,1): warning C4005: 'APIENTRY': 매크로 재정의
   (소스 파일 'OpenGLCode.cpp'을(를) 컴파일하는 중)
   C:\glfw-3.4\include\glad\glad.h(32,1):
   'APIENTRY'의 이전 정의를 참조하십시오.
   
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(453,44): warning C4804: '*=': 연산에 'bool' 형식을 사용하는 것은 안전하지 않습니다.
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(457,44): warning C4804: '*=': 연산에 'bool' 형식을 사용하는 것은 안전하지 않습니다.
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(974,15): warning C4101: 'lastDir' :참조되지 않은 지역 변수입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.h(49,30): error C2371: 'Quest': 재정의. 기본 형식이 다릅니다.
+  (소스 파일 'OpenGLCode.cpp'을(를) 컴파일하는 중)
+  C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\WQFS.h(15,50):
+  'Quest' 선언을 참조하십시오.
+  
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.h(63,1): error C2059: 구문 오류: '<<'
+  (소스 파일 'OpenGLCode.cpp'을(를) 컴파일하는 중)
+  
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.h(64,40): error C2238: ';' 앞에 예기치 않은 토큰이 있습니다.
+  (소스 파일 'OpenGLCode.cpp'을(를) 컴파일하는 중)
+  
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.h(65,1): error C2059: 구문 오류: '=='
+  (소스 파일 'OpenGLCode.cpp'을(를) 컴파일하는 중)
+  
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.h(66,55): error C2238: ';' 앞에 예기치 않은 토큰이 있습니다.
+  (소스 파일 'OpenGLCode.cpp'을(를) 컴파일하는 중)
+  
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.h(69,1): error C2059: 구문 오류: '>>'
+  (소스 파일 'OpenGLCode.cpp'을(를) 컴파일하는 중)
+  
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.h(70,22): error C2238: ';' 앞에 예기치 않은 토큰이 있습니다.
+  (소스 파일 'OpenGLCode.cpp'을(를) 컴파일하는 중)
+  
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(69,2): error C2065: 'level': 선언되지 않은 식별자입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(214,5): error C2065: 'level': 선언되지 않은 식별자입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(283,1): error C2059: 구문 오류: '<<'
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(285,19): error C2143: 구문 오류: ';'이(가) '{' 앞에 없습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(286,9): error C2065: 'questList': 선언되지 않은 식별자입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(287,9): error C2065: 'questList': 선언되지 않은 식별자입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(288,9): error C2065: 'questList': 선언되지 않은 식별자입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(289,9): error C2065: 'questList': 선언되지 않은 식별자입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(290,9): error C2065: 'questList': 선언되지 않은 식별자입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(292,1): error C2059: 구문 오류: '=='
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(423,5): error C2065: 'level': 선언되지 않은 식별자입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(731,17): error C2065: 'QuestList': 선언되지 않은 식별자입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(732,17): error C2065: 'QuestList': 선언되지 않은 식별자입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(733,17): error C2065: 'QuestList': 선언되지 않은 식별자입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(734,17): error C2065: 'QuestList': 선언되지 않은 식별자입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1170,23): error C2065: 'level': 선언되지 않은 식별자입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1170,5): error C2530: 'tile': 참조를 초기화해야 합니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1170,5): error C3531: 'tile': 형식에 'auto'이(가) 포함된 기호에는 이니셜라이저가 있어야 합니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1170,21): error C2143: 구문 오류: ';'이(가) ':' 앞에 없습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1170,34): error C2143: 구문 오류: ';'이(가) ')' 앞에 없습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1171,29): error C2664: 'Direction OpenGLCode::CheckCollisionDirection(GameObject &,GameObject &,bool)': 인수 2을(를) 'int'에서 'GameObject &'(으)로 변환할 수 없습니다.
+  C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1113,23):
+  'OpenGLCode::CheckCollisionDirection' 선언을 참조하십시오.
+  C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1171,29):
+  인수 목록 '(GameObject, int)'을(를) 일치시키는 동안
+  
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1178,22): error C2664: 'Direction OpenGLCode::CheckCollisionDirection(GameObject &,GameObject &,bool)': 인수 2을(를) 'int'에서 'GameObject &'(으)로 변환할 수 없습니다.
+  C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1113,23):
+  'OpenGLCode::CheckCollisionDirection' 선언을 참조하십시오.
+  C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1178,22):
+  인수 목록 '(_Ty1, int, bool)'을(를) 일치시키는 동안
+          with
+          [
+              _Ty1=GameObject
+          ]
+  
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1188,26): error C2664: 'Direction OpenGLCode::CheckCollisionDirection(GameObject &,GameObject &,bool)': 인수 2을(를) 'int'에서 'GameObject &'(으)로 변환할 수 없습니다.
+  C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1113,23):
+  'OpenGLCode::CheckCollisionDirection' 선언을 참조하십시오.
+  C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1188,26):
+  인수 목록 '(GameObject, int, bool)'을(를) 일치시키는 동안
+  
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1267,1): error C2059: 구문 오류: '<<'
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1268,5): error C2143: 구문 오류: ';'이(가) '{' 앞에 없습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1269,1): error C2059: 구문 오류: '=='
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1270,5): error C2143: 구문 오류: ';'이(가) '{' 앞에 없습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1271,1): error C2059: 구문 오류: '>>'
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1272,22): error C2143: 구문 오류: ';'이(가) '{' 앞에 없습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1292,9): error C2181: if와 짝을 이루지 않는 잘못된 else문입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1294,1): error C2059: 구문 오류: '<<'
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1295,63): error C2143: 구문 오류: ';'이(가) '{' 앞에 없습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1297,1): error C2059: 구문 오류: '=='
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1298,87): error C2143: 구문 오류: ';'이(가) '{' 앞에 없습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1301,37): error C2065: 'QuestList': 선언되지 않은 식별자입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1302,21): error C2065: 'QuestList': 선언되지 않은 식별자입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1305,17): error C2181: if와 짝을 이루지 않는 잘못된 else문입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1305,27): error C2065: 'QuestList': 선언되지 않은 식별자입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1308,21): error C2065: 'QuestList': 선언되지 않은 식별자입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1311,27): error C2065: 'QuestList': 선언되지 않은 식별자입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1313,37): error C2065: 'QuestList': 선언되지 않은 식별자입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1314,21): error C2065: 'QuestList': 선언되지 않은 식별자입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1317,27): error C2065: 'QuestList': 선언되지 않은 식별자입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1320,21): error C2065: 'QuestList': 선언되지 않은 식별자입니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1322,1): error C2059: 구문 오류: '>>'
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1329,18): error C2601: 'OpenGLCode::SetCompensation': 지역 함수 정의가 잘못되었습니다.
+  C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1268,47):
+  이 줄에 짝이 되지 않는 '{'가 들어 있습니다.
+  
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1268,47): error C1075: '{': 일치하는 토큰을 찾을 수 없습니다.
+  ParticleGenerator.cpp
+  PostProcessing.cpp
+  ResourceManager.cpp
+  Shader.cpp
+  SpriteRenderer.cpp
+  TextRenderer.cpp
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\TextRenderer.cpp(64,24): warning C4838: 'FT_Pos'에서 'unsigned int'(으)로의 변환에는 축소 변환이 필요합니다.
+  Texture.cpp
+  WorldEvent.cpp
   World_event_n_Quest_Fusion_System.cpp
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(130,1): warning C4005: 'APIENTRY': 매크로 재정의
   (소스 파일 'World_event_n_Quest_Fusion_System.cpp'을(를) 컴파일하는 중)
   C:\glfw-3.4\include\glad\glad.h(32,1):
   'APIENTRY'의 이전 정의를 참조하십시오.
   
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.h(49,30): error C2371: 'Quest': 재정의. 기본 형식이 다릅니다.
+  (소스 파일 'World_event_n_Quest_Fusion_System.cpp'을(를) 컴파일하는 중)
+  C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\WQFS.h(15,50):
+  'Quest' 선언을 참조하십시오.
+  
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.h(63,1): error C2059: 구문 오류: '<<'
+  (소스 파일 'World_event_n_Quest_Fusion_System.cpp'을(를) 컴파일하는 중)
+  
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.h(64,40): error C2238: ';' 앞에 예기치 않은 토큰이 있습니다.
+  (소스 파일 'World_event_n_Quest_Fusion_System.cpp'을(를) 컴파일하는 중)
+  
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.h(65,1): error C2059: 구문 오류: '=='
+  (소스 파일 'World_event_n_Quest_Fusion_System.cpp'을(를) 컴파일하는 중)
+  
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.h(66,55): error C2238: ';' 앞에 예기치 않은 토큰이 있습니다.
+  (소스 파일 'World_event_n_Quest_Fusion_System.cpp'을(를) 컴파일하는 중)
+  
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.h(69,1): error C2059: 구문 오류: '>>'
+  (소스 파일 'World_event_n_Quest_Fusion_System.cpp'을(를) 컴파일하는 중)
+  
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.h(70,22): error C2238: ';' 앞에 예기치 않은 토큰이 있습니다.
+  (소스 파일 'World_event_n_Quest_Fusion_System.cpp'을(를) 컴파일하는 중)
+  
+  WQFS.cpp
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\WQFS.cpp(26,120): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\WQFS.cpp(49,129): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\WQFS.cpp(248,31): warning C4244: '인수': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\WQFS.cpp(252,33): warning C4244: '인수': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\WQFS.cpp(264,13): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   코드를 생성하고 있습니다...
-  World_event_n_Quest_Fusion_System.vcxproj -> C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\x64\Debug\World_event_n_Quest_Fusion_System.exe

@@ -47,6 +47,7 @@ void LevelGenerator::init(std::vector<std::vector<unsigned int>> tileData, unsig
 				case 3: //Ocean colid tile
 					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(200 / 255.0f));
 					walls.push_back(obj);
+					break;
 				case 4: //Tree tile
 					obj = GameObject(ResourceManager::GetTexture("Tree"), pos, size, 0.0f, glm::vec3(1.0f));
 					walls.push_back(obj);
@@ -101,14 +102,50 @@ void LevelGenerator::init(std::vector<std::vector<unsigned int>> tileData, unsig
 					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(200 / 255.0f));
 					walls.push_back(obj);
 					break;
-				case 17: //Tornado event Object
+				case 17: //Tsunami event Object
+					WQFS::GetInstance().GetEvent(tsunamiEvents[1]).SetPosition(pos.x, pos.y);
+					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(200 / 255.0f));
+					walls.push_back(obj);
+					break;
+				case 18: //Tsunami event Object
+					WQFS::GetInstance().GetEvent(tsunamiEvents[2]).SetPosition(pos.x, pos.y);
+					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(200 / 255.0f));
+					walls.push_back(obj);
+					break;
+				case 19: //Tsunami event Object
+					WQFS::GetInstance().GetEvent(tsunamiEvents[3]).SetPosition(pos.x, pos.y);
+					obj = GameObject(ResourceManager::GetTexture("GroundTile"), pos, size, 0.0f, glm::vec3(200 / 255.0f));
+					walls.push_back(obj);
+					break;
+				case 20: //Tornado event Object
 					WQFS::GetInstance().GetEvent(tornadoEvents[0]).SetPosition(pos.x, pos.y);
 					break;
-				case 18: //Monster Object
+				case 21: //Tornado event Object
+					WQFS::GetInstance().GetEvent(tornadoEvents[1]).SetPosition(pos.x, pos.y);
+					break;
+				case 22: //Tornado event Object
+					WQFS::GetInstance().GetEvent(tornadoEvents[2]).SetPosition(pos.x, pos.y);
+					break;
+				case 23: //Monster Object
 					WQFS::GetInstance().GetEvent(monsters[0]).SetPosition(pos.x, pos.y);
 					break;
-				case 19: //NPC Object
+				case 24: //Monster Object
+					WQFS::GetInstance().GetEvent(monsters[1]).SetPosition(pos.x, pos.y);
+					break;
+				case 25: //Monster Object
+					WQFS::GetInstance().GetEvent(monsters[2]).SetPosition(pos.x, pos.y);
+					break;
+				case 26: //NPC Object
 					WQFS::GetInstance().GetNPC(npcs[0]).SetPosition(pos.x, pos.y);
+					break;
+				case 27: //NPC Object
+					WQFS::GetInstance().GetNPC(npcs[1]).SetPosition(pos.x, pos.y);
+					break;
+				case 28: //NPC Object
+					WQFS::GetInstance().GetNPC(npcs[2]).SetPosition(pos.x, pos.y);
+					break;
+				case 29: //NPC Object
+					WQFS::GetInstance().GetNPC(npcs[3]).SetPosition(pos.x, pos.y);
 					break;
 			}
 		}

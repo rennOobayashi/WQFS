@@ -42,7 +42,7 @@ enum Direction {
 	NONE
 };
 
-typedef std::tuple<GameObject, float> Monster;
+typedef std::tuple<GameObject, float, float> Monster;
 typedef std::tuple<std::vector<GameObject>, bool, bool, bool> QuestObject; //obstacle list, isGenerated type(false = 2, true = 3)
 typedef std::pair<glm::vec2, int> Moving; //default position, moveDirection(0 = left, 1 = right, 2 = up, 3 = down)
 typedef std::pair<GameObject, float> NPCObject;
@@ -61,6 +61,10 @@ private:
 	std::map<std::string, GameObject> itemObjects;
 	std::map<std::string, ParticleGenerator> particleGenerators;
 	std::map<std::string, Quest> questList;
+	std::map<std::string, std::pair<int, bool>> QuestList;
+	std::map<int, int> monsterRemainning;
+	std::vector<std::string> questListString;
+
 	LevelGenerator level;
 
 	glm::mat4 view;
@@ -75,8 +79,10 @@ private:
 	float pauseDelayTimer, pauseDelay;
 	float moveAnimationTimer;
 	float playerHitDelay;
+	float inputDelay;
 	int hp, monsterHp;
 	int damage;
+	int questCnt, maxQuestCnt;
 	bool changedir;
 	bool mapLoading, getItemFirstTime, isAttacked;
 	bool isMoving;
@@ -105,10 +111,10 @@ private:
 	void CameraMove(float dt);
 	void DoCollisions();
 	void Reset();
-	void CheckGameState();
 	void MakeQusetObject(int questNumber, glm::vec2 offset);
 	bool CheckCollision(GameObject& object1, GameObject& object2);
 	bool CheckCollision(glm::vec2 object1Pos, glm::vec2 object1Size, glm::vec2 object2Pos, glm::vec2 object2Size);
+	void SetCompensation(NPC& npc);
 	Direction CheckCollisionDirection(GameObject& object1, GameObject& object2, bool isPlayer = true);
 public:
 	OpenGLCode(unsigned int _width, unsigned int _height);
