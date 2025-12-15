@@ -280,14 +280,6 @@ void OpenGLCode::init() {
     soundEngine->setSoundVolume(0.1f);
 
     stopDir = NONE;
-
-    if (!useWQFS) {
-        QuestList["Eliminate 1 Monster"] = std::make_tuple(0, glm::vec2(0.0f), false);
-        QuestList["Eliminate 2 Monster"] = std::make_tuple(1, glm::vec2(0.0f), false);
-        QuestList["Return 1 Item"] = std::make_tuple(2, glm::vec2(0.0f), false);
-        QuestList["Return 2 Item"] = std::make_tuple(3, glm::vec2(0.0f), false);
-        QuestList["Return 3 Item"] = std::make_tuple(4, glm::vec2(0.0f), false);
-    }
 }
 
 void OpenGLCode::update() {
@@ -594,8 +586,6 @@ void OpenGLCode::render() {
                     npcObjects[npc.first].first.flipX = true;
                     npcObjects[npc.first].first.objSprite = ResourceManager::GetTexture("NPC1Move");
                 }
-
-                std::cout << npcObjects[npc.first].first.flipX << std::endl;
             }
         }
 
@@ -1261,24 +1251,86 @@ void OpenGLCode::DoCollisions() {
         }
     }
 
-    for (auto npc : WQFS::GetInstance().npcs) {
-        for (auto event : WQFS::GetInstance().worldEvents) {
-            if (event.first.find("Tornado") != std::string::npos && event.second.GetIsCanCollid() && CheckCollision(npcObjects[npc.first].first, eventObjects[event.first])) {
-                if (npcObjects[npc.first].first.objPosition.x >= eventObjects[event.first].objPosition.x + (eventObjects[event.first].objSize.x / 2) - (npcObjects[npc.first].first.objSize.x / 2)) {
-                    npcObjects[npc.first].first.objPosition.x -= 50 * deltaTime;
-                }
-                else {
-                    npcObjects[npc.first].first.objPosition.x += 50 * deltaTime;
-                }
-                if (event.second.GetIsCanCollid() && CheckCollision(npcObjects[npc.first].first, eventObjects[event.first])) {
-                    if (npcObjects[npc.first].first.objPosition.y >= eventObjects[event.first].objPosition.y + (eventObjects[event.first].objSize.y / 2) - (npcObjects[npc.first].first.objSize.y / 2)) {
-                        npcObjects[npc.first].first.objPosition.y -= 50 * deltaTime;
+    for (auto& npc : WQFS::GetInstance().npcs) {
+        if (useWQFS) {
+            for (auto event : WQFS::GetInstance().worldEvents) {
+                if (event.first.find("Tornado") != std::string::npos && event.second.GetIsCanCollid() && CheckCollision(npcObjects[npc.first].first, eventObjects[event.first])) {
+                    if (npcObjects[npc.first].first.objPosition.x >= eventObjects[event.first].objPosition.x + (eventObjects[event.first].objSize.x / 2) - (npcObjects[npc.first].first.objSize.x / 2)) {
+                        npcObjects[npc.first].first.objPosition.x -= 50 * deltaTime;
                     }
                     else {
-                        npcObjects[npc.first].first.objPosition.y += 50 * deltaTime;
+                        npcObjects[npc.first].first.objPosition.x += 50 * deltaTime;
+                    }
+                    if (event.second.GetIsCanCollid() && CheckCollision(npcObjects[npc.first].first, eventObjects[event.first])) {
+                        if (npcObjects[npc.first].first.objPosition.y >= eventObjects[event.first].objPosition.y + (eventObjects[event.first].objSize.y / 2) - (npcObjects[npc.first].first.objSize.y / 2)) {
+                            npcObjects[npc.first].first.objPosition.y -= 50 * deltaTime;
+                        }
+                        else {
+                            npcObjects[npc.first].first.objPosition.y += 50 * deltaTime;
+                        }
                     }
                 }
             }
-		}
+        }
+        else {
+            if (CheckCollision(npcObjects[npc.first].first, *player)) {
+                if (!QuestList["Return 1 Item"].second && npc.first._Equal("Normal")) {
+					std::cout << "Start Quest: Return 1 Item" << std::endl;
+					npc.second.SetInDangerous(true);
+                    MakeQusetObject(QuestList["Return 1 Item"].first, npcObjects[npc.first].first.objPosition);
+                    QuestList["Return 1 Item"].second = true;
+                    questListString.push_back("1. Return 1 Item");
+                }
+                else if (!QuestList["Eliminate 1 Monster"].second && npc.first._Equal("Item")) {
+                    npc.second.SetInDangerous(true);
+                    monsterRemainning[0] = 1;
+                    QuestList["Eliminate 1 Monster"].second = true;
+                    questListString.push_back("2. Eliminate 1 Monster");
+                }
+                else if (!QuestList["Return 2 Item"].second && npc.first._Equal("Weapon")) {
+                    npc.second.SetInDangerous(true);
+                    MakeQusetObject(QuestList["Return 2 Item"].first, npcObjects[npc.first].first.objPosition);
+                    QuestList["Return 2 Item"].second = true;
+                    questListString.push_back("3. Return 2 Item");
+                }
+                else if (!QuestList["Eliminate 2 Monster"].second && npc.first._Equal("All")) {
+                    npc.second.SetInDangerous(true);
+                    monsterRemainning[0] = 2;
+                    QuestList["Eliminate 2 Monster"].second = true;
+                    questListString.push_back("4. Eliminate 2 Monster");
+                }
+            }
+        }
+    }
+}
+
+void OpenGLCode::SetCompensation(NPC& npc) {
+    std::vector<Item> compList;
+
+    switch (npc.GetType()) {
+    case 0:
+		compList.push_back(WQFS::GetInstance().GetItem("HP Posion"));
+        break;
+    case 1:
+        compList.push_back(WQFS::GetInstance().GetItem("Good HP Posion"));
+        compList.push_back(WQFS::GetInstance().GetItem("Silver"));
+        break;
+    case 2:
+        compList.push_back(WQFS::GetInstance().GetItem("HP Posion"));
+        compList.push_back(WQFS::GetInstance().GetItem("Mana Up Posion"));
+        break;
+    case 3:
+        compList.push_back(WQFS::GetInstance().GetItem("HP Posion"));
+        compList.push_back(WQFS::GetInstance().GetItem("Good HP Posion"));
+        compList.push_back(WQFS::GetInstance().GetItem("Mana Up Posion"));
+        compList.push_back(WQFS::GetInstance().GetItem("Iron"));
+        compList.push_back(WQFS::GetInstance().GetItem("Gold"));
+        break;
+    default: std::cout << "Wrong NPC type!" << std::endl;
+        break;
+    }
+
+    for (auto c : compList) {
+        ++inventory[c];
     }
 }

@@ -46,7 +46,6 @@ typedef std::tuple<GameObject, float, float> Monster;
 typedef std::tuple<std::vector<GameObject>, bool, bool, bool> QuestObject; //obstacle list, isGenerated type(false = 2, true = 3)
 typedef std::pair<glm::vec2, int> Moving; //default position, moveDirection(0 = left, 1 = right, 2 = up, 3 = down)
 typedef std::pair<GameObject, float> NPCObject;
-typedef std::pair<int, bool> Quest;
 class OpenGLCode
 {
 private:
@@ -60,11 +59,9 @@ private:
 	std::map<int, QuestObject> QuestObjects;
 	std::map<std::string, GameObject> itemObjects;
 	std::map<std::string, ParticleGenerator> particleGenerators;
-	std::map<std::string, Quest> questList;
 	std::map<std::string, std::pair<int, bool>> QuestList;
 	std::map<int, int> monsterRemainning;
 	std::vector<std::string> questListString;
-
 	LevelGenerator level;
 
 	glm::mat4 view;
