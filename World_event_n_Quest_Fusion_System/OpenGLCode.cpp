@@ -175,7 +175,7 @@ void OpenGLCode::init() {
 	WQFS::GetInstance().GetEvent("Earthquake1").SetIsMove(true);
     WQFS::GetInstance().GetEvent("Earthquake2").SetIsMove(true);
     WQFS::GetInstance().GetEvent("Earthquake3").SetIsMove(true);
-    //WQFS::GetInstance().GetEvent("Tornado1").SetIsMove(true);
+    WQFS::GetInstance().GetEvent("Tornado1").SetIsMove(true);
      
     mapWidth = width * 5;
     mapHeight = height * 5;
@@ -256,11 +256,11 @@ void OpenGLCode::init() {
     stopDir = NONE;
 
     if (!useWQFS) {
-        QuestList["Eliminate 1 Monster"] = std::make_tuple(0, glm::vec2(0.0f), false);
-        QuestList["Eliminate 2 Monster"] = std::make_tuple(1, glm::vec2(0.0f), false);
-        QuestList["Return 1 Item"] = std::make_tuple(2, glm::vec2(0.0f), false);
-        QuestList["Return 2 Item"] = std::make_tuple(3, glm::vec2(0.0f), false);
-        QuestList["Return 3 Item"] = std::make_tuple(4, glm::vec2(0.0f), false);
+        questList["Eliminate 1 Monster"] = std::make_pair(0, false);
+        questList["Eliminate 2 Monster"] = std::make_pair(1, false);
+        questList["Return 1 Item"] = std::make_pair(2, false);
+        questList["Return 2 Item"] = std::make_pair(3, false);
+        questList["Return 3 Item"] = std::make_pair(4, false);
     }
 }
 
@@ -1065,23 +1065,32 @@ void OpenGLCode::DoCollisions() {
     }
 
     for (auto npc : WQFS::GetInstance().npcs) {
-        for (auto event : WQFS::GetInstance().worldEvents) {
-            if (event.first.find("Tornado") != std::string::npos && event.second.GetIsCanCollid() && CheckCollision(npcObjects[npc.first].first, eventObjects[event.first])) {
-                if (npcObjects[npc.first].first.objPosition.x >= eventObjects[event.first].objPosition.x + (eventObjects[event.first].objSize.x / 2) - (npcObjects[npc.first].first.objSize.x / 2)) {
-                    npcObjects[npc.first].first.objPosition.x -= 50 * deltaTime;
-                }
-                else {
-                    npcObjects[npc.first].first.objPosition.x += 50 * deltaTime;
-                }
-                if (event.second.GetIsCanCollid() && CheckCollision(npcObjects[npc.first].first, eventObjects[event.first])) {
-                    if (npcObjects[npc.first].first.objPosition.y >= eventObjects[event.first].objPosition.y + (eventObjects[event.first].objSize.y / 2) - (npcObjects[npc.first].first.objSize.y / 2)) {
-                        npcObjects[npc.first].first.objPosition.y -= 50 * deltaTime;
+        if (useWQFS) {
+            for (auto event : WQFS::GetInstance().worldEvents) {
+                if (event.first.find("Tornado") != std::string::npos && event.second.GetIsCanCollid() && CheckCollision(npcObjects[npc.first].first, eventObjects[event.first])) {
+                    if (npcObjects[npc.first].first.objPosition.x >= eventObjects[event.first].objPosition.x + (eventObjects[event.first].objSize.x / 2) - (npcObjects[npc.first].first.objSize.x / 2)) {
+                        npcObjects[npc.first].first.objPosition.x -= 50 * deltaTime;
                     }
                     else {
-                        npcObjects[npc.first].first.objPosition.y += 50 * deltaTime;
+                        npcObjects[npc.first].first.objPosition.x += 50 * deltaTime;
+                    }
+                    if (event.second.GetIsCanCollid() && CheckCollision(npcObjects[npc.first].first, eventObjects[event.first])) {
+                        if (npcObjects[npc.first].first.objPosition.y >= eventObjects[event.first].objPosition.y + (eventObjects[event.first].objSize.y / 2) - (npcObjects[npc.first].first.objSize.y / 2)) {
+                            npcObjects[npc.first].first.objPosition.y -= 50 * deltaTime;
+                        }
+                        else {
+                            npcObjects[npc.first].first.objPosition.y += 50 * deltaTime;
+                        }
                     }
                 }
             }
-		}
+        }
+        else {
+            if (CheckCollision(npcObjects[npc.first].first, *player)) {
+                if (npc.first.find("1") != std::string::npos) {
+
+                }
+            }
+        }
     }
 }
