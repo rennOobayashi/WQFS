@@ -119,12 +119,15 @@ void LevelGenerator::init(std::vector<std::vector<unsigned int>> tileData, unsig
 					break;
 				case 20: //Tornado event Object
 					WQFS::GetInstance().GetEvent(tornadoEvents[0]).SetPosition(pos.x, pos.y);
+					std::cout << tornadoEvents[0] << " Placed at : " << pos.x << ", " << pos.y << std::endl;
 					break;
 				case 21: //Tornado event Object
 					WQFS::GetInstance().GetEvent(tornadoEvents[1]).SetPosition(pos.x, pos.y);
+					std::cout << tornadoEvents[1] << " Placed at : " << pos.x << ", " << pos.y << std::endl;
 					break;
 				case 22: //Tornado event Object
 					WQFS::GetInstance().GetEvent(tornadoEvents[2]).SetPosition(pos.x, pos.y);
+					std::cout << tornadoEvents[2] << " Placed at : " << pos.x << ", " << pos.y << std::endl;
 					break;
 				case 23: //Monster Object
 					WQFS::GetInstance().GetEvent(monsters[0]).SetPosition(pos.x, pos.y);
