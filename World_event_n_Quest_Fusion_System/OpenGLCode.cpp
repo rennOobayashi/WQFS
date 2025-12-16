@@ -651,18 +651,22 @@ void OpenGLCode::render() {
         textRenderer->renderText("Quest List", (width / 2) - 110.0f, 100.0f, 1.0f, glm::vec3(0.0f));
 
         int cnt = 1;
-        for (std::string s : WQFS::GetInstance().GetQuestListByString(5)) {
-            if ((cnt + 1) % 2 == 1) {
-                textRenderer->renderText("Reward(" + s + ")", 150.0f, 150.0f + (40.0f * cnt++), 0.5f, glm::vec3(0.0f));
-            }
-            else {
-                textRenderer->renderText(s, 50.0f, 150.0f + (40.0f * cnt++), 0.6f, glm::vec3(0.0f));
+        
+        if (useWQFS) {
+            for (std::string s : WQFS::GetInstance().GetQuestListByString(5)) {
+                if ((cnt + 1) % 2 == 1) {
+                    textRenderer->renderText("Reward(" + s + ")", 150.0f, 150.0f + (40.0f * cnt++), 0.5f, glm::vec3(0.0f));
+                }
+                else {
+                    textRenderer->renderText(s, 50.0f, 150.0f + (40.0f * cnt++), 0.6f, glm::vec3(0.0f));
+                }
             }
         }
-
-        for (std::string s : questListString) {
-            if ((cnt + 1) % 2 == 1) {
-                textRenderer->renderText(s, 50.0f, 150.0f + (40.0f * cnt++), 0.6f, glm::vec3(0.0f));
+        if (!useWQFS) {
+            for (std::string s : questListString) {
+                if ((cnt + 1) % 2 == 1) {
+                    textRenderer->renderText(s, 50.0f, 150.0f + (40.0f * cnt++), 0.6f, glm::vec3(0.0f));
+                }
             }
         }
     }
@@ -1214,6 +1218,8 @@ void OpenGLCode::DoCollisions() {
                     soundEngine->play2D("audio/death.wav", false);
                     
                     if (!useWQFS) {
+                        WQFS::GetInstance().GetEvent(monster.first).setVisible(false);
+
                         for (auto& mr : monsterRemainning) {
                             if (mr.second > 0) {
                                 --mr.second;
@@ -1221,6 +1227,7 @@ void OpenGLCode::DoCollisions() {
                         }
                     }
                 }
+                std::cout << WQFS::GetInstance().GetEvent(monster.first).getVisible() << std::endl;
 
                 std::get<1>(monster.second) = 0.0f;
             }
