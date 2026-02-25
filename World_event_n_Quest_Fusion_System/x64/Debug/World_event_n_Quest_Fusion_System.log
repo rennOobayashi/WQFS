@@ -1,8 +1,12 @@
-﻿  OpenGLCode.cpp
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: 'APIENTRY': 매크로 재정의
-  (소스 파일 'OpenGLCode.cpp'을(를) 컴파일하는 중)
-      C:\glfw-3.4\include\glad\glad.h(32,9):
-      'APIENTRY'의 이전 정의를 참조하십시오.
+﻿  WQFS.cpp
+C:\Users\devfo\source\repos\WQFS\World_event_n_Quest_Fusion_System\WQFS.cpp(1,1): warning C4819: 현재 코드 페이지(949)에서 표시할 수 없는 문자가 파일에 들어 있습니다. 데이터가 손실되지 않게 하려면 해당 파일을 유니코드 형식으로 저장하십시오.
+C:\Users\devfo\source\repos\WQFS\World_event_n_Quest_Fusion_System\WQFS.h(1,1): warning C4819: 현재 코드 페이지(949)에서 표시할 수 없는 문자가 파일에 들어 있습니다. 데이터가 손실되지 않게 하려면 해당 파일을 유니코드 형식으로 저장하십시오.
+  (소스 파일 'WQFS.cpp'을(를) 컴파일하는 중)
   
-C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\World_event_n_Quest_Fusion_System\OpenGLCode.cpp(1156,15): warning C4101: 'lastDir' :참조되지 않은 지역 변수입니다.
-  World_event_n_Quest_Fusion_System.vcxproj -> C:\Users\devfo\source\repos\World_event_n_Quest_Fusion_System\x64\Debug\World_event_n_Quest_Fusion_System.exe
+C:\Users\devfo\source\repos\WQFS\World_event_n_Quest_Fusion_System\WQFS.cpp(26,120): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\devfo\source\repos\WQFS\World_event_n_Quest_Fusion_System\WQFS.cpp(49,129): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\devfo\source\repos\WQFS\World_event_n_Quest_Fusion_System\WQFS.cpp(248,31): warning C4244: '인수': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\devfo\source\repos\WQFS\World_event_n_Quest_Fusion_System\WQFS.cpp(252,33): warning C4244: '인수': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\devfo\source\repos\WQFS\World_event_n_Quest_Fusion_System\WQFS.cpp(264,13): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+LINK : warning LNK4098: 'MSVCRT' defaultlib가 다른 라이브러리와 충돌합니다. /NODEFAULTLIB:library를 사용하십시오.
+  World_event_n_Quest_Fusion_System.vcxproj -> C:\Users\devfo\source\repos\WQFS\x64\Debug\World_event_n_Quest_Fusion_System.exe

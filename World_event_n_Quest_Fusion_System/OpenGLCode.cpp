@@ -195,7 +195,7 @@ void OpenGLCode::init() {
     WQFS::GetInstance().AddEvent("Earthquake1", 1, 0, 0, 0.0f, 0.0f, eventObjects["Earthquake1"].objSize.x, eventObjects["Earthquake1"].objSize.y, 15.0f, 5.0f, 0.0f, 2.0f);
     WQFS::GetInstance().AddEvent("Earthquake2", 1, 1, 0, 0.0f, 0.0f, eventObjects["Earthquake2"].objSize.x, eventObjects["Earthquake2"].objSize.y, 20.0f, 6.0f, 0.0f, 5.0f);
     WQFS::GetInstance().AddEvent("Earthquake3", 1, 2, 0, 0.0f, 0.0f, eventObjects["Earthquake3"].objSize.x, eventObjects["Earthquake3"].objSize.y, 10.0f, 3.0f, 0.0f, 1.0f);
-    WQFS::GetInstance().AddEvent("Tornado1", 1, 0, 0, 0.0f, 0.0f, eventObjects["Tornado1"].objSize.x, eventObjects["Tornado1"].objSize.y, 5.0f, 3.0f, 0.0f, 1.0f);
+    WQFS::GetInstance().AddEvent("Tornado1", 1, 0, 0, 0.0f, 0.0f, eventObjects["Tornado1"].objSize.x, eventObjects["Tornado1"].objSize.y, 25.0f, 3.0f, 0.0f, 8.0f);
     WQFS::GetInstance().AddEvent("Tornado2", 1, 1, 0, 0.0f, 0.0f, eventObjects["Tornado2"].objSize.x, eventObjects["Tornado2"].objSize.y, 20.0f, 8.0f, 0.0f, 10.0f);
     WQFS::GetInstance().AddEvent("Tornado3", 1, 2, 0, 0.0f, 0.0f, eventObjects["Tornado3"].objSize.x, eventObjects["Tornado3"].objSize.y, 30.0f, 5.0f, 0.0f, 5.0f);
     WQFS::GetInstance().AddEvent("Tsunami1", 2, 0, 0, 0.0f, 0.0f, eventObjects["Tsunami1"].objSize.x, eventObjects["Tsunami1"].objSize.y, 20.0f, 3.0f, 0.0f, 9.0f);
@@ -206,7 +206,7 @@ void OpenGLCode::init() {
 	WQFS::GetInstance().GetEvent("Earthquake1").SetIsMove(true);
     WQFS::GetInstance().GetEvent("Earthquake2").SetIsMove(true);
     WQFS::GetInstance().GetEvent("Earthquake3").SetIsMove(true);
-    WQFS::GetInstance().GetEvent("Tornado1").SetIsMove(false);
+    WQFS::GetInstance().GetEvent("Tornado1").SetIsMove(true);
     WQFS::GetInstance().GetEvent("Tornado2").SetIsMove(true);
     WQFS::GetInstance().GetEvent("Tornado3").SetIsMove(true);
      
