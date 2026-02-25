@@ -126,8 +126,8 @@ void WQFS::MakeQuest(NPC &npc, WorldEvent &event) {
 	std::cout << std::endl;
 	//std::cout << npc.GetType()  << " " << event.GetType() << std::endl;
 
-	WQFS::GetInstance().lastEventPosition[0] = npc.GetPositionX();
-	WQFS::GetInstance().lastEventPosition[1] = npc.GetPositionY();
+	WQFS::GetInstance().lastQuestPosition[0] = npc.GetPositionX();
+	WQFS::GetInstance().lastQuestPosition[1] = npc.GetPositionY();
 }
 
 bool WQFS::CheckCollision(float object1X, float object1Y, float object1SizeX, float object1SizeY, float object2X, float object2Y, float object2SizeX, float object2SizeY) {
@@ -572,8 +572,8 @@ std::vector<Item> WQFS::CompleteQuest(NPC &npc, int& questCnt)  {
 		}
 
 		//If no quest
-		WQFS::GetInstance().lastEventPosition[0] = -1;
-		WQFS::GetInstance().lastEventPosition[1] = -1;
+		WQFS::GetInstance().lastQuestPosition[0] = -1;
+		WQFS::GetInstance().lastQuestPosition[1] = -1;
 
 		return std::get<0>(questList[questNumber]);
 	}
@@ -629,6 +629,10 @@ std::vector<std::string> WQFS::GetQuestListByString(int maxQuestList) {
 		stringQuest.push_back("");
 		return stringQuest;
 	}
+}
+
+std::vector<float> WQFS::GetLastQuestPosition() {
+	return WQFS::GetInstance().lastQuestPosition;
 }
 
 void WQFS::DiscountRemainingObstacles(int questNumber) {

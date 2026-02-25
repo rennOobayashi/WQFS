@@ -25,6 +25,7 @@
 #include <ctime>
 #include <vector>
 #include <map>
+#include <algorithm>
 
 enum GameState {
 	GAME_ACTIVE,
@@ -92,6 +93,7 @@ private:
 	GameObject* questGameObject;
 	GameObject* InventoryObject;
 	GameObject* hpObjects;
+	GameObject* questNavi;
 
 	SpriteRenderer* sRenderer;
 	TextRenderer* textRenderer;
@@ -112,7 +114,9 @@ private:
 	bool CheckCollision(GameObject& object1, GameObject& object2);
 	bool CheckCollision(glm::vec2 object1Pos, glm::vec2 object1Size, glm::vec2 object2Pos, glm::vec2 object2Size);
 	void SetCompensation(NPC& npc);
+	void QuestNavi();
 	Direction CheckCollisionDirection(GameObject& object1, GameObject& object2, bool isPlayer = true);
+	glm::vec2 GridMapping(glm::vec2 position);
 public:
 	OpenGLCode(unsigned int _width, unsigned int _height);
 	~OpenGLCode(); //Destructor

@@ -18,13 +18,13 @@ typedef std::pair<NPC*, WorldEvent*> QuestTarget; // npc, event
 class WQFS
 {
 private:
-	std::vector<float> lastEventPosition;
+	std::vector<float> lastQuestPosition;
 	int questNumber;
 	int npcNumber, eventNumber, itemNumber;
 	bool isPaused;
 	clock_t pauseStart;
 
-	WQFS() : questNumber(0), npcNumber(0), eventNumber(0), itemNumber(0), lastEventPosition({-1, -1}) {}
+	WQFS() : questNumber(0), npcNumber(0), eventNumber(0), itemNumber(0), lastQuestPosition({-1, -1}) {}
 	// 복사 방지
 	WQFS(const WQFS&) = delete;
 	WQFS& operator=(const WQFS&) = delete;
@@ -64,7 +64,7 @@ public:
 	
 	static void CheckEvent();
 
-	static std::vector<float> GetLastEventPosition();
+	static std::vector<float> GetLastQuestPosition();
 
 	static void Pause();
 	static void Resume();

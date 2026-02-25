@@ -7,6 +7,7 @@ glm::vec2 cameraNextPos(0.0f, 0.0f);
 glm::vec3 cameraFront(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp(0.0f, 1.0f, 0.0f);
 glm::vec2 attackCollidePos(0.0f, 0.0f);
+glm::vec2 naviPos(0.0f);
 const glm::vec2 inventoryItemPos[] = {
     glm::vec2(125.0f, 110.0f),
     glm::vec2(290.0f, 110.0f),
@@ -60,6 +61,7 @@ OpenGLCode::~OpenGLCode() {
     delete hpObjects;
     delete soundEngine;
     delete effects;
+    delete questNavi;
 
 	npcObjects.clear();
     monsterObjects.clear();
@@ -139,6 +141,7 @@ void OpenGLCode::init() {
     ResourceManager::LoadTexture("Texture/Gold.png", true, "Gold");
     ResourceManager::LoadTexture("Texture/Heart.png", true, "Heart");
     ResourceManager::LoadTexture("Texture/Attack.png", true, "Attack");
+    ResourceManager::LoadTexture("Texture/navi.png", true, "Navi");
 
 	Shader spriteShader = ResourceManager::GetShader("sprite");
 	sRenderer = new SpriteRenderer(spriteShader);
@@ -176,6 +179,7 @@ void OpenGLCode::init() {
     questGameObject = new GameObject(ResourceManager::GetTexture("GroundTile"), glm::vec2(0.0f), glm::vec2(50.0f), 0.0f, glm::vec3(1.0f));
 	InventoryObject = new GameObject(ResourceManager::GetTexture("Inventory"), glm::vec2(100.0f, 80.0f), glm::vec2(800.0f, 160.0f), 0.0f, glm::vec3(1.0f), 0.5f);
 	hpObjects = new GameObject(ResourceManager::GetTexture("Heart"), glm::vec2(10.0f), glm::vec2(50.0f), 0.0f, glm::vec3(1.0f), 0.7f);
+    questNavi = new GameObject(ResourceManager::GetTexture("Navi"), glm::vec2(-1.0f), glm::vec2(75.0f), 0.0f, glm::vec3(1.0f));
 
     itemObjects["HP Posion"] = GameObject(ResourceManager::GetTexture("HP Posion"), glm::vec2(125.0f, 110.0f), glm::vec2(100.0f), 0.0f, glm::vec3(1.0f), 0.8f);
     itemObjects["Good HP Posion"] = GameObject(ResourceManager::GetTexture("Good HP Posion"), glm::vec2(290.0f, 110.0f), glm::vec2(100.0f), 0.0f, glm::vec3(1.0f), 0.8f);
@@ -195,7 +199,7 @@ void OpenGLCode::init() {
     WQFS::GetInstance().AddEvent("Earthquake1", 1, 0, 0, 0.0f, 0.0f, eventObjects["Earthquake1"].objSize.x, eventObjects["Earthquake1"].objSize.y, 15.0f, 5.0f, 0.0f, 2.0f);
     WQFS::GetInstance().AddEvent("Earthquake2", 1, 1, 0, 0.0f, 0.0f, eventObjects["Earthquake2"].objSize.x, eventObjects["Earthquake2"].objSize.y, 20.0f, 6.0f, 0.0f, 5.0f);
     WQFS::GetInstance().AddEvent("Earthquake3", 1, 2, 0, 0.0f, 0.0f, eventObjects["Earthquake3"].objSize.x, eventObjects["Earthquake3"].objSize.y, 10.0f, 3.0f, 0.0f, 1.0f);
-    WQFS::GetInstance().AddEvent("Tornado1", 1, 0, 0, 0.0f, 0.0f, eventObjects["Tornado1"].objSize.x, eventObjects["Tornado1"].objSize.y, 25.0f, 3.0f, 0.0f, 8.0f);
+    WQFS::GetInstance().AddEvent("Tornado1", 1, 0, 0, 0.0f, 0.0f, eventObjects["Tornado1"].objSize.x, eventObjects["Tornado1"].objSize.y, 5.0f, 3.0f, 0.0f, 1.0f);
     WQFS::GetInstance().AddEvent("Tornado2", 1, 1, 0, 0.0f, 0.0f, eventObjects["Tornado2"].objSize.x, eventObjects["Tornado2"].objSize.y, 20.0f, 8.0f, 0.0f, 10.0f);
     WQFS::GetInstance().AddEvent("Tornado3", 1, 2, 0, 0.0f, 0.0f, eventObjects["Tornado3"].objSize.x, eventObjects["Tornado3"].objSize.y, 30.0f, 5.0f, 0.0f, 5.0f);
     WQFS::GetInstance().AddEvent("Tsunami1", 2, 0, 0, 0.0f, 0.0f, eventObjects["Tsunami1"].objSize.x, eventObjects["Tsunami1"].objSize.y, 20.0f, 3.0f, 0.0f, 9.0f);
@@ -206,7 +210,7 @@ void OpenGLCode::init() {
 	WQFS::GetInstance().GetEvent("Earthquake1").SetIsMove(true);
     WQFS::GetInstance().GetEvent("Earthquake2").SetIsMove(true);
     WQFS::GetInstance().GetEvent("Earthquake3").SetIsMove(true);
-    WQFS::GetInstance().GetEvent("Tornado1").SetIsMove(true);
+    WQFS::GetInstance().GetEvent("Tornado1").SetIsMove(false);
     WQFS::GetInstance().GetEvent("Tornado2").SetIsMove(true);
     WQFS::GetInstance().GetEvent("Tornado3").SetIsMove(true);
      
@@ -313,6 +317,8 @@ void OpenGLCode::update() {
             if (hp <= 0) {
 				states = GAME_OVER;
             }
+
+            QuestNavi();
 
             DoCollisions();
 
@@ -615,6 +621,10 @@ void OpenGLCode::render() {
 
     effects->Render((float)glfwGetTime());
 
+    if (questNavi->visible) {
+        questNavi->Draw(*sRenderer);
+    }
+
     for (int i = 0; i < hp; i++) {
         hpObjects->objPosition.x = 10.0f + (i * 60.0f) + cameraPos.x;
         hpObjects->objPosition.y = 10.0f + cameraPos.y;
@@ -846,7 +856,7 @@ void OpenGLCode::MakeQusetObject(int questNumber, glm::vec2 offset) {
 	std::cout << "Make Quest Object for quest number " << questNumber << std::endl;
     std::vector<std::string> itemSpriteName;
 
-    for (auto name : WQFS::GetInstance().WQFS::GetInstance().comps) {
+    for (auto name : WQFS::GetInstance().comps) {
         itemSpriteName.push_back(name.first);
     }
 
@@ -899,6 +909,42 @@ void OpenGLCode::MakeQusetObject(int questNumber, glm::vec2 offset) {
             std::cout << "Generate Quest Object at (" << questGameObject->objPosition.x << ", " << questGameObject->objPosition.y << ")" << std::endl;
         }
         std::get<1>(QuestObjects[questNumber]) = true;
+    }
+}
+
+
+void OpenGLCode::QuestNavi() {
+    naviPos = glm::vec2(WQFS::GetInstance().GetLastQuestPosition()[0], WQFS::GetInstance().GetLastQuestPosition()[1]);
+
+    naviPos.x = int(naviPos.x / 1000) * 1000;
+    naviPos.y = int(naviPos.y / 1000) * 1000;
+
+    if (naviPos == glm::vec2(-1) || CheckCollision(cameraPos, glm::vec2(width, height), naviPos, glm::vec2(1.0f))) {
+        questNavi->visible = false;
+    }
+    else {
+        //Left
+        if (cameraPos.x > naviPos.x) {
+            questNavi->objPosition = glm::vec2(0.0f, (height / 2.0f) - questNavi->objSize.y) + cameraPos;
+            questNavi->objRotation = 90.0f;
+        }
+        //Right
+        else if (cameraPos.x < naviPos.x) {
+            questNavi->objPosition = glm::vec2(width - questNavi->objSize.x, (height / 2.0f) - questNavi->objSize.y) + cameraPos;
+            questNavi->objRotation = 270.0f;
+        }
+        //Up
+        else if (cameraPos.y > naviPos.y) {
+            questNavi->objPosition = glm::vec2((width / 2.0f) - questNavi->objSize.x, 0.0f) + cameraPos;
+            questNavi->objRotation = 180.0f;
+        }
+        //Down
+        else if (cameraPos.y < naviPos.y) {
+            questNavi->objPosition = glm::vec2((width / 2.0f) - questNavi->objSize.x, height - questNavi->objSize.y) + cameraPos;
+            questNavi->objRotation = 0.0f;
+        }
+
+        questNavi->visible = true;
     }
 }
 
